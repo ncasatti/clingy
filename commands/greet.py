@@ -4,6 +4,7 @@ from argparse import ArgumentParser, Namespace
 from typing import Optional
 
 from manager.commands.base import BaseCommand
+from manager.core.colors import Emojis
 from manager.core.logger import log_info, log_success
 from manager.core.menu import MenuNode
 
@@ -45,26 +46,26 @@ class GreetCommand(BaseCommand):
         """Interactive menu for greet command"""
         return MenuNode(
             label="Greet",
-            emoji="👋",
+            emoji=Emojis.GREET,
             children=[
                 MenuNode(
                     label="English",
-                    emoji="🇬🇧",
+                    emoji=Emojis.FLAG_GB,
                     action=lambda: self._greet("en"),
                 ),
                 MenuNode(
                     label="Spanish",
-                    emoji="🇪🇸",
+                    emoji=Emojis.FLAG_ES,
                     action=lambda: self._greet("es"),
                 ),
                 MenuNode(
                     label="French",
-                    emoji="🇫🇷",
+                    emoji=Emojis.FLAG_FR,
                     action=lambda: self._greet("fr"),
                 ),
                 MenuNode(
                     label="German",
-                    emoji="🇩🇪",
+                    emoji=Emojis.FLAG_DE,
                     action=lambda: self._greet("de"),
                 ),
             ],

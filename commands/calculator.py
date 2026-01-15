@@ -4,6 +4,7 @@ from argparse import ArgumentParser, Namespace
 from typing import Optional
 
 from manager.commands.base import BaseCommand
+from manager.core.colors import Emojis
 from manager.core.logger import log_error, log_success
 from manager.core.menu import MenuNode, fzf_select
 
@@ -35,26 +36,26 @@ class CalculatorCommand(BaseCommand):
         """Interactive menu for calculator"""
         return MenuNode(
             label="Calculator",
-            emoji="🔢",
+            emoji=Emojis.CALCULATOR,
             children=[
                 MenuNode(
                     label="Add",
-                    emoji="➕",
+                    emoji=Emojis.ADD,
                     action=lambda: self._calculate_interactive("+"),
                 ),
                 MenuNode(
                     label="Subtract",
-                    emoji="➖",
+                    emoji=Emojis.SUBTRACT,
                     action=lambda: self._calculate_interactive("-"),
                 ),
                 MenuNode(
                     label="Multiply",
-                    emoji="✖️",
+                    emoji=Emojis.MULTIPLY,
                     action=lambda: self._calculate_interactive("*"),
                 ),
                 MenuNode(
                     label="Divide",
-                    emoji="➗",
+                    emoji=Emojis.DIVIDE,
                     action=lambda: self._calculate_interactive("/"),
                 ),
             ],

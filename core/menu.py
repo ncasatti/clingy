@@ -194,7 +194,7 @@ def fzf_select(
         return None
 
     # Construir comando fzf
-    cmd = ["fzf", "--prompt", prompt, "--height", "40%", "--border", "--ansi"]
+    cmd = ["fzf", "--prompt", prompt, "--height", "40%", "--border", "--ansi", "--reverse"]
 
     if header:
         cmd.extend(["--header", header])

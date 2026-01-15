@@ -5,6 +5,7 @@ from argparse import ArgumentParser, Namespace
 from typing import Optional
 
 from manager.commands.base import BaseCommand
+from manager.core.colors import Emojis
 from manager.core.logger import log_error, log_info, log_success
 from manager.core.menu import MenuNode
 
@@ -39,21 +40,21 @@ class FilesCommand(BaseCommand):
         """Interactive menu for file operations"""
         return MenuNode(
             label="File Operations",
-            emoji="📁",
+            emoji=Emojis.FILES,
             children=[
                 MenuNode(
                     label="List Files",
-                    emoji="📋",
+                    emoji=Emojis.FILE_LIST,
                     action=lambda: self._list_files("."),
                 ),
                 MenuNode(
                     label="Create File",
-                    emoji="➕",
+                    emoji=Emojis.FILE_CREATE,
                     action=lambda: self._create_file_interactive(),
                 ),
                 MenuNode(
                     label="Delete File",
-                    emoji="🗑️",
+                    emoji=Emojis.FILE_DELETE,
                     action=lambda: self._delete_file_interactive(),
                 ),
             ],
