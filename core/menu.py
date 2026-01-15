@@ -242,29 +242,29 @@ def fzf_select(
         sys.exit(0)
 
 
-def fzf_select_functions(
-    prompt: str = "Select functions: ", include_all: bool = True
+def fzf_select_items(
+    prompt: str = "Select items: ", include_all: bool = True
 ) -> Optional[List[str]]:
     """
-    Selector específico para funciones Go.
+    Selector específico para items configurados.
 
     Args:
         prompt: Texto del prompt
-        include_all: Si incluir opción [ALL FUNCTIONS]
+        include_all: Si incluir opción [ALL ITEMS]
 
     Returns:
-        Lista de funciones seleccionadas o None
+        Lista de items seleccionados o None
     """
-    from manager.config import GO_FUNCTIONS
+    from manager.config import ITEMS
 
     options = []
 
-    # Agregar opción [ALL FUNCTIONS] al principio
+    # Agregar opción [ALL ITEMS] al principio
     if include_all:
-        options.append(f"{Colors.BOLD}{Colors.GREEN}[ALL FUNCTIONS]{Colors.RESET}")
+        options.append(f"{Colors.BOLD}{Colors.GREEN}[ALL ITEMS]{Colors.RESET}")
 
-    # Agregar funciones individuales
-    options.extend(GO_FUNCTIONS)
+    # Agregar items individuales
+    options.extend(ITEMS)
 
     # Ejecutar fzf con multi-selección
     selected = fzf_select(
@@ -274,9 +274,9 @@ def fzf_select_functions(
     if not selected:
         return None
 
-    # Si seleccionó [ALL FUNCTIONS], retornar todas las funciones
-    if any("[ALL FUNCTIONS]" in s for s in selected):
-        return GO_FUNCTIONS
+    # Si seleccionó [ALL ITEMS], retornar todos los items
+    if any("[ALL ITEMS]" in s for s in selected):
+        return ITEMS
 
     # Filtrar las opciones de control que puedan tener códigos ANSI
     filtered = []
@@ -285,7 +285,7 @@ def fzf_select_functions(
         clean = s.replace(Colors.BOLD, "").replace(Colors.GREEN, "").replace(
             Colors.RESET, ""
         )
-        if clean in GO_FUNCTIONS:
+        if clean in ITEMS:
             filtered.append(clean)
 
     return filtered if filtered else None

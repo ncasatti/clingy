@@ -1,17 +1,18 @@
 # AGENTS.md
 
-**AI Coding Agents Guide** for the Serverless Manager CLI project.
+**AI Coding Agents Guide** for the CLI Manager Template project.
 
 ---
 
 ## Project Overview
 
-**Python CLI tool** for managing AWS Lambda functions with Go runtime. Features modular command discovery, CloudWatch Insights integration, and interactive development workflows.
+**Python CLI template** for building interactive command-line tools with fuzzy search menus and modular command architecture. This is a reusable template, not a project-specific tool.
 
 - **Language:** Python 3.8+
-- **Runtime Target:** AWS Lambda (Go 1.19+)
 - **Architecture:** Modular command-based CLI with auto-discovery
-- **Dependencies:** fzf, serverless, awscli, go, python, pyyaml
+- **Menu System:** Interactive menus powered by `fzf` (fuzzy finder)
+- **Dependencies:** fzf, python, pyyaml (optional)
+- **Use Cases:** DevOps tools, data pipelines, admin dashboards, development utilities
 
 ---
 
@@ -27,25 +28,37 @@ python manager.py                    # Starts fuzzy-searchable menu system
 python manager.py <command> [options]
 
 # Examples
-python manager.py build -f status
-python manager.py deploy --all
-python manager.py logs -f status
+python manager.py greet --language es
+python manager.py files --action list
+python manager.py calculator
+python manager.py info
 ```
 
-### Build Commands
+### Example Commands
 
 ```bash
-# Build Go functions
-python manager.py build                # Build all functions
-python manager.py build -f getUsers    # Build specific function
+# Greet in different languages
+python manager.py greet                # Interactive menu
+python manager.py greet --language es  # Spanish
 
-# Create deployment packages
-python manager.py zip
-python manager.py zip -f status
+# File operations
+python manager.py files                # Interactive menu
+python manager.py files --action list  # List files
 
-# Deploy to AWS
-python manager.py deploy --all
-python manager.py deploy -f status
+# Calculator
+python manager.py calculator           # Interactive mode
+
+# System info
+python manager.py info                 # Show system information
+
+# List configured items
+python manager.py list-items
+
+# Clean output artifacts
+python manager.py clean
+
+# Check dependencies
+python manager.py requirements status
 ```
 
 ### Testing
@@ -56,7 +69,7 @@ python manager.py deploy -f status
 # Recommended: pytest
 pytest tests/                          # Run all tests
 pytest tests/test_commands.py          # Run specific test file
-pytest tests/test_build.py::test_name  # Run single test
+pytest tests/test_mycommand.py::test_name  # Run single test
 pytest -v                              # Verbose output
 pytest -x                              # Stop on first failure
 pytest --pdb                           # Drop into debugger on failure
@@ -88,17 +101,11 @@ isort manager/
 # Check system dependencies
 python manager.py requirements status
 
-# List all functions
-python manager.py list
+# List all configured items
+python manager.py list-items
 
-# Clean build artifacts
+# Clean output artifacts
 python manager.py clean
-
-# View CloudWatch logs
-python manager.py logs -f status
-
-# Run Insights queries
-python manager.py insights -f processContenedor
 ```
 
 ---
@@ -111,6 +118,7 @@ python manager.py insights -f processContenedor
 - **Modular design**: One responsibility per class/function
 - **Error handling**: Fail gracefully with clear error messages
 - **Logging**: Use `core/logger.py` utilities for all output
+- **Configuration**: Never hardcode values, use `config.py`
 
 ### 2. File Organization
 
@@ -118,16 +126,24 @@ python manager.py insights -f processContenedor
 manager/
 ├── commands/          # Command implementations (auto-discovered)
 │   ├── base.py       # Abstract base class
-│   ├── build.py      # Each command is a self-contained module
-│   └── ...
+│   ├── greet.py      # Example: simple menu
+│   ├── files.py      # Example: hierarchical menu
+│   ├── calculator.py # Example: interactive input
+│   ├── info.py       # Example: CLI-only
+│   ├── list_items.py # List configured items
+│   ├── clean.py      # Clean artifacts
+│   └── requirements.py
+│
 ├── core/             # Core utilities (shared logic)
 │   ├── logger.py     # Logging functions
 │   ├── colors.py     # Terminal styling
 │   ├── menu.py       # Interactive menu system (fzf)
-│   └── ...
+│   └── stats.py      # Statistics tracking
+│
 ├── cli.py            # CLI entry point (orchestrator)
 ├── config.py         # Project-specific configuration
-└── manager.py        # Wrapper script
+├── manager.py        # Wrapper script
+└── README.md         # Documentation
 ```
 
 ### 3. Imports
@@ -141,13 +157,12 @@ import sys
 from typing import List, Optional
 
 # Third-party
-import boto3
 from argparse import ArgumentParser, Namespace
 
 # Local
 from manager.commands.base import BaseCommand
 from manager.core.logger import log_error, log_success
-from manager.config import GO_FUNCTIONS
+from manager.config import ITEMS
 ```
 
 **Guidelines:**
@@ -163,14 +178,14 @@ from manager.config import GO_FUNCTIONS
 ```python
 def execute(self, args: Namespace) -> bool:
     """Execute command logic"""
-    functions: List[str] = self._resolve_function_list(args)
-    return self._process_functions(functions)
+    items: List[str] = self._resolve_item_list(args)
+    return self._process_items(items)
 
-def _get_filtered_functions(self, filter: Optional[str]) -> List[str]:
-    """Get filtered function list"""
+def _get_filtered_items(self, filter: Optional[str]) -> List[str]:
+    """Get filtered item list"""
     if filter is None:
-        return GO_FUNCTIONS
-    return [filter] if filter in GO_FUNCTIONS else []
+        return ITEMS
+    return [filter] if filter in ITEMS else []
 ```
 
 **Common types:**
@@ -183,19 +198,19 @@ def _get_filtered_functions(self, filter: Optional[str]) -> List[str]:
 **Use Google-style docstrings:**
 
 ```python
-def build_function(self, func_name: str, output_dir: str) -> bool:
+def process_item(self, item_name: str, output_dir: str) -> bool:
     """
-    Build a single Go function to binary.
+    Process a single item.
 
     Args:
-        func_name: Name of the function to build
-        output_dir: Directory to write the binary
+        item_name: Name of the item to process
+        output_dir: Directory to write output
 
     Returns:
-        True if build succeeded, False otherwise
+        True if processing succeeded, False otherwise
 
     Raises:
-        FileNotFoundError: If main.go doesn't exist
+        FileNotFoundError: If item doesn't exist
     """
     pass
 ```
@@ -207,11 +222,11 @@ def build_function(self, func_name: str, output_dir: str) -> bool:
 
 ### 6. Naming Conventions
 
-**Files:** `snake_case.py` (e.g., `list_functions.py`)  
-**Classes:** `PascalCase` (e.g., `BuildCommand`, `BaseCommand`)  
-**Functions/Variables:** `snake_case` (e.g., `build_function`, `func_name`)  
-**Constants:** `UPPER_SNAKE_CASE` (e.g., `GO_FUNCTIONS`, `BIN_DIR`)  
-**Private methods:** `_leading_underscore` (e.g., `_validate_function`)
+**Files:** `snake_case.py` (e.g., `my_command.py`)  
+**Classes:** `PascalCase` (e.g., `MyCommand`, `BaseCommand`)  
+**Functions/Variables:** `snake_case` (e.g., `process_item`, `item_name`)  
+**Constants:** `UPPER_SNAKE_CASE` (e.g., `ITEMS`, `OUTPUT_DIR`)  
+**Private methods:** `_leading_underscore` (e.g., `_validate_item`)
 
 ### 7. Command Structure
 
@@ -220,6 +235,8 @@ def build_function(self, func_name: str, output_dir: str) -> bool:
 ```python
 from manager.commands.base import BaseCommand
 from argparse import ArgumentParser, Namespace
+from manager.core.menu import MenuNode
+from typing import Optional
 
 class MyCommand(BaseCommand):
     """One-line description of command"""
@@ -228,12 +245,12 @@ class MyCommand(BaseCommand):
     help = "Short help text"              # Shown in --help
     description = "Detailed description"  # Optional, defaults to help
     epilog = """Examples:
-  manager.py mycommand -f status
+  manager.py mycommand --option value
 """
     
     def add_arguments(self, parser: ArgumentParser):
         """Add command-specific CLI arguments"""
-        parser.add_argument('-f', '--function', help='Function name')
+        parser.add_argument('--option', help='Option description')
     
     def execute(self, args: Namespace) -> bool:
         """
@@ -243,20 +260,50 @@ class MyCommand(BaseCommand):
             True on success, False on failure
         """
         # Use base class helpers
-        functions = self._resolve_function_list(args)
+        items = self._resolve_item_list(args)
         
         # Your logic here
-        for func in functions:
-            self._process_function(func)
+        for item in items:
+            self._process_item(item)
         
+        return True
+    
+    def get_menu_tree(self) -> Optional[MenuNode]:
+        """
+        Optional: Define interactive menu structure.
+        
+        Return None if command doesn't support interactive mode.
+        """
+        return MenuNode(
+            label="My Command",
+            emoji="⚙️",
+            children=[
+                MenuNode(
+                    label="Option 1",
+                    action=lambda: self._execute_option_1()
+                ),
+                MenuNode(
+                    label="Option 2",
+                    action=lambda: self._execute_option_2()
+                ),
+            ]
+        )
+    
+    def _execute_option_1(self) -> bool:
+        """Execute option 1"""
+        return True
+    
+    def _execute_option_2(self) -> bool:
+        """Execute option 2"""
         return True
 ```
 
 **Key patterns:**
 - Commands are **auto-discovered** (no registration needed)
-- Use `_resolve_function_list(args)` to support both CLI and dev menu
+- Use `_resolve_item_list(args)` to support both CLI and interactive menu
 - Return `bool` for success/failure (affects exit code)
 - Use `log_*` functions from `core/logger.py` for output
+- Implement `get_menu_tree()` for interactive menu support (optional)
 
 ### 7.5. Interactive Menu Support
 
@@ -283,34 +330,34 @@ class MyCommand(BaseCommand):
             emoji="⚙️",
             children=[
                 MenuNode(
-                    label="Build All",
-                    emoji="🔨",
-                    action=lambda: self._build_all()
+                    label="Process All",
+                    emoji="🔄",
+                    action=lambda: self._process_all()
                 ),
                 MenuNode(
-                    label="Build Specific",
-                    emoji="🔨",
+                    label="Process Specific",
+                    emoji="🔄",
                     children=[
                         MenuNode(
-                            label="status",
-                            action=lambda: self._build_function("status")
+                            label="item-1",
+                            action=lambda: self._process_item("item-1")
                         ),
                         MenuNode(
-                            label="getUsers",
-                            action=lambda: self._build_function("getUsers")
+                            label="item-2",
+                            action=lambda: self._process_item("item-2")
                         ),
                     ]
                 ),
             ]
         )
     
-    def _build_all(self) -> bool:
-        """Build all functions"""
+    def _process_all(self) -> bool:
+        """Process all items"""
         # Implementation
         return True
     
-    def _build_function(self, func_name: str) -> bool:
-        """Build specific function"""
+    def _process_item(self, item_name: str) -> bool:
+        """Process specific item"""
         # Implementation
         return True
 ```
@@ -336,50 +383,50 @@ class MenuNode:
 - **Submenu nodes**: Have `children` but no `action` (navigable)
 - **Emojis**: Automatically prefixed to labels in fzf
 - **Navigation**: fzf handles breadcrumb and "← Back" option
-- **Multi-select**: Use `fzf_select_functions()` for function selection
+- **Multi-select**: Use `fzf_select_items()` for item selection
 
-**Example: Build Command with Menu:**
+**Example: Command with Menu:**
 
 ```python
-from manager.core.menu import MenuNode, fzf_select_functions
+from manager.core.menu import MenuNode, fzf_select_items
 
-class BuildCommand(BaseCommand):
-    name = "build"
-    help = "Build Go functions"
+class ProcessCommand(BaseCommand):
+    name = "process"
+    help = "Process items"
     
     def get_menu_tree(self) -> Optional[MenuNode]:
         return MenuNode(
-            label="Build",
-            emoji="🔨",
+            label="Process",
+            emoji="🔄",
             children=[
                 MenuNode(
-                    label="Build All Functions",
-                    action=lambda: self._build_all()
+                    label="Process All Items",
+                    action=lambda: self._process_all()
                 ),
                 MenuNode(
-                    label="Select Functions",
-                    action=lambda: self._build_selected()
+                    label="Select Items",
+                    action=lambda: self._process_selected()
                 ),
             ]
         )
     
-    def _build_all(self) -> bool:
-        """Build all functions"""
-        functions = GO_FUNCTIONS
-        return self._build_functions(functions)
+    def _process_all(self) -> bool:
+        """Process all items"""
+        items = ITEMS
+        return self._process_items(items)
     
-    def _build_selected(self) -> bool:
-        """Let user select functions to build"""
-        functions = fzf_select_functions(
-            prompt="Select functions to build: ",
+    def _process_selected(self) -> bool:
+        """Let user select items to process"""
+        items = fzf_select_items(
+            prompt="Select items to process: ",
             include_all=True
         )
-        if not functions:
+        if not items:
             return False
-        return self._build_functions(functions)
+        return self._process_items(items)
     
-    def _build_functions(self, functions: List[str]) -> bool:
-        """Build specified functions"""
+    def _process_items(self, items: List[str]) -> bool:
+        """Process specified items"""
         # Implementation
         return True
 ```
@@ -389,22 +436,22 @@ class BuildCommand(BaseCommand):
 **Fail gracefully with user-friendly messages:**
 
 ```python
-from manager.core.logger import log_error, log_warning
+from manager.core.logger import log_error, log_warning, log_info
 
 # Validate input
-if func_name not in GO_FUNCTIONS:
-    log_error(f"Function '{func_name}' not found")
-    log_info(f"Available: {', '.join(GO_FUNCTIONS[:5])}...")
+if item_name not in ITEMS:
+    log_error(f"Item '{item_name}' not found")
+    log_info(f"Available: {', '.join(ITEMS[:5])}...")
     return False
 
 # Handle subprocess errors
 try:
     result = subprocess.run(command, check=True, capture_output=True)
 except subprocess.CalledProcessError as e:
-    log_error(f"Build failed: {e.stderr.strip()}")
+    log_error(f"Operation failed: {e.stderr.strip()}")
     return False
 except FileNotFoundError:
-    log_error("Go compiler not found. Install with: brew install go")
+    log_error("Required tool not found. Install with: brew install tool")
     return False
 ```
 
@@ -430,13 +477,13 @@ from manager.core.logger import (
 )
 
 # Example
-log_section(f"BUILDING {len(functions)} FUNCTIONS")
-for func in functions:
-    log_info(f"Processing {func}")
-    if build_success:
-        log_success(f"{func} → {size:,} bytes", duration=1.2)
+log_section(f"PROCESSING {len(items)} ITEMS")
+for item in items:
+    log_info(f"Processing {item}")
+    if success:
+        log_success(f"{item} → completed", duration=1.2)
     else:
-        log_error(f"{func} → compilation failed")
+        log_error(f"{item} → failed")
 print_summary()
 ```
 
@@ -446,11 +493,11 @@ print_summary()
 
 ```python
 from manager.config import (
-    GO_FUNCTIONS,      # List of all functions
-    BUILD_SETTINGS,    # Go build environment vars
-    FUNCTIONS_DIR,     # "functions/"
-    BIN_DIR,           # ".bin/"
-    AWS_PROFILE,       # AWS profile name
+    ITEMS,           # List of all items
+    PROJECT_NAME,    # Project name
+    PROJECT_VERSION, # Project version
+    DATA_DIR,        # Data directory
+    OUTPUT_DIR,      # Output directory
 )
 ```
 
@@ -458,38 +505,39 @@ from manager.config import (
 - Add to `config.py` with comments
 - Use UPPER_SNAKE_CASE for constants
 - Group related settings with section headers
+- Document the purpose of each setting
 
 ---
 
 ## Common Patterns
 
-### Function Resolution (CLI + Dev Mode)
+### Item Resolution (CLI + Interactive Mode)
 
 ```python
 def execute(self, args: Namespace) -> bool:
-    # This works for both CLI (-f flag) and dev menu (function_list)
-    functions = self._resolve_function_list(args)
-    if not functions:
+    # This works for both CLI (-i flag) and interactive menu (item_list)
+    items = self._resolve_item_list(args)
+    if not items:
         return False  # Error already logged
     
-    for func in functions:
-        self._process_function(func)
+    for item in items:
+        self._process_item(item)
     return True
 ```
 
-### Building with Stats
+### Processing with Stats
 
 ```python
 from manager.core.stats import stats
 
 stats.reset()
-stats.total_functions = len(functions)
+stats.total_items = len(items)
 
-for func in functions:
+for item in items:
     if success:
         stats.add_success()
     else:
-        stats.add_failure(func)
+        stats.add_failure(item)
 
 print_summary()  # Prints stats automatically
 ```
@@ -499,16 +547,12 @@ print_summary()  # Prints stats automatically
 ```python
 import subprocess
 
-env = os.environ.copy()
-env.update(BUILD_SETTINGS)  # Add Go build settings
-
 result = subprocess.run(
-    ["go", "build", "-o", output, source],
+    ["command", "arg1", "arg2"],
     check=True,           # Raise on error
     capture_output=True,  # Capture stdout/stderr
     text=True,            # Return strings (not bytes)
-    env=env,              # Custom environment
-    cwd=source_dir        # Working directory
+    cwd=working_dir       # Working directory
 )
 ```
 
@@ -551,12 +595,94 @@ success = renderer.show()
 
 ---
 
+## Creating Your Own Manager
+
+### Step 1: Clone the Template
+
+```bash
+git clone <this-repo> my-cli-tool
+cd my-cli-tool
+```
+
+### Step 2: Customize Configuration
+
+Edit `config.py`:
+
+```python
+PROJECT_NAME = "My CLI Tool"
+PROJECT_VERSION = "1.0.0"
+
+ITEMS = [
+    "item-1",
+    "item-2",
+    "item-3",
+]
+
+DATA_DIR = "data"
+OUTPUT_DIR = "output"
+```
+
+### Step 3: Create Your Commands
+
+Create new files in `manager/commands/`:
+
+```python
+# manager/commands/mycommand.py
+from manager.commands.base import BaseCommand
+from argparse import ArgumentParser, Namespace
+from manager.core.menu import MenuNode
+from manager.core.logger import log_success
+from typing import Optional
+
+class MyCommand(BaseCommand):
+    name = "mycommand"
+    help = "My custom command"
+    
+    def execute(self, args: Namespace) -> bool:
+        items = self._resolve_item_list(args)
+        for item in items:
+            log_success(f"Processing {item}")
+        return True
+    
+    def get_menu_tree(self) -> Optional[MenuNode]:
+        return MenuNode(
+            label="My Command",
+            emoji="⚙️",
+            children=[
+                MenuNode(
+                    label="Process All",
+                    action=lambda: self.execute(Namespace(item_list=ITEMS))
+                ),
+            ]
+        )
+```
+
+### Step 4: Test
+
+```bash
+# Interactive mode
+python manager.py
+
+# CLI mode
+python manager.py mycommand
+```
+
+### Step 5: Update Documentation
+
+Update `README.md` with your project details:
+- Project description
+- Installation instructions
+- Usage examples
+- Configuration guide
+
+---
+
 ## Best Practices
 
 1. **Read before writing:** If modifying a command, read similar commands first
-2. **Validate inputs:** Check function names exist, files exist, etc.
+2. **Validate inputs:** Check item names exist, files exist, etc.
 3. **Atomic operations:** Each command should do ONE thing well
-4. **Interactive support:** Commands should work in both CLI and dev menu
+4. **Interactive support:** Commands should work in both CLI and interactive menu
 5. **Cross-platform:** Use `os.path.join()`, not hardcoded slashes
 6. **Progress feedback:** Log each step (especially in long operations)
 7. **Clean state:** Don't leave artifacts on failure
@@ -568,17 +694,52 @@ success = renderer.show()
 
 - **No tests exist yet:** When writing tests, use pytest with fixtures
 - **Auto-discovery:** New commands are auto-registered (no imports needed)
-- **Base class helpers:** Use `_resolve_function_list()` and `_get_filtered_functions()`
+- **Base class helpers:** Use `_resolve_item_list()` and `_get_filtered_items()`
 - **Interactive menus:** Implement `get_menu_tree()` to add interactive support
 - **Menu system:** Uses `MenuNode` (tree structure) + `MenuRenderer` (fzf navigation)
-- **Function selection:** Use `fzf_select_functions()` for multi-select in menus
+- **Item selection:** Use `fzf_select_items()` for multi-select in menus
 - **Colors/Emojis:** Already handled by logger utilities
-- **AWS integration:** Uses `serverless` CLI and `aws` CLI (not boto3)
-- **Go functions:** Expected at `functions/<name>/main.go`
-- **Output directory:** Binaries go to `.bin/<name>/bootstrap`
+- **Configuration:** All settings in `config.py` (never hardcode values)
+- **Items:** Defined in `config.py:ITEMS` (not tied to any specific resource type)
 
 ---
 
-**Last Updated:** 2026-01-14 (Interactive Menu System)  
+## Example Commands Reference
+
+### greet.py (Simple Menu)
+
+```python
+# Simple menu with language selection
+# Shows: Spanish, English, French, German
+# Pattern: Single-level menu with actions
+```
+
+### files.py (Hierarchical Menu)
+
+```python
+# Hierarchical menu for file operations
+# Shows: List Files, Create File, Delete File
+# Pattern: Multi-level menu with nested operations
+```
+
+### calculator.py (Interactive Input)
+
+```python
+# Interactive calculator with user input
+# Shows: Operation selection, number input, result
+# Pattern: Form-like interface with prompts
+```
+
+### info.py (CLI-Only)
+
+```python
+# System information display
+# Shows: Python version, OS, working directory
+# Pattern: No menu, CLI-only command
+```
+
+---
+
+**Last Updated:** 2026-01-15 (Template Conversion)  
 **Python Version:** 3.8+  
 **Primary Maintainer:** @ncasatti

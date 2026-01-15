@@ -3,7 +3,7 @@
 from abc import ABC, abstractmethod
 from argparse import ArgumentParser, Namespace
 from typing import Optional, List
-from manager.config import GO_FUNCTIONS
+from manager.config import ITEMS
 from manager.core.logger import log_error, log_info
 from manager.core.menu import MenuNode
 
@@ -13,7 +13,7 @@ class BaseCommand(ABC):
     Abstract base class for all CLI commands
 
     Each command must implement:
-    - name: Command name (e.g., "build", "deploy")
+    - name: Command name (e.g., "greet", "files")
     - help: Short help text
     - description: Detailed description (optional)
     - epilog: Usage examples (optional)
@@ -57,53 +57,53 @@ class BaseCommand(ABC):
         """Get command epilog"""
         return self.epilog
 
-    def _resolve_function_list(self, args: Namespace) -> List[str]:
+    def _resolve_item_list(self, args: Namespace) -> List[str]:
         """
-        Resolve function list from args, supporting both dev mode and CLI mode.
+        Resolve item list from args, supporting both interactive mode and CLI mode.
 
         Priority:
-        1. args.function_list (from dev command) - takes precedence
-        2. args.function (from CLI) - filtered via _get_filtered_functions()
+        1. args.item_list (from interactive menu) - takes precedence
+        2. args.item (from CLI) - filtered via _get_filtered_items()
 
         Args:
             args: Parsed command-line arguments
 
         Returns:
-            List of function names to process
+            List of item names to process
         """
-        # Dev mode: function_list is provided directly
-        if hasattr(args, "function_list") and args.function_list:
-            return args.function_list
+        # Interactive mode: item_list is provided directly
+        if hasattr(args, "item_list") and args.item_list:
+            return args.item_list
 
-        # CLI mode: filter based on function argument
-        function_arg = getattr(args, "function", None)
-        return self._get_filtered_functions(function_arg)
+        # CLI mode: filter based on item argument
+        item_arg = getattr(args, "item", None)
+        return self._get_filtered_items(item_arg)
 
-    def _get_filtered_functions(self, function_filter: Optional[str]) -> List[str]:
+    def _get_filtered_items(self, item_filter: Optional[str]) -> List[str]:
         """
-        Get list of functions to process, filtered if necessary.
+        Get list of items to process, filtered if necessary.
 
         Args:
-            function_filter: Specific function name or None for all
+            item_filter: Specific item name or None for all
 
         Returns:
-            List of valid function names (empty list if function doesn't exist)
+            List of valid item names (empty list if item doesn't exist)
         """
-        if function_filter is None:
-            return GO_FUNCTIONS
+        if item_filter is None:
+            return ITEMS
 
-        # Validate function exists
-        if function_filter not in GO_FUNCTIONS:
+        # Validate item exists
+        if item_filter not in ITEMS:
             log_error(
-                f"Function '{function_filter}' does not exist in the available functions list"
+                f"Item '{item_filter}' does not exist in the available items list"
             )
             log_info(
-                f"Available functions: {', '.join(GO_FUNCTIONS[:5])}{'...' if len(GO_FUNCTIONS) > 5 else ''}"
+                f"Available items: {', '.join(ITEMS[:5])}{'...' if len(ITEMS) > 5 else ''}"
             )
-            log_info("Use 'python manager.py list' to see all available functions")
+            log_info("Use 'python manager.py list' to see all available items")
             return []
 
-        return [function_filter]
+        return [item_filter]
 
     def get_menu_tree(self) -> Optional[MenuNode]:
         """

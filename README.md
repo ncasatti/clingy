@@ -1,24 +1,88 @@
-# Serverless Manager CLI
+# CLI Manager Template
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![AWS](https://img.shields.io/badge/AWS-Lambda-orange.svg)](https://aws.amazon.com/lambda/)
+[![Template](https://img.shields.io/badge/Type-Template-purple.svg)](#)
 
-> Professional CLI tool for managing AWS Lambda serverless applications with Go runtime
+> A reusable Python template for building interactive CLI tools with fuzzy search menus and modular command architecture.
 
-A comprehensive command-line interface for building, deploying, and managing AWS Lambda functions written in Go. Features interactive menus, CloudWatch Insights integration, and automated deployment workflows.
+A flexible, production-ready template for creating command-line interfaces with:
+- **Interactive menus** powered by `fzf` (fuzzy finder)
+- **Auto-discovery** command system (no registration needed)
+- **Multiple menu types** (simple, hierarchical, interactive, CLI-only)
+- **Type-safe** Python 3.8+ with full type hints
+- **Extensible** architecture for any use case
+
+---
+
+## 🎯 What is This?
+
+This is a **template**, not a finished application. It's designed to be cloned and customized for your specific needs.
+
+**Original use case:** AWS Lambda manager with CloudWatch integration  
+**Current form:** Generic template for building interactive CLIs  
+**Your use case:** Whatever you need! (DevOps tools, data pipelines, admin dashboards, etc.)
+
+### Why Use This Template?
+
+- ✅ **No boilerplate**: Start with a working CLI structure
+- ✅ **Interactive by default**: Users get fuzzy search menus automatically
+- ✅ **Modular design**: Add commands without touching core code
+- ✅ **Production-ready**: Error handling, logging, and validation included
+- ✅ **Well-documented**: Examples for every pattern you'll need
 
 ---
 
 ## 🚀 Features
 
-- **🔨 Build Management**: Compile Go functions to AWS Lambda-compatible binaries
-- **📦 Deployment**: Deploy individual functions or entire stacks with Serverless Framework
-- **🔍 CloudWatch Insights**: Query and analyze Lambda logs with custom queries
-- **📊 Interactive Menus**: Fuzzy search-powered function selection with `fzf`
-- **🧪 Function Invocation**: Test functions locally or remotely with custom payloads
-- **📝 Logs Streaming**: Real-time log viewing with filtering and saving
-- **🎯 Modular Architecture**: Auto-discovery command system for easy extension
+### Interactive Menu System
+
+```
+┌─ CLI Manager Template ──────────────────┐
+│ 👋 Greet                                │
+│ 📁 Files                                │
+│ 🧮 Calculator                           │
+│ ℹ️  Info                                 │
+└─────────────────────────────────────────┘
+```
+
+- **Fuzzy search**: Type to filter options
+- **Multi-select**: Use `TAB` to select multiple items
+- **Hierarchical menus**: Nested submenus with breadcrumb navigation
+- **Keyboard shortcuts**: Arrow keys, TAB, ENTER, ESC
+- **Fallback to CLI**: Commands work with or without interactive mode
+
+### Command Types
+
+| Type | Example | Use Case |
+|------|---------|----------|
+| **Simple Menu** | `greet.py` | Language selection, yes/no prompts |
+| **Hierarchical** | `files.py` | File operations, nested workflows |
+| **Interactive Input** | `calculator.py` | User input, form-like interfaces |
+| **CLI-Only** | `info.py` | System info, read-only operations |
+
+### Auto-Discovery Architecture
+
+```
+manager/commands/
+├── base.py          # Abstract base class
+├── greet.py         # Automatically discovered
+├── files.py         # Automatically discovered
+├── calculator.py    # Automatically discovered
+└── info.py          # Automatically discovered
+```
+
+Just add a new file inheriting from `BaseCommand` — no registration needed!
+
+### Modular Core
+
+```
+manager/core/
+├── logger.py        # Colored output & logging
+├── colors.py        # Terminal styling
+├── menu.py          # Interactive menu system (fzf)
+└── stats.py         # Statistics tracking
+```
 
 ---
 
@@ -26,13 +90,13 @@ A comprehensive command-line interface for building, deploying, and managing AWS
 
 - [Installation](#installation)
 - [Quick Start](#quick-start)
-- [Architecture](#architecture)
 - [Commands](#commands)
+- [Menu Types](#menu-types)
+- [How to Extend](#how-to-extend)
+- [Use Cases](#use-cases)
 - [Configuration](#configuration)
-- [CloudWatch Insights](#cloudwatch-insights)
 - [Development](#development)
 - [Troubleshooting](#troubleshooting)
-- [Contributing](#contributing)
 
 ---
 
@@ -40,59 +104,55 @@ A comprehensive command-line interface for building, deploying, and managing AWS
 
 ### Prerequisites
 
-Required dependencies:
 - **Python 3.8+**
-- **Go 1.19+** (for building Lambda functions)
-- **AWS CLI** (configured with credentials)
-- **Serverless Framework** (`npm install -g serverless`)
 - **fzf** (fuzzy finder for interactive menus)
 
-Optional but recommended:
+Optional:
 - **PyYAML** (for YAML output formatting)
 
 ### Install Dependencies
 
 **macOS:**
 ```bash
-brew install python go awscli serverless fzf
+brew install python fzf
 pip install pyyaml
 ```
 
 **Ubuntu/Debian:**
 ```bash
-sudo apt install python3 golang awscli fzf
-npm install -g serverless
+sudo apt install python3 fzf
 pip install pyyaml
 ```
 
-### Verify Installation
-
+**Verify Installation:**
 ```bash
 python manager.py requirements status
 ```
-
-This will check all required dependencies and show their installation status.
 
 ---
 
 ## ⚡ Quick Start
 
-### 1. Configure Your Project
+### 1. Clone and Customize
 
-Edit `manager/config.py` with your AWS settings:
+```bash
+# Clone this template
+git clone <this-repo> my-cli-tool
+cd my-cli-tool
 
+# Edit config.py with your project details
+nano config.py
+```
+
+**Edit `config.py`:**
 ```python
-# AWS Configuration
-ENV = "dev"
-AWS_PROFILE = "your-aws-profile"
-SERVICE_NAME = "your-service-name"
+PROJECT_NAME = "My CLI Tool"
+PROJECT_VERSION = "1.0.0"
 
-# Function List
-GO_FUNCTIONS = [
-    "status",
-    "getUsers",
-    "createOrder",
-    # ... add your functions
+ITEMS = [
+    "item-1",
+    "item-2",
+    "item-3",
 ]
 ```
 
@@ -103,331 +163,146 @@ GO_FUNCTIONS = [
 python manager.py
 ```
 
-This opens a **fuzzy-searchable menu system** where you can:
-- Navigate through command menus with arrow keys
-- Select functions with `TAB` (multi-select)
-- Build, zip, and deploy in one step
-- View logs in real-time
-- Invoke functions with test payloads
-- Run CloudWatch Insights queries
+Navigate with arrow keys, select with ENTER, multi-select with TAB.
 
 **Navigation:**
 - `↑/↓`: Navigate menu items
 - `TAB`: Select/deselect (in multi-select menus)
 - `ENTER`: Confirm selection
 - `ESC` or `Ctrl+C`: Go back or exit
+- Type to filter options (fuzzy search)
 
 ### 3. CLI Mode (Traditional)
 
 ```bash
-# Build all functions
-python manager.py build
+# List all items
+python manager.py list-items
 
-# Build specific function
-python manager.py build -f status
+# Greet with a language
+python manager.py greet --language es
 
-# Deploy all functions
-python manager.py deploy --all
+# Show system info
+python manager.py info
 
-# Deploy specific function
-python manager.py deploy -f status
+# Calculate something
+python manager.py calculator
 ```
 
-### 4. Hybrid Workflow
+### 4. Example Workflows
 
-You can mix interactive and CLI modes:
-
+**Workflow 1: Interactive File Management**
 ```bash
-# Start interactive menu
 python manager.py
-
-# Or use CLI directly
-python manager.py build -f status
-python manager.py deploy -f status
-python manager.py logs -f status
+→ Select "Files"
+→ Select "List Files"
+→ View directory contents
 ```
 
----
-
-## 🏗️ Architecture
-
-### Directory Structure
-
-```
-manager/
-├── commands/          # Command implementations
-│   ├── base.py       # Abstract base command
-│   ├── build.py      # Build Go binaries
-│   ├── clean.py      # Clean artifacts
-│   ├── deploy.py     # Deploy to AWS
-│   ├── dev.py        # Interactive dev menu
-│   ├── insights.py   # CloudWatch Insights
-│   ├── invoke.py     # Function invocation
-│   ├── logs.py       # Log viewing
-│   ├── list_functions.py
-│   ├── remove.py     # Remove stack
-│   ├── requirements.py
-│   └── zip.py        # Create deployment packages
-│
-├── core/             # Core utilities
-│   ├── colors.py     # Terminal colors & emojis
-│   ├── insights_formatter.py
-│   ├── insights_queries.py
-│   ├── logger.py     # Logging utilities
-│   ├── menu.py       # Interactive menu system (fzf)
-│   └── stats.py      # Build statistics
-│
-├── cli.py            # CLI entry point (orchestrator)
-├── config.py         # Project configuration
-└── README.md         # This file
+**Workflow 2: CLI-based Calculation**
+```bash
+python manager.py calculator
+→ Select operation (add, subtract, multiply, divide)
+→ Enter numbers
+→ Get result
 ```
 
-### Interactive Menu System
-
-The manager features a **tree-based interactive menu system** powered by `fzf`:
-
-```
-┌─ Main Menu ─────────────────────────────────┐
-│ 🔨 Build                                    │
-│ 🚀 Deploy                                   │
-│ 📦 Zip                                      │
-│ 📋 Logs                                     │
-│ 🔍 Insights                                 │
-│ ▶️  Invoke                                   │
-│ 🧹 Clean                                    │
-└─────────────────────────────────────────────┘
-```
-
-**How it works:**
-1. Run `python manager.py` (no arguments) to enter interactive mode
-2. Navigate menus with arrow keys
-3. Select functions with `TAB` (multi-select support)
-4. Confirm with `ENTER`
-5. Go back with `ESC` or select "← Back"
-
-**Key Features:**
-- **Fuzzy search**: Type to filter options
-- **Multi-select**: Use `TAB` to select multiple functions
-- **Breadcrumb navigation**: See your path through the menu tree
-- **Context-aware**: Each command has its own menu structure
-- **Fallback to CLI**: Commands without interactive menus still work
-
-### Command Discovery
-
-The manager uses an **auto-discovery system** for commands:
-
-1. All Python files in `commands/` are automatically discovered
-2. Each command inherits from `BaseCommand`
-3. Commands are registered in CLI with their `name` attribute
-4. No manual registration needed - just add a new file!
-
-**Example Command:**
-
-```python
-from manager.commands.base import BaseCommand
-
-class MyCommand(BaseCommand):
-    name = "mycommand"
-    help = "Short description"
-    description = "Detailed description"
-    
-    def add_arguments(self, parser):
-        parser.add_argument('-f', '--flag')
-    
-    def execute(self, args):
-        # Your logic here
-        return True
+**Workflow 3: Batch Greetings**
+```bash
+python manager.py greet --language es
+python manager.py greet --language en
+python manager.py greet --language fr
 ```
 
 ---
 
 ## 📚 Commands
 
-### Core Commands
+### Built-in Example Commands
 
-#### `build`
-Compile Go Lambda functions to Linux/amd64 binaries.
+#### `greet`
+Simple menu with language selection.
 
 ```bash
-# Build all functions
-python manager.py build
+# Interactive mode
+python manager.py greet
 
-# Build specific function
-python manager.py build -f getUsers
-
-# From dev menu (supports multi-select)
-python manager.py dev
-→ Select functions → Build only
+# CLI mode
+python manager.py greet --language es
+python manager.py greet --language en
 ```
 
-**Environment Variables Set:**
-- `GOOS=linux`
-- `GOARCH=amd64`
-- `CGO_ENABLED=0`
-
-**Build Flags:**
-- `-ldflags="-s -w"` (strip debug info, reduce binary size)
+**Supported languages:** es (Spanish), en (English), fr (French), de (German)
 
 ---
 
-#### `zip`
-Create deployment packages for Lambda functions.
+#### `files`
+Hierarchical menu for file operations.
 
 ```bash
-# Zip all functions
-python manager.py zip
+# Interactive mode
+python manager.py files
 
-# Zip specific function
-python manager.py zip -f getUsers
+# CLI mode (list files)
+python manager.py files --action list
+python manager.py files --action list --path /tmp
 ```
 
-Creates `.zip` files in `.bin/` directory ready for Lambda deployment.
+**Operations:**
+- List files in directory
+- Create new file
+- Delete file
 
 ---
 
-#### `deploy`
-Deploy functions to AWS using Serverless Framework.
+#### `calculator`
+Interactive calculator with basic operations.
 
 ```bash
-# Deploy all functions (full stack)
-python manager.py deploy --all
+# Interactive mode
+python manager.py calculator
 
-# Deploy specific function
-python manager.py deploy -f getUsers
-
-# Debug mode
-python manager.py deploy --debug
+# CLI mode
+python manager.py calculator --operation add --a 5 --b 3
 ```
 
-**Deployment Strategies:**
-- **Single function**: Uses `serverless deploy function -f <name>` (fast)
-- **Multiple functions**: Uses `serverless deploy` (full stack, slower but safer)
+**Operations:** add, subtract, multiply, divide
 
 ---
 
-#### `dev`
-Interactive development menu with fuzzy search.
+#### `info`
+Display system information (CLI-only command).
 
 ```bash
-python manager.py dev
+python manager.py info
 ```
 
-**Features:**
-- Multi-select functions with `TAB`
-- Build → Zip → Deploy pipeline
-- View logs for single function
-- Invoke functions with payloads
-- Run CloudWatch Insights queries
-
-**Keyboard Shortcuts:**
-- `TAB`: Select/deselect function
-- `ENTER`: Confirm selection
-- `ESC` or `Ctrl+C`: Exit menu
+Shows:
+- Python version
+- Operating system
+- Current working directory
+- Environment variables
 
 ---
 
-#### `logs`
-View CloudWatch logs for Lambda functions.
+#### `list-items`
+List all configured items.
 
 ```bash
-# Interactive menu
-python manager.py logs
-
-# Specific function
-python manager.py logs -f getUsers
+python manager.py list-items
 ```
 
-**Log Options:**
-1. **Last 30 minutes** (short format)
-2. **Last 5 minutes** (short format)
-3. **Real-time** (follow mode with `--follow`)
-4. **Custom filter** (filter by pattern)
-
-Logs are automatically saved to `functions/<name>/function.log`.
-
----
-
-#### `invoke`
-Test Lambda functions locally or remotely.
-
-```bash
-# Interactive menu
-python manager.py invoke
-
-# Specific function with payload
-python manager.py invoke -f getUsers -p test-payloads/user.json
-
-# Local invocation
-python manager.py invoke -f getUsers --local
-```
-
-**Payload Discovery:**
-- **Global**: `test-payloads/*.json` (shared across all functions)
-- **Local**: `functions/<name>/payloads/*.json` (function-specific)
-
-**Response Handling:**
-- Pretty-printed JSON output
-- Saves response to `functions/<name>/output.yaml`
-- Color-coded status codes (green for 2xx, red for errors)
-
----
-
-#### `insights`
-Query CloudWatch Logs with Insights DSL.
-
-```bash
-# Interactive menu
-python manager.py insights
-
-# Specific function
-python manager.py insights -f processContenedor
-```
-
-**Features:**
-- **6 predefined templates** (errors, performance, cold starts, etc.)
-- **Custom queries** with save/load functionality
-- **Query library**: Global (`insights-queries/`) + Function-specific (`functions/<name>/queries/`)
-- **Multiple targets**: Single function, all functions, or multi-select
-- **YAML output** for easy reading
-
-See [CloudWatch Insights](#cloudwatch-insights) section for details.
-
----
-
-#### `list`
-List all available Lambda functions.
-
-```bash
-python manager.py list
-```
-
-Displays all functions defined in `config.py`.
+Displays all items from `config.py:ITEMS`.
 
 ---
 
 #### `clean`
-Remove all build artifacts.
+Remove output artifacts.
 
 ```bash
 python manager.py clean
 ```
 
-Deletes the `.bin/` directory with all compiled binaries and zip files.
-
----
-
-#### `remove`
-Remove the entire serverless stack from AWS.
-
-```bash
-# Remove stack
-python manager.py remove
-
-# With debug output
-python manager.py remove --debug
-```
-
-**⚠️ Warning:** This permanently deletes all Lambda functions, API Gateway, and resources.
+Deletes the `OUTPUT_DIR` directory.
 
 ---
 
@@ -438,233 +313,121 @@ Check system dependencies.
 python manager.py requirements status
 ```
 
-Verifies installation of:
-- Python, Go, AWS CLI, Serverless Framework, fzf
-- Shows installation commands for missing dependencies
+Verifies installation of required tools.
 
 ---
 
-## ⚙️ Configuration
+## 🎨 Menu Types
 
-### `manager/config.py`
+### Type 1: Simple Menu
 
-This is the **only file** you need to modify for your project.
+**Use case:** Language selection, yes/no prompts, single choice
 
 ```python
-# ============================================================================
-# AWS Configuration
-# ============================================================================
-ENV = "dev"                          # Environment: dev, staging, prod
-AWS_PROFILE = "your-aws-profile"     # AWS CLI profile name
-SERVICE_NAME = "your-service-name"   # Serverless service name
+from manager.core.menu import MenuNode
 
-# ============================================================================
-# Build Settings
-# ============================================================================
-BUILD_SETTINGS = {
-    "GOOS": "linux",
-    "GOARCH": "amd64",
-    "CGO_ENABLED": "0",
-}
-
-BUILD_FLAGS = ["-ldflags", "-s -w"]  # Strip debug symbols
-
-# ============================================================================
-# Paths
-# ============================================================================
-FUNCTIONS_DIR = "functions"          # Go functions directory
-BIN_DIR = ".bin"                     # Build output directory
-
-# ============================================================================
-# Deployment Settings
-# ============================================================================
-SERVERLESS_STAGE = ENV               # Serverless stage (same as ENV)
-SERVERLESS_PROFILE = AWS_PROFILE     # AWS profile for deployment
-
-# ============================================================================
-# Invoke Settings
-# ============================================================================
-INVOKE_REMOTE_METHOD = "serverless"  # Options: "serverless" or "aws-cli"
-INVOKE_AWS_REGION = "us-west-2"      # AWS region for Lambda invocations
-
-# ============================================================================
-# Function List
-# ============================================================================
-GO_FUNCTIONS = [
-    "status",
-    "getUsers",
-    "createOrder",
-    "processPayment",
-    # Add all your Lambda function names here
-]
-
-# ============================================================================
-# Required System Dependencies
-# ============================================================================
-REQUIRED_DEPENDENCIES = {
-    "fzf": {
-        "command": "fzf",
-        "check": "--version",
-        "install": {
-            "macos": "brew install fzf",
-            "ubuntu": "sudo apt install fzf",
-        },
-        "description": "Fuzzy finder for interactive menus",
-        "required": True
-    },
-    # ... more dependencies
-}
+def get_menu_tree(self) -> Optional[MenuNode]:
+    return MenuNode(
+        label="Select Language",
+        emoji="🌐",
+        children=[
+            MenuNode(label="Spanish", action=lambda: self._greet_es()),
+            MenuNode(label="English", action=lambda: self._greet_en()),
+            MenuNode(label="French", action=lambda: self._greet_fr()),
+        ]
+    )
 ```
 
 ---
 
-## 🔍 CloudWatch Insights
+### Type 2: Hierarchical Menu
 
-The `insights` command provides powerful log analysis capabilities using AWS CloudWatch Logs Insights.
+**Use case:** Multi-level workflows, nested operations
 
-### Quick Start
-
-```bash
-python manager.py insights -f processContenedor
+```python
+def get_menu_tree(self) -> Optional[MenuNode]:
+    return MenuNode(
+        label="Files",
+        emoji="📁",
+        children=[
+            MenuNode(
+                label="Read Operations",
+                emoji="📖",
+                children=[
+                    MenuNode(label="List Files", action=lambda: self._list()),
+                    MenuNode(label="Show File", action=lambda: self._show()),
+                ]
+            ),
+            MenuNode(
+                label="Write Operations",
+                emoji="✏️",
+                children=[
+                    MenuNode(label="Create File", action=lambda: self._create()),
+                    MenuNode(label="Delete File", action=lambda: self._delete()),
+                ]
+            ),
+        ]
+    )
 ```
-
-### Features
-
-#### 1. Predefined Templates
-
-Six ready-to-use query templates:
-
-- **🔴 Recent Errors**: Find ERROR and Exception messages
-- **⚡ Performance Stats**: P50/P95/P99 latency analysis
-- **🥶 Cold Starts**: Identify cold start invocations
-- **🐌 Slowest Requests**: Top 20 slowest executions
-- **📊 Error Rate by Hour**: Error count distribution
-- **💾 Memory Usage**: Memory consumption statistics
-
-#### 2. Custom Queries
-
-Create and save custom queries for reuse:
-
-**Global Queries** (`insights-queries/`):
-```yaml
-# insights-queries/my-query.query
-name: My Custom Query
-description: Find specific error patterns
-time_range: 2h
-target: single
-
----
-fields @timestamp, @message, @requestId
-| filter @message like /timeout/
-| sort @timestamp desc
-| limit 50
-```
-
-**Function-Specific Queries** (`functions/<name>/queries/`):
-```yaml
-# functions/processContenedor/queries/erp-dispatch-analysis.query
-name: ERP Dispatch Analysis
-description: Analyze ERP dispatch events
-time_range: 2h
-
----
-fields @timestamp, event, db_schema, function_arn, error
-| filter event in ["erp_dispatch_started", "erp_dispatch_completed"]
-| sort @timestamp desc
-```
-
-#### 3. Time Range Selection
-
-Predefined ranges:
-- Last 5, 15, 30 minutes
-- Last 1, 3, 6, 12, 24 hours
-- Last 7 days
-- Custom (e.g., `2h`, `45m`, `3d`)
-
-#### 4. Output Formats
-
-**Console Output:**
-```
-@timestamp              | event                             | db_schema
-------------------------+-----------------------------------+-----------
-2026-01-06 16:41:51.903 | erp_dispatch_completed            | latam
-2026-01-06 16:41:49.558 | erp_dispatch_started              |
-
-Statistics:
-  • Records matched: 8
-  • Records scanned: 66
-  • Bytes scanned: 12.24 KB
-```
-
-**YAML File** (`functions/<name>/insights-result.yaml`):
-```yaml
-query_metadata:
-  query_name: ERP Dispatch Analysis
-  function: processContenedor
-  executed_at: '2026-01-06T16:45:22.123456'
-  records_matched: 8
-  records_scanned: 66
-
-results:
-- '@timestamp': '2026-01-06 16:41:51.903'
-  event: erp_dispatch_completed
-  db_schema: latam
-  function_arn: arn:aws:lambda:us-west-2:...
-```
-
-### Query Syntax
-
-CloudWatch Insights uses its own DSL (Domain Specific Language):
-
-```
-fields @timestamp, @message, @requestId
-| filter @message like /ERROR/
-| stats count(*) by bin(5m)
-| sort @timestamp desc
-| limit 20
-```
-
-**Common Patterns:**
-
-```
-# Find errors in last hour
-fields @timestamp, @message
-| filter level = "error"
-| sort @timestamp desc
-
-# Performance percentiles
-fields @duration
-| filter @type = "REPORT"
-| stats avg(@duration), pct(@duration, 95), pct(@duration, 99)
-
-# Count by field
-fields event
-| stats count(*) by event
-| sort count(*) desc
-```
-
-**Reference**: [CloudWatch Logs Insights Query Syntax](https://docs.aws.amazon.com/AmazonCloudWatch/latest/logs/CWL_QuerySyntax.html)
 
 ---
 
-## 🔧 Development
+### Type 3: Interactive Input
 
-### Adding a New Command
+**Use case:** Forms, user input, dynamic prompts
 
-1. Create a new file in `manager/commands/`:
+```python
+def execute(self, args: Namespace) -> bool:
+    """Interactive calculator"""
+    operation = input("Select operation (add/subtract/multiply/divide): ")
+    a = float(input("First number: "))
+    b = float(input("Second number: "))
+    
+    result = self._calculate(operation, a, b)
+    log_success(f"Result: {result}")
+    return True
+```
+
+---
+
+### Type 4: CLI-Only
+
+**Use case:** Read-only operations, system info, no menu needed
+
+```python
+def get_menu_tree(self) -> Optional[MenuNode]:
+    # Return None to disable interactive mode
+    return None
+
+def execute(self, args: Namespace) -> bool:
+    """Show system information"""
+    log_info(f"Python: {sys.version}")
+    log_info(f"OS: {platform.system()}")
+    return True
+```
+
+---
+
+## 🔧 How to Extend
+
+### Creating Your Own Command
+
+1. **Create a new file** in `manager/commands/`:
 
 ```python
 # manager/commands/mycommand.py
 from manager.commands.base import BaseCommand
 from argparse import ArgumentParser, Namespace
 from manager.core.menu import MenuNode
+from manager.core.logger import log_success, log_info
+from typing import Optional
 
 class MyCommand(BaseCommand):
     """Description of what this command does"""
     
-    name = "mycommand"
-    help = "Short help text"
-    description = "Detailed description for --help"
+    name = "mycommand"                    # CLI command name
+    help = "Short help text"              # Shown in --help
+    description = "Detailed description"  # Optional
     epilog = """Examples:
   manager.py mycommand --option value
 """
@@ -675,15 +438,12 @@ class MyCommand(BaseCommand):
     
     def execute(self, args: Namespace) -> bool:
         """Execute the command logic"""
-        # Your implementation here
-        return True  # Return True on success, False on failure
+        log_info("Executing my command...")
+        log_success("Command completed!")
+        return True
     
     def get_menu_tree(self) -> Optional[MenuNode]:
-        """
-        Optional: Define interactive menu structure.
-        
-        If you don't implement this, the command only works via CLI.
-        """
+        """Optional: Define interactive menu structure"""
         return MenuNode(
             label="My Command",
             emoji="⚙️",
@@ -701,16 +461,18 @@ class MyCommand(BaseCommand):
     
     def _execute_option_1(self) -> bool:
         """Execute option 1"""
+        log_success("Option 1 executed")
         return True
     
     def _execute_option_2(self) -> bool:
         """Execute option 2"""
+        log_success("Option 2 executed")
         return True
 ```
 
-2. That's it! The command is automatically discovered and registered.
+2. **That's it!** The command is automatically discovered and registered.
 
-3. Test it:
+3. **Test it:**
 ```bash
 # CLI mode
 python manager.py mycommand --help
@@ -719,45 +481,304 @@ python manager.py mycommand --help
 python manager.py
 ```
 
-### Command Auto-Discovery
+### Customizing Configuration
 
-The CLI automatically discovers commands by:
-
-1. Scanning `manager/commands/` directory
-2. Loading all `.py` files (except `__init__.py` and `base.py`)
-3. Finding classes that inherit from `BaseCommand`
-4. Registering them using their `name` attribute
-
-**No manual registration needed!**
-
-### Extending BaseCommand
-
-`BaseCommand` provides:
-
-- **`_resolve_function_list(args)`**: Resolves function list from CLI args or dev menu
-- **`_get_filtered_functions(filter)`**: Validates function names against config
-
-**Example Usage:**
+Edit `config.py` to customize your project:
 
 ```python
+# Project metadata
+PROJECT_NAME = "My CLI Tool"
+PROJECT_VERSION = "1.0.0"
+
+# Items to manage
+ITEMS = [
+    "item-1",
+    "item-2",
+    "item-3",
+]
+
+# Directories
+DATA_DIR = "data"
+OUTPUT_DIR = "output"
+
+# Add custom dependencies
+REQUIRED_DEPENDENCIES = {
+    "my-tool": {
+        "command": "my-tool",
+        "check": "--version",
+        "install": {
+            "macos": "brew install my-tool",
+            "ubuntu": "sudo apt install my-tool",
+        },
+        "description": "My custom tool",
+        "required": True,
+    },
+}
+```
+
+### Using Base Class Helpers
+
+The `BaseCommand` class provides utilities:
+
+```python
+from manager.commands.base import BaseCommand
+
+class MyCommand(BaseCommand):
+    def execute(self, args: Namespace) -> bool:
+        # Resolve items from CLI args or dev menu
+        items = self._resolve_item_list(args)
+        
+        # Get filtered items
+        filtered = self._get_filtered_items("item-1")
+        
+        for item in items:
+            self._process_item(item)
+        
+        return True
+```
+
+---
+
+## 💡 Use Cases
+
+### 1. DevOps Tool
+
+Manage infrastructure, deployments, and monitoring:
+
+```python
+ITEMS = [
+    "web-server",
+    "database",
+    "cache",
+    "load-balancer",
+]
+
+# Commands: deploy, rollback, status, logs, scale
+```
+
+### 2. Data Pipeline Manager
+
+Orchestrate ETL workflows:
+
+```python
+ITEMS = [
+    "extract-raw-data",
+    "transform-data",
+    "load-to-warehouse",
+    "validate-results",
+]
+
+# Commands: run, schedule, monitor, retry
+```
+
+### 3. Admin Dashboard
+
+Manage users, permissions, and system settings:
+
+```python
+ITEMS = [
+    "users",
+    "roles",
+    "permissions",
+    "audit-logs",
+]
+
+# Commands: list, create, update, delete, export
+```
+
+### 4. Development Tool
+
+Manage local development environment:
+
+```python
+ITEMS = [
+    "database",
+    "cache",
+    "message-queue",
+    "search-engine",
+]
+
+# Commands: start, stop, reset, logs, shell
+```
+
+### 5. Testing Framework
+
+Run and manage test suites:
+
+```python
+ITEMS = [
+    "unit-tests",
+    "integration-tests",
+    "e2e-tests",
+    "performance-tests",
+]
+
+# Commands: run, report, coverage, benchmark
+```
+
+---
+
+## ⚙️ Configuration
+
+### `config.py` Structure
+
+```python
+# ============================================================================
+# Project Metadata
+# ============================================================================
+PROJECT_NAME = "My CLI Tool"
+PROJECT_VERSION = "1.0.0"
+
+# ============================================================================
+# Core Items List
+# ============================================================================
+ITEMS = [
+    "example-item-1",
+    "example-item-2",
+    "example-item-3",
+]
+
+# ============================================================================
+# Paths
+# ============================================================================
+DATA_DIR = "data"
+OUTPUT_DIR = "output"
+
+# ============================================================================
+# Required System Dependencies
+# ============================================================================
+REQUIRED_DEPENDENCIES = {
+    "fzf": {
+        "command": "fzf",
+        "check": "--version",
+        "install": {
+            "ubuntu": "sudo apt install fzf",
+            "macos": "brew install fzf",
+        },
+        "description": "Fuzzy finder for interactive menus",
+        "required": True,
+    },
+    # Add more dependencies as needed
+}
+```
+
+### Adding Custom Configuration
+
+```python
+# Custom settings for your project
+CUSTOM_SETTING = "value"
+TIMEOUT_SECONDS = 30
+MAX_RETRIES = 3
+
+# Import in your commands
+from manager.config import CUSTOM_SETTING, TIMEOUT_SECONDS
+```
+
+---
+
+## 🔧 Development
+
+### Project Structure
+
+```
+manager/
+├── commands/          # Command implementations (auto-discovered)
+│   ├── base.py       # Abstract base command
+│   ├── greet.py      # Example: simple menu
+│   ├── files.py      # Example: hierarchical menu
+│   ├── calculator.py # Example: interactive input
+│   ├── info.py       # Example: CLI-only
+│   ├── list_items.py # List configured items
+│   ├── clean.py      # Clean artifacts
+│   └── requirements.py
+│
+├── core/             # Core utilities (shared logic)
+│   ├── logger.py     # Logging functions
+│   ├── colors.py     # Terminal styling
+│   ├── menu.py       # Interactive menu system (fzf)
+│   └── stats.py      # Statistics tracking
+│
+├── cli.py            # CLI entry point (orchestrator)
+├── config.py         # Project configuration
+├── manager.py        # Wrapper script
+└── README.md         # This file
+```
+
+### Code Style Guidelines
+
+**Type Hints:**
+```python
 def execute(self, args: Namespace) -> bool:
-    # Get functions to process (supports both dev and CLI modes)
-    functions = self._resolve_function_list(args)
-    
-    for func in functions:
-        # Process each function
-        print(f"Processing {func}")
-    
-    return True
+    items: List[str] = self._resolve_item_list(args)
+    return self._process_items(items)
+```
+
+**Docstrings (Google style):**
+```python
+def process_item(self, item: str) -> bool:
+    """
+    Process a single item.
+
+    Args:
+        item: Name of the item to process
+
+    Returns:
+        True if successful, False otherwise
+    """
+    pass
+```
+
+**Logging (not print):**
+```python
+from manager.core.logger import log_info, log_success, log_error
+
+log_info("Processing item...")
+log_success("Item processed!")
+log_error("Failed to process item")
+```
+
+**Naming Conventions:**
+- Files: `snake_case.py`
+- Classes: `PascalCase`
+- Functions/Variables: `snake_case`
+- Constants: `UPPER_SNAKE_CASE`
+- Private methods: `_leading_underscore`
+
+### Testing
+
+**⚠️ No test suite exists yet.** When adding tests:
+
+```bash
+# Recommended: pytest
+pytest tests/
+pytest tests/test_commands.py
+pytest tests/test_mycommand.py::test_name -v
+```
+
+### Linting
+
+**Recommended setup:**
+
+```bash
+# Black (code formatter)
+black manager/ --check
+black manager/
+
+# Flake8 (style guide)
+flake8 manager/ --max-line-length=100
+
+# MyPy (type checking)
+mypy manager/ --strict
+
+# isort (import sorting)
+isort manager/ --check-only
 ```
 
 ---
 
 ## 🐛 Troubleshooting
 
-### Common Issues
-
-#### **1. `fzf: command not found`**
+### `fzf: command not found`
 
 Install fzf:
 ```bash
@@ -768,39 +789,27 @@ brew install fzf
 sudo apt install fzf
 ```
 
-#### **2. Build fails with `permission denied`**
+### `ModuleNotFoundError: No module named 'manager'`
 
-Ensure Go binaries are executable:
+Ensure you're running from the project root:
 ```bash
-chmod +x .bin/*
+cd /path/to/manager
+python manager.py
 ```
 
-#### **3. Deployment fails with AWS credentials error**
+### Menu not showing (interactive mode)
 
-Check AWS CLI configuration:
+Check that fzf is installed:
 ```bash
-aws configure list --profile your-profile
+which fzf
+fzf --version
 ```
 
-#### **4. PyYAML import error**
+### PyYAML import error
 
-Install PyYAML (optional but recommended):
+Install PyYAML (optional):
 ```bash
 pip install pyyaml
-```
-
-#### **5. Serverless Framework not found**
-
-Install globally with npm:
-```bash
-npm install -g serverless
-```
-
-### Debug Mode
-
-Enable debug output for deployment:
-```bash
-python manager.py deploy --debug
 ```
 
 ### Check Requirements
@@ -814,53 +823,75 @@ python manager.py requirements status
 
 ## 📖 Best Practices
 
-### 1. Function Organization
+### 1. Command Organization
 
-```
-functions/
-├── status/
-│   ├── main.go          # Lambda handler
-│   ├── payloads/        # Test payloads for this function
-│   │   └── test.json
-│   └── queries/         # CloudWatch Insights queries
-│       └── errors.query
-├── getUsers/
-│   ├── main.go
-│   └── ...
-└── ...
-```
+Keep commands focused and single-purpose:
 
-### 2. Payload Management
+```python
+# ✅ Good: One responsibility
+class GreetCommand(BaseCommand):
+    """Greet users in different languages"""
+    # ...
 
-- **Global payloads**: Use `test-payloads/` for payloads shared across functions
-- **Function-specific**: Use `functions/<name>/payloads/` for function-specific tests
-
-### 3. Query Management
-
-- **Global queries**: Use `insights-queries/` for general-purpose queries
-- **Function-specific**: Use `functions/<name>/queries/` for specialized analysis
-
-### 4. Deployment Strategy
-
-For **development**:
-```bash
-# Deploy single function (fast)
-python manager.py deploy -f status
+# ❌ Bad: Multiple responsibilities
+class GreetAndCalculateCommand(BaseCommand):
+    """Greet users AND do math"""
+    # ...
 ```
 
-For **production**:
-```bash
-# Deploy full stack (safer)
-python manager.py deploy --all
+### 2. Error Handling
+
+Fail gracefully with helpful messages:
+
+```python
+from manager.core.logger import log_error, log_info
+
+if item not in ITEMS:
+    log_error(f"Item '{item}' not found")
+    log_info(f"Available items: {', '.join(ITEMS)}")
+    return False
 ```
 
-### 5. Git Ignore
+### 3. Interactive Support
 
-The manager automatically ignores:
-- `.bin/` (build artifacts)
-- `functions/*/output.yaml` (invocation responses)
-- `functions/*/function.log` (log files)
-- `functions/*/insights-result.*` (query results)
+Commands should work in both CLI and interactive modes:
+
+```python
+def execute(self, args: Namespace) -> bool:
+    # Works for both modes
+    items = self._resolve_item_list(args)
+    return self._process_items(items)
+
+def get_menu_tree(self) -> Optional[MenuNode]:
+    # Optional: add interactive menu support
+    return MenuNode(...)
+```
+
+### 4. Configuration
+
+Never hardcode values:
+
+```python
+# ✅ Good
+from manager.config import ITEMS, OUTPUT_DIR
+
+# ❌ Bad
+ITEMS = ["hardcoded", "values"]
+OUTPUT_DIR = "/tmp/output"
+```
+
+### 5. Logging
+
+Use logger utilities, not print:
+
+```python
+# ✅ Good
+from manager.core.logger import log_success
+log_success("Operation completed")
+
+# ❌ Bad
+print("Operation completed")
+```
 
 ---
 
@@ -872,44 +903,26 @@ The manager automatically ignores:
 2. Create a feature branch (`git checkout -b feature/my-command`)
 3. Add your command in `manager/commands/`
 4. Test thoroughly
-5. Update this README if adding new features
+5. Update README.md if adding new features
 6. Submit a pull request
 
-### Code Style
+### Adding New Commands
 
-- **Docstrings**: Use Google-style docstrings
-- **Type hints**: Use Python type hints for all function signatures
-- **Naming**: Use snake_case for functions, PascalCase for classes
-- **Logging**: Use logger utilities from `manager.core.logger`
-
-### Testing
-
-Test your command:
-```bash
-# Test help text
-python manager.py mycommand --help
-
-# Test execution
-python manager.py mycommand
-
-# Test with dev menu integration (if applicable)
-python manager.py dev
-```
+See [How to Extend](#how-to-extend) section above.
 
 ---
 
 ## 📄 License
 
-MIT License - See [LICENSE](../LICENSE) for details.
+MIT License - See [LICENSE](LICENSE) for details.
 
 ---
 
 ## 🙏 Acknowledgments
 
-- **AWS Lambda**: Serverless compute platform
-- **Serverless Framework**: Deployment automation
 - **fzf**: Interactive fuzzy finder
-- **CloudWatch Logs Insights**: Log analysis engine
+- **Python**: Programming language
+- **Keep a Changelog**: Changelog format standard
 
 ---
 
@@ -922,4 +935,4 @@ For issues, questions, or contributions:
 
 ---
 
-**Built with ❤️ for serverless developers**
+**Built with ❤️ for CLI developers**
