@@ -34,7 +34,7 @@ def cli_mode():
 
     # Create main parser
     parser = argparse.ArgumentParser(
-        description="🚀 Serverless Project Manager - Build, deploy, and manage Lambda functions",
+        description="🚀 CLI Manager Template - Modular command-line tool with interactive menus",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
@@ -93,7 +93,7 @@ def interactive_mode():
     """Modo interactivo global"""
     from manager.core.menu import MenuNode, MenuRenderer
 
-    log_header("SERVERLESS MANAGER - INTERACTIVE MODE")
+    log_header("CLI MANAGER - INTERACTIVE MODE")
 
     # Discover commands
     commands = discover_commands()

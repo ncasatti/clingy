@@ -1,0 +1,44 @@
+"""Info command - Example of CLI-only command (no interactive menu)"""
+
+import platform
+import sys
+from argparse import ArgumentParser, Namespace
+
+from manager.commands.base import BaseCommand
+from manager.config import PROJECT_NAME, PROJECT_VERSION
+from manager.core.logger import log_info, log_section
+
+
+class InfoCommand(BaseCommand):
+    """Display system and project information"""
+
+    name = "info"
+    help = "Display system information"
+    description = "Show system and project information (CLI only)"
+
+    def add_arguments(self, parser: ArgumentParser):
+        """Add command arguments"""
+        parser.add_argument(
+            "--verbose", action="store_true", help="Show verbose information"
+        )
+
+    def execute(self, args: Namespace) -> bool:
+        """Display system information"""
+        log_section("PROJECT INFORMATION")
+        log_info(f"Project: {PROJECT_NAME}")
+        log_info(f"Version: {PROJECT_VERSION}")
+
+        log_section("SYSTEM INFORMATION")
+        log_info(f"OS: {platform.system()} {platform.release()}")
+        log_info(f"Python: {sys.version.split()[0]}")
+        log_info(f"Platform: {platform.platform()}")
+
+        if args.verbose:
+            log_section("DETAILED INFORMATION")
+            log_info(f"Machine: {platform.machine()}")
+            log_info(f"Processor: {platform.processor()}")
+            log_info(f"Architecture: {platform.architecture()[0]}")
+
+        return True
+
+    # No get_menu_tree() - this command is CLI-only
