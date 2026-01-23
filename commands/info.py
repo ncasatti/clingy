@@ -1,4 +1,4 @@
-"""Info command - Example of CLI-only command (no interactive menu)"""
+"""Info command - Display system and project information"""
 
 import platform
 import sys
@@ -6,7 +6,9 @@ from argparse import ArgumentParser, Namespace
 
 from manager.commands.base import BaseCommand
 from manager.config import PROJECT_NAME, PROJECT_VERSION
+from manager.core.colors import Emojis
 from manager.core.logger import log_info, log_section
+from manager.core.menu import MenuNode
 
 
 class InfoCommand(BaseCommand):
@@ -33,7 +35,7 @@ class InfoCommand(BaseCommand):
         log_info(f"Python: {sys.version.split()[0]}")
         log_info(f"Platform: {platform.platform()}")
 
-        if args.verbose:
+        if getattr(args, "verbose", False):
             log_section("DETAILED INFORMATION")
             log_info(f"Machine: {platform.machine()}")
             log_info(f"Processor: {platform.processor()}")
@@ -41,4 +43,10 @@ class InfoCommand(BaseCommand):
 
         return True
 
-    # No get_menu_tree() - this command is CLI-only
+    def get_menu_tree(self) -> MenuNode:
+        """Interactive menu for info command"""
+        return MenuNode(
+            label="System Information",
+            emoji=Emojis.CMD_INFO,
+            action=lambda: self.execute(Namespace()),
+        )

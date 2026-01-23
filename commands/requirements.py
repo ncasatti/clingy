@@ -15,6 +15,9 @@ from manager.core.logger import (
 )
 from manager.core.colors import Colors, Emojis
 from manager.config import REQUIRED_DEPENDENCIES
+from manager.core.colors import Emojis
+from manager.core.menu import MenuNode
+from typing import Optional
 
 
 class RequirementsCommand(BaseCommand):
@@ -39,7 +42,8 @@ class RequirementsCommand(BaseCommand):
 
     def execute(self, args: Namespace) -> bool:
         """Execute requirements command"""
-        if args.action == "status":
+        action = getattr(args, "action", "status")
+        if action == "status":
             return self._check_status()
         return False
 
@@ -221,3 +225,12 @@ class RequirementsCommand(BaseCommand):
                 f"\n{Colors.YELLOW}Please install the missing dependencies before using this manager.{Colors.RESET}"
             )
             return False
+
+    def get_menu_tree(self) -> Optional[MenuNode]:
+        """Interactive menu for greet command"""
+        return MenuNode(
+            label="Check Requirements",
+            emoji=Emojis.FLOPPY,
+            action=lambda: self.execute(Namespace()),
+        )
+

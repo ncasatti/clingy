@@ -34,7 +34,7 @@ def cli_mode():
 
     # Create main parser
     parser = argparse.ArgumentParser(
-        description="🚀 CLI Manager Template - Modular command-line tool with interactive menus",
+        description="  CLI Manager Template - Modular command-line tool with interactive menus",
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
@@ -102,45 +102,14 @@ def interactive_mode():
     menu_items = []
     for cmd_name, cmd_class in sorted(commands.items()):
         cmd_instance = cmd_class()
-
-        # Si el comando tiene menú interactivo, usarlo
-        if cmd_instance.supports_interactive():
-            node = cmd_instance.get_menu_tree()
-            if node:
-                menu_items.append(node)
-        else:
-            # Si no, crear nodo simple que ejecuta el comando
-            menu_items.append(
-                MenuNode(
-                    label=f"{cmd_instance.help}",
-                    emoji=_get_command_emoji(cmd_name),
-                    action=lambda c=cmd_instance: c.execute(Namespace()),
-                )
-            )
+        node = cmd_instance.get_menu_tree()
+        menu_items.append(node)
 
     root = MenuNode(label="Main Menu", emoji="🚀", children=menu_items)
 
     renderer = MenuRenderer(root, header="Select a command")
     renderer.show()
     return 0
-
-
-def _get_command_emoji(cmd_name: str) -> str:
-    """Mapea nombres de comando a emojis"""
-    emoji_map = {
-        "build": "🔨",
-        "deploy": "🚀",
-        "zip": "📦",
-        "logs": "📋",
-        "list": "📝",
-        "clean": "🧹",
-        "dev": "💻",
-        "invoke": "▶️",
-        "insights": "🔍",
-        "requirements": "📌",
-        "remove": "🗑️",
-    }
-    return emoji_map.get(cmd_name, "⚙️")
 
 
 if __name__ == "__main__":

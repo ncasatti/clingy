@@ -15,12 +15,12 @@ A flexible, production-ready template for creating command-line interfaces with:
 
 ---
 
-## 🎯 What is This?
+## What is This?
 
 This is a **template**, not a finished application. It's designed to be cloned and customized for your specific needs.
 
-**Original use case:** AWS Lambda manager with CloudWatch integration  
-**Current form:** Generic template for building interactive CLIs  
+**Original use case:** AWS Lambda manager with CloudWatch integration
+**Current form:** Generic template for building interactive CLIs
 **Your use case:** Whatever you need! (DevOps tools, data pipelines, admin dashboards, etc.)
 
 ### Why Use This Template?
@@ -33,7 +33,7 @@ This is a **template**, not a finished application. It's designed to be cloned a
 
 ---
 
-## 🚀 Features
+## Features
 
 ### Interactive Menu System
 

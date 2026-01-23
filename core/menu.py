@@ -98,7 +98,7 @@ class MenuRenderer:
                     else:
                         return False
 
-                elif selected.label == "← Back":
+                elif selected.label == "Back":
                     # Opción "Back" seleccionada
                     if len(self.navigation_stack) > 1:
                         self.navigation_stack.pop()
@@ -142,7 +142,7 @@ class MenuRenderer:
             node_map[display] = child
 
         # Agregar opción "Back" al final si no estamos en root
-        back_label = f"{Emojis.BACK}  ← Back"
+        back_label = f"{Emojis.BACK}  Back"
         if len(self.navigation_stack) > 1:
             options.append(back_label)
 
@@ -162,7 +162,7 @@ class MenuRenderer:
 
         # Si seleccionó "Back", retornar un nodo especial
         if selected_display == back_label:
-            return MenuNode(label="← Back")
+            return MenuNode(label="Back")
 
         # Retornar el nodo correspondiente
         return node_map.get(selected_display)
@@ -194,7 +194,16 @@ def fzf_select(
         return None
 
     # Construir comando fzf
-    cmd = ["fzf", "--prompt", prompt, "--height", "40%", "--border", "--ansi", "--reverse"]
+    cmd = [
+        "fzf",
+        "--prompt",
+        prompt,
+        "--height",
+        "40%",
+        "--border",
+        "--ansi",
+        "--reverse",
+    ]
 
     if header:
         cmd.extend(["--header", header])
@@ -234,7 +243,9 @@ def fzf_select(
         return selected.split("\n") if multi else [selected]
 
     except FileNotFoundError:
-        log_error("fzf not found. Install it with: brew install fzf (macOS) or sudo apt install fzf (Linux)")
+        log_error(
+            "fzf not found. Install it with: brew install fzf (macOS) or sudo apt install fzf (Linux)"
+        )
         sys.exit(1)
 
     except KeyboardInterrupt:
@@ -282,8 +293,10 @@ def fzf_select_items(
     filtered = []
     for s in selected:
         # Eliminar códigos ANSI para comparación
-        clean = s.replace(Colors.BOLD, "").replace(Colors.GREEN, "").replace(
-            Colors.RESET, ""
+        clean = (
+            s.replace(Colors.BOLD, "")
+            .replace(Colors.GREEN, "")
+            .replace(Colors.RESET, "")
         )
         if clean in ITEMS:
             filtered.append(clean)

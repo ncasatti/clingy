@@ -105,18 +105,21 @@ class BaseCommand(ABC):
 
         return [item_filter]
 
-    def get_menu_tree(self) -> Optional[MenuNode]:
+    @abstractmethod
+    def get_menu_tree(self) -> MenuNode:
         """
         Retorna árbol de menús para modo interactivo.
 
-        Si retorna None, el comando no tiene modo interactivo
-        y solo funciona via CLI tradicional.
+        OBLIGATORIO: Todos los comandos deben definir su menú.
+        
+        Para comandos simples sin submenús, usar:
+            MenuNode(
+                label="Command Name",
+                emoji=Emojis.ICON,
+                action=lambda: self.execute(Namespace())
+            )
 
         Returns:
-            MenuNode con estructura de menús o None
+            MenuNode con estructura de menús
         """
-        return None
-
-    def supports_interactive(self) -> bool:
-        """True si el comando soporta modo interactivo"""
-        return self.get_menu_tree() is not None
+        pass
