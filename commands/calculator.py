@@ -19,9 +19,7 @@ class CalculatorCommand(BaseCommand):
     def add_arguments(self, parser: ArgumentParser):
         """Add command arguments"""
         parser.add_argument("num1", type=float, nargs="?", help="First number")
-        parser.add_argument(
-            "operation", nargs="?", choices=["+", "-", "*", "/"], help="Operation"
-        )
+        parser.add_argument("operation", nargs="?", choices=["+", "-", "*", "/"], help="Operation")
         parser.add_argument("num2", type=float, nargs="?", help="Second number")
 
     def execute(self, args: Namespace) -> bool:

@@ -94,12 +94,8 @@ class BaseCommand(ABC):
 
         # Validate item exists
         if item_filter not in ITEMS:
-            log_error(
-                f"Item '{item_filter}' does not exist in the available items list"
-            )
-            log_info(
-                f"Available items: {', '.join(ITEMS[:5])}{'...' if len(ITEMS) > 5 else ''}"
-            )
+            log_error(f"Item '{item_filter}' does not exist in the available items list")
+            log_info(f"Available items: {', '.join(ITEMS[:5])}{'...' if len(ITEMS) > 5 else ''}")
             log_info("Use 'python manager.py list' to see all available items")
             return []
 
@@ -108,11 +104,11 @@ class BaseCommand(ABC):
     @abstractmethod
     def get_menu_tree(self) -> MenuNode:
         """
-        Retorna árbol de menús para modo interactivo.
+        Return menu tree for interactive mode.
 
-        OBLIGATORIO: Todos los comandos deben definir su menú.
-        
-        Para comandos simples sin submenús, usar:
+        REQUIRED: All commands must define their menu.
+
+        For simple commands without submenus, use:
             MenuNode(
                 label="Command Name",
                 emoji=Emojis.ICON,
@@ -120,6 +116,6 @@ class BaseCommand(ABC):
             )
 
         Returns:
-            MenuNode con estructura de menús
+            MenuNode with menu structure
         """
         pass

@@ -182,9 +182,7 @@ class RequirementsCommand(BaseCommand):
             print(f"   {description}")
 
             if installed:
-                version_text = (
-                    version if version and version != "installed" else "installed"
-                )
+                version_text = version if version and version != "installed" else "installed"
                 print(f"   {Colors.GREEN}✓ {version_text}{Colors.RESET}")
             else:
                 install_cmd = self._get_install_command(config)
@@ -204,9 +202,7 @@ class RequirementsCommand(BaseCommand):
         print(f"{Colors.BOLD}{Colors.MAGENTA}{'═' * 60}{Colors.RESET}")
 
         if all_installed and not optional_missing:
-            print(
-                f"{Colors.GREEN}{Emojis.SUCCESS} All dependencies are installed!{Colors.RESET}"
-            )
+            print(f"{Colors.GREEN}{Emojis.SUCCESS} All dependencies are installed!{Colors.RESET}")
             return True
         elif all_installed:
             print(
@@ -233,4 +229,3 @@ class RequirementsCommand(BaseCommand):
             emoji=Emojis.FLOPPY,
             action=lambda: self.execute(Namespace()),
         )
-

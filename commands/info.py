@@ -20,9 +20,7 @@ class InfoCommand(BaseCommand):
 
     def add_arguments(self, parser: ArgumentParser):
         """Add command arguments"""
-        parser.add_argument(
-            "--verbose", action="store_true", help="Show verbose information"
-        )
+        parser.add_argument("--verbose", action="store_true", help="Show verbose information")
 
     def execute(self, args: Namespace) -> bool:
         """Display system information"""

@@ -15,16 +15,16 @@ from manager.core.logger import log_error, log_header
 
 def main():
     """Main CLI entry point"""
-    # Si no hay argumentos, modo interactivo
+    # If no arguments provided, enter interactive mode
     if len(sys.argv) == 1:
         return interactive_mode()
 
-    # Modo CLI tradicional
+    # Traditional CLI mode
     return cli_mode()
 
 
 def cli_mode():
-    """Modo CLI tradicional"""
+    """Traditional CLI mode"""
     # Discover all available commands
     commands = discover_commands()
 
@@ -39,14 +39,10 @@ def cli_mode():
     )
 
     # Global options
-    parser.add_argument(
-        "--no-color", action="store_true", help="Disable colored output"
-    )
+    parser.add_argument("--no-color", action="store_true", help="Disable colored output")
 
     # Create subparsers for commands
-    subparsers = parser.add_subparsers(
-        dest="command", help="Available commands", required=True
-    )
+    subparsers = parser.add_subparsers(dest="command", help="Available commands", required=True)
 
     # Register all discovered commands
     command_instances = {}
@@ -90,7 +86,7 @@ def cli_mode():
 
 
 def interactive_mode():
-    """Modo interactivo global"""
+    """Global interactive mode"""
     from manager.core.menu import MenuNode, MenuRenderer
 
     log_header("CLI MANAGER - INTERACTIVE MODE")
@@ -98,7 +94,7 @@ def interactive_mode():
     # Discover commands
     commands = discover_commands()
 
-    # Construir menú principal
+    # Build main menu
     menu_items = []
     for cmd_name, cmd_class in sorted(commands.items()):
         cmd_instance = cmd_class()

@@ -23,18 +23,14 @@ def log_success(message: str, duration: float = None):
     """Log success with timestamp and optional duration"""
     timestamp = datetime.now().strftime("%H:%M:%S")
     duration_str = f" ({duration:.1f}s)" if duration else ""
-    print(
-        f"{Colors.GREEN}{Emojis.SUCCESS} [{timestamp}] {message}{duration_str}{Colors.RESET}"
-    )
+    print(f"{Colors.GREEN}{Emojis.SUCCESS} [{timestamp}] {message}{duration_str}{Colors.RESET}")
 
 
 def log_error(message: str, duration: float = None):
     """Log error with timestamp and optional duration"""
     timestamp = datetime.now().strftime("%H:%M:%S")
     duration_str = f" ({duration:.1f}s)" if duration else ""
-    print(
-        f"{Colors.RED}{Emojis.ERROR} [{timestamp}] {message}{duration_str}{Colors.RESET}"
-    )
+    print(f"{Colors.RED}{Emojis.ERROR} [{timestamp}] {message}{duration_str}{Colors.RESET}")
 
 
 def log_warning(message: str):
@@ -53,9 +49,7 @@ def print_summary():
     """Print final summary with statistics"""
     total_time = stats.get_duration()
 
-    print(
-        f"\n{Colors.BOLD}{Colors.MAGENTA}{Emojis.STATS} OPERATION SUMMARY:{Colors.RESET}"
-    )
+    print(f"\n{Colors.BOLD}{Colors.MAGENTA}{Emojis.STATS} OPERATION SUMMARY:{Colors.RESET}")
     print(f"{'─' * 30}")
 
     if stats.total_functions > 0:
@@ -76,10 +70,6 @@ def print_summary():
     print(f"{Colors.CYAN}{Emojis.TIME} Total time: {total_time:.1f}s{Colors.RESET}")
 
     if stats.failed == 0 and stats.total_functions > 0:
-        print(
-            f"\n{Colors.GREEN}{Colors.BOLD}🎉 Operation completed successfully!{Colors.RESET}"
-        )
+        print(f"\n{Colors.GREEN}{Colors.BOLD}🎉 Operation completed successfully!{Colors.RESET}")
     elif stats.failed > 0:
-        print(
-            f"\n{Colors.YELLOW}{Colors.BOLD}⚠️  Operation completed with errors{Colors.RESET}"
-        )
+        print(f"\n{Colors.YELLOW}{Colors.BOLD}⚠️  Operation completed with errors{Colors.RESET}")

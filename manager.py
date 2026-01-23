@@ -18,5 +18,5 @@ sys.path.insert(0, _parent_dir)
 
 if __name__ == "__main__":
     from manager.cli import main
-    main()
 
+    main()

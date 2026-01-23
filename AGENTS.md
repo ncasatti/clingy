@@ -77,22 +77,30 @@ pytest --pdb                           # Drop into debugger on failure
 
 ### Linting/Formatting
 
-**⚠️ No linters configured yet.** Recommended setup:
+**Configured:** Black (line-length: 100)
 
 ```bash
-# Black (code formatter)
-black manager/ --check                 # Check formatting
-black manager/                         # Auto-format code
+# Format code
+black . --line-length 100
 
+# Check without modifying
+black . --check --line-length 100
+
+# Format specific files
+black commands/ core/ cli.py
+```
+
+**Optional (not configured):**
+
+```bash
 # Flake8 (style guide)
-flake8 manager/ --max-line-length=100
+flake8 . --max-line-length=100
 
 # MyPy (type checking)
-mypy manager/ --strict
+mypy . --strict
 
 # isort (import sorting)
-isort manager/ --check-only
-isort manager/
+isort . --profile black
 ```
 
 ### Utility Commands
@@ -268,11 +276,17 @@ class MyCommand(BaseCommand):
         
         return True
     
-    def get_menu_tree(self) -> Optional[MenuNode]:
+    def get_menu_tree(self) -> MenuNode:
         """
-        Optional: Define interactive menu structure.
+        REQUIRED: Define interactive menu structure.
         
-        Return None if command doesn't support interactive mode.
+        All commands must implement this method.
+        For simple commands without submenus, use:
+            MenuNode(
+                label="Command Name",
+                emoji=Emojis.ICON,
+                action=lambda: self.execute(Namespace())
+            )
         """
         return MenuNode(
             label="My Command",
@@ -303,15 +317,14 @@ class MyCommand(BaseCommand):
 - Use `_resolve_item_list(args)` to support both CLI and interactive menu
 - Return `bool` for success/failure (affects exit code)
 - Use `log_*` functions from `core/logger.py` for output
-- Implement `get_menu_tree()` for interactive menu support (optional)
+- Implement `get_menu_tree()` for interactive menu support (required)
 
 ### 7.5. Interactive Menu Support
 
-Commands can optionally support **interactive menu mode** by implementing `get_menu_tree()`:
+All commands **must** support **interactive menu mode** by implementing `get_menu_tree()`:
 
 ```python
 from manager.core.menu import MenuNode
-from typing import Optional
 
 class MyCommand(BaseCommand):
     """Command with interactive menu support"""
@@ -319,11 +332,11 @@ class MyCommand(BaseCommand):
     name = "mycommand"
     help = "Short help text"
     
-    def get_menu_tree(self) -> Optional[MenuNode]:
+    def get_menu_tree(self) -> MenuNode:
         """
         Define the interactive menu structure.
         
-        Returns None if command doesn't support interactive mode.
+        REQUIRED: All commands must implement this method.
         """
         return MenuNode(
             label="My Command",
@@ -701,6 +714,10 @@ Update `README.md` with your project details:
 - **Colors/Emojis:** Already handled by logger utilities
 - **Configuration:** All settings in `config.py` (never hardcode values)
 - **Items:** Defined in `config.py:ITEMS` (not tied to any specific resource type)
+- **Linting:** Use black with line-length 100
+- **Comments:** All comments must be in English
+- **get_menu_tree():** Now mandatory (abstract method), not optional
+- **Emojis:** Centralized in `core/colors.py` `Emojis` class
 
 ---
 
@@ -740,6 +757,6 @@ Update `README.md` with your project details:
 
 ---
 
-**Last Updated:** 2026-01-15 (Template Conversion)  
+**Last Updated:** 2026-01-23 (Black linter + English comments refactor)  
 **Python Version:** 3.8+  
 **Primary Maintainer:** @ncasatti
