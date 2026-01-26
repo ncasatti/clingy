@@ -6,8 +6,8 @@ from manager.commands.base import BaseCommand
 from manager.config import ITEMS
 from manager.core.logger import log_header, log_info
 from manager.core.colors import Colors
+from manager.core.emojis import Emojis
 from manager.core.menu import MenuNode
-from manager.core.colors import Emojis
 from typing import Optional
 
 

@@ -6,7 +6,7 @@ from argparse import ArgumentParser, Namespace
 
 from manager.commands.base import BaseCommand
 from manager.config import PROJECT_NAME, PROJECT_VERSION
-from manager.core.colors import Emojis
+from manager.core.emojis import Emojis
 from manager.core.logger import log_info, log_section
 from manager.core.menu import MenuNode
 

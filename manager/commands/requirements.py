@@ -13,9 +13,9 @@ from manager.core.logger import (
     log_info,
     log_success,
 )
-from manager.core.colors import Colors, Emojis
-from manager.config import REQUIRED_DEPENDENCIES
-from manager.core.colors import Emojis
+from manager.core.colors import Colors
+from manager.core.emojis import Emojis
+from manager.config import DEPENDENCIES, Dependency
 from manager.core.menu import MenuNode
 from typing import Optional
 
@@ -27,39 +27,29 @@ class RequirementsCommand(BaseCommand):
     help = "Check system requirements status"
     description = "Verify that all required system dependencies are installed"
     epilog = """Examples:
-  manager.py requirements status    # Check all dependencies
+  manager.py requirements    # Check all dependencies
 """
 
     def add_arguments(self, parser: ArgumentParser):
         """Add command-specific arguments"""
-        parser.add_argument(
-            "action",
-            nargs="?",
-            default="status",
-            choices=["status"],
-            help="Action to perform (default: status)",
-        )
+        pass
 
     def execute(self, args: Namespace) -> bool:
         """Execute requirements command"""
-        action = getattr(args, "action", "status")
-        if action == "status":
-            return self._check_status()
-        return False
+        return self._check_status()
 
-    def _check_dependency(self, name: str, config: dict) -> tuple:
+    def _check_dependency(self, dep: Dependency) -> tuple:
         """
         Check if a dependency is installed
 
         Args:
-            name: Dependency name
-            config: Dependency configuration
+            dep: Dependency configuration
 
         Returns:
             Tuple of (installed: bool, version: str or None)
         """
-        command = config.get("command")
-        check_arg = config.get("check", "--version")
+        command = dep.command
+        check_arg = dep.check_arg
 
         try:
             # Check if command exists
@@ -116,32 +106,25 @@ class RequirementsCommand(BaseCommand):
         else:
             return system
 
-    def _get_install_command(self, config: dict) -> str:
+    def _get_install_command(self, dep: Dependency) -> str:
         """
         Get installation command for current OS
 
         Args:
-            config: Dependency configuration
+            dep: Dependency configuration
 
         Returns:
             Installation command string
         """
-        install_info = config.get("install", {})
         os_type = self._detect_os()
 
-        # Try OS-specific command first
-        if os_type in install_info:
-            return install_info[os_type]
-
-        # Fallback to generic commands
-        if "npm" in install_info:
-            return install_info["npm"]
-        elif "pip" in install_info:
-            return install_info["pip"]
-
-        # If no match, return first available
-        if install_info:
-            return list(install_info.values())[0]
+        # Try OS-specific command
+        if os_type == "macos" and dep.install_macos:
+            return dep.install_macos
+        elif os_type in ["linux", "ubuntu", "debian"] and dep.install_linux:
+            return dep.install_linux
+        elif dep.install_other:
+            return dep.install_other
 
         return "See documentation for installation instructions"
 
@@ -161,10 +144,10 @@ class RequirementsCommand(BaseCommand):
         optional_missing = []
 
         # Check each dependency
-        for name, config in REQUIRED_DEPENDENCIES.items():
-            is_required = config.get("required", True)
-            description = config.get("description", "")
-            installed, version = self._check_dependency(name, config)
+        for dep in DEPENDENCIES:
+            is_required = dep.required
+            description = dep.description
+            installed, version = self._check_dependency(dep)
 
             # Format output
             status_icon = (
@@ -178,23 +161,23 @@ class RequirementsCommand(BaseCommand):
                 else f"{Colors.CYAN}[OPTIONAL]{Colors.RESET}"
             )
 
-            print(f"{status_icon} {required_badge} {Colors.BOLD}{name}{Colors.RESET}")
+            print(f"{status_icon} {required_badge} {Colors.BOLD}{dep.name}{Colors.RESET}")
             print(f"   {description}")
 
             if installed:
                 version_text = version if version and version != "installed" else "installed"
                 print(f"   {Colors.GREEN}✓ {version_text}{Colors.RESET}")
             else:
-                install_cmd = self._get_install_command(config)
+                install_cmd = self._get_install_command(dep)
                 print(f"   {Colors.RED}✗ Not installed{Colors.RESET}")
                 print(f"   {Colors.CYAN}Install: {install_cmd}{Colors.RESET}")
 
                 # Track missing dependencies
                 if is_required:
                     all_installed = False
-                    required_missing.append(name)
+                    required_missing.append(dep.name)
                 else:
-                    optional_missing.append(name)
+                    optional_missing.append(dep.name)
 
             print()  # Empty line between dependencies
 

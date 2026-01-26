@@ -8,11 +8,13 @@ Uses fzf for fuzzy finding and selection.
 # Standard library
 import subprocess
 import sys
+import time
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional
 
 # Local
-from manager.core.colors import Colors, Emojis
+from manager.core.colors import Colors
+from manager.core.emojis import Emojis
 from manager.core.logger import log_error, log_info
 
 
@@ -54,6 +56,7 @@ class MenuRenderer:
         self.root = root
         self.header = header
         self.navigation_stack: List[MenuNode] = [root]
+        self.last_esc_time: float = 0.0  # Track last ESC press for double-ESC detection
 
     def show(self) -> bool:
         """
@@ -91,12 +94,23 @@ class MenuRenderer:
                 selected = self._select_with_fzf(current_node)
 
                 if selected is None:
-                    # User cancelled (ESC) - go back or exit
+                    # User cancelled (ESC) - go back or exit with double-ESC
                     if len(self.navigation_stack) > 1:
+                        # In submenu - go back
                         self.navigation_stack.pop()
                         current_node = self.navigation_stack[-1]
                     else:
-                        return False
+                        # In root - require double ESC to exit
+                        current_time = time.time()
+                        if current_time - self.last_esc_time < 2.0:
+                            # Double ESC detected - exit
+                            log_info("Exiting...")
+                            return False
+                        else:
+                            # First ESC - show message and continue
+                            log_info("Press ESC again to exit, or select an option")
+                            self.last_esc_time = current_time
+                            # Continue showing menu (don't change current_node)
 
                 elif selected.label == "Back":
                     # "Back" option selected
@@ -224,14 +238,9 @@ def fzf_select(
         )
 
         # Exit code 0: successful selection
-        # Exit code 1: no selection (ESC)
-        # Exit code 130: CTRL+C
-        if result.returncode == 130:
-            # CTRL+C - propagate interruption
-            raise KeyboardInterrupt
-
+        # Any other code: cancelled (ESC/Ctrl+C) or error
         if result.returncode != 0:
-            # ESC or error - return None
+            # User cancelled or error - return None
             return None
 
         # Parse output
@@ -249,8 +258,8 @@ def fzf_select(
         sys.exit(1)
 
     except KeyboardInterrupt:
-        log_info("Operation cancelled by user")
-        sys.exit(0)
+        # Ctrl+C pressed - return None to go back
+        return None
 
 
 def fzf_select_items(

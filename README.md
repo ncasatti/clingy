@@ -502,18 +502,18 @@ DATA_DIR = "data"
 OUTPUT_DIR = "output"
 
 # Add custom dependencies
-REQUIRED_DEPENDENCIES = {
-    "my-tool": {
-        "command": "my-tool",
-        "check": "--version",
-        "install": {
-            "macos": "brew install my-tool",
-            "ubuntu": "sudo apt install my-tool",
-        },
-        "description": "My custom tool",
-        "required": True,
-    },
-}
+from manager.config import Dependency
+
+DEPENDENCIES = [
+    Dependency(
+        name="my-tool",
+        command="my-tool",
+        description="My custom tool",
+        install_macos="brew install my-tool",
+        install_linux="sudo apt install my-tool",
+        required=True,
+    ),
+]
 ```
 
 ### Using Base Class Helpers
@@ -645,21 +645,35 @@ DATA_DIR = "data"
 OUTPUT_DIR = "output"
 
 # ============================================================================
-# Required System Dependencies
+# Dependency Definition
 # ============================================================================
-REQUIRED_DEPENDENCIES = {
-    "fzf": {
-        "command": "fzf",
-        "check": "--version",
-        "install": {
-            "ubuntu": "sudo apt install fzf",
-            "macos": "brew install fzf",
-        },
-        "description": "Fuzzy finder for interactive menus",
-        "required": True,
-    },
+from typing import NamedTuple, Optional
+
+class Dependency(NamedTuple):
+    """System dependency definition"""
+    name: str
+    command: str
+    description: str
+    check_arg: str = "--version"
+    install_macos: Optional[str] = None
+    install_linux: Optional[str] = None
+    install_other: Optional[str] = None
+    required: bool = True
+
+# ============================================================================
+# Required Dependencies
+# ============================================================================
+DEPENDENCIES = [
+    Dependency(
+        name="fzf",
+        command="fzf",
+        description="Fuzzy finder for interactive menus",
+        install_macos="brew install fzf",
+        install_linux="sudo apt install fzf",
+        required=True,
+    ),
     # Add more dependencies as needed
-}
+]
 ```
 
 ### Adding Custom Configuration

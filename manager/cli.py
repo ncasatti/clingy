@@ -6,15 +6,68 @@ This file orchestrates the command-line interface using the auto-discovery syste
 """
 
 import argparse
+import platform
+import shutil
 import sys
-from argparse import Namespace
 from manager.commands import discover_commands
+from manager.config import DEPENDENCIES
 from manager.core.colors import Colors
-from manager.core.logger import log_error, log_header
+from manager.core.logger import log_error, log_header, log_info
+
+
+def check_required_dependencies() -> bool:
+    """
+    Check if all required dependencies are installed.
+
+    Returns:
+        True if all required dependencies are available, False otherwise.
+    """
+    # Filter only required dependencies
+    required_deps = [dep for dep in DEPENDENCIES if dep.required]
+
+    if not required_deps:
+        return True
+
+    # Check which dependencies are missing
+    missing = []
+    for dep in required_deps:
+        if shutil.which(dep.command) is None:
+            missing.append(dep)
+
+    # If all dependencies are present, return silently
+    if not missing:
+        return True
+
+    # Show error message with missing dependencies
+    missing_names = ", ".join([dep.name for dep in missing])
+    log_error(f"Missing required dependencies: {missing_names}")
+
+    # Show installation commands
+    log_info("Install with:")
+    system = platform.system()
+    for dep in missing:
+        if system == "Darwin" and dep.install_macos:
+            log_info(f"  - {dep.name}: {dep.install_macos}")
+        elif system == "Linux" and dep.install_linux:
+            log_info(f"  - {dep.name}: {dep.install_linux}")
+        elif dep.install_other:
+            log_info(f"  - {dep.name}: {dep.install_other}")
+
+    log_info("Run 'python manager.py requirements' for details")
+    return False
 
 
 def main():
     """Main CLI entry point"""
+    # Allow 'requirements' command to run even if dependencies are missing
+    # (it's designed to diagnose dependency issues)
+    is_requirements_command = len(sys.argv) > 1 and sys.argv[1] == "requirements"
+
+    if not is_requirements_command:
+        # Check required dependencies first
+        if not check_required_dependencies():
+            sys.exit(1)
+
     # If no arguments provided, enter interactive mode
     if len(sys.argv) == 1:
         return interactive_mode()
@@ -39,10 +92,14 @@ def cli_mode():
     )
 
     # Global options
-    parser.add_argument("--no-color", action="store_true", help="Disable colored output")
+    parser.add_argument(
+        "--no-color", action="store_true", help="Disable colored output"
+    )
 
     # Create subparsers for commands
-    subparsers = parser.add_subparsers(dest="command", help="Available commands", required=True)
+    subparsers = parser.add_subparsers(
+        dest="command", help="Available commands", required=True
+    )
 
     # Register all discovered commands
     command_instances = {}
@@ -88,6 +145,7 @@ def cli_mode():
 def interactive_mode():
     """Global interactive mode"""
     from manager.core.menu import MenuNode, MenuRenderer
+    from manager.core.emojis import Emojis
 
     log_header("CLI MANAGER - INTERACTIVE MODE")
 
@@ -101,11 +159,25 @@ def interactive_mode():
         node = cmd_instance.get_menu_tree()
         menu_items.append(node)
 
+    # Add Exit option at the end
+    menu_items.append(
+        MenuNode(
+            label="Exit",
+            emoji=Emojis.EXIT,
+            action=lambda: False,  # Return False to exit
+        )
+    )
+
     root = MenuNode(label="Main Menu", emoji="🚀", children=menu_items)
 
     renderer = MenuRenderer(root, header="Select a command")
-    renderer.show()
-    return 0
+
+    try:
+        renderer.show()
+        return 0
+    except KeyboardInterrupt:
+        print(f"\n{Colors.YELLOW}Operation cancelled by user{Colors.RESET}")
+        sys.exit(130)
 
 
 if __name__ == "__main__":
