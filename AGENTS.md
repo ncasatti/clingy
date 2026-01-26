@@ -1,17 +1,17 @@
 # AGENTS.md
 
-**AI Coding Agents Guide** for the CLI Manager Template project.
+**AI Coding Agents Guide** for the manager-core framework project.
 
 ---
 
 ## Project Overview
 
-**Python CLI template** for building interactive command-line tools with fuzzy search menus and modular command architecture. This is a reusable template, not a project-specific tool.
+**manager-core** is a context-aware CLI framework for building interactive command-line tools with fuzzy search menus and modular command architecture. It works like Git/Poetry/Terraform - install once, use everywhere.
 
 - **Language:** Python 3.8+
-- **Architecture:** Modular command-based CLI with auto-discovery
+- **Architecture:** Context-aware framework with auto-discovery
 - **Menu System:** Interactive menus powered by `fzf` (fuzzy finder)
-- **Dependencies:** fzf, python, pyyaml (optional)
+- **Dependencies:** fzf, python
 - **Use Cases:** DevOps tools, data pipelines, admin dashboards, development utilities
 
 ---
@@ -21,44 +21,45 @@
 ### Run the CLI
 
 ```bash
+# Install framework (development mode)
+pip install -e .
+
+# Initialize a test project
+cd /tmp && mkdir test-project && cd test-project
+manager init
+
 # Interactive mode (recommended)
-python manager.py                    # Starts fuzzy-searchable menu system
+manager                              # Starts fuzzy-searchable menu system
 
 # CLI mode (traditional)
-python manager.py <command> [options]
+manager <command> [options]
 
 # Examples
-python manager.py greet --language es
-python manager.py files --action list
-python manager.py calculator
-python manager.py info
+manager greet --language es
+manager info
+manager calculator
+
+# Or run directly (development)
+python -m manager_core.cli init
+python -m manager_core.cli
 ```
 
 ### Example Commands
 
 ```bash
-# Greet in different languages
-python manager.py greet                # Interactive menu
-python manager.py greet --language es  # Spanish
+# Initialize new project
+manager init                           # Create project in current directory
+manager init --force                   # Overwrite existing project
 
-# File operations
-python manager.py files                # Interactive menu
-python manager.py files --action list  # List files
+# Greet in different languages
+manager greet                          # Interactive menu
+manager greet --language es            # Spanish
 
 # Calculator
-python manager.py calculator           # Interactive mode
+manager calculator                     # Interactive mode
 
 # System info
-python manager.py info                 # Show system information
-
-# List configured items
-python manager.py list-items
-
-# Clean output artifacts
-python manager.py clean
-
-# Check dependencies
-python manager.py requirements status
+manager info                           # Show system information
 ```
 
 ### Testing
@@ -87,7 +88,7 @@ black . --line-length 100
 black . --check --line-length 100
 
 # Format specific files
-black commands/ core/ cli.py
+black manager_core/
 ```
 
 **Optional (not configured):**
@@ -106,14 +107,12 @@ isort . --profile black
 ### Utility Commands
 
 ```bash
-# Check system dependencies
-python manager.py requirements status
+# Initialize new project
+manager init
 
-# List all configured items
-python manager.py list-items
-
-# Clean output artifacts
-python manager.py clean
+# Run from any subdirectory (context-aware)
+cd my-project/subdir
+manager  # Automatically finds project root
 ```
 
 ---
@@ -131,27 +130,27 @@ python manager.py clean
 ### 2. File Organization
 
 ```
-manager/
-├── commands/          # Command implementations (auto-discovered)
+manager_core/          # Framework package
+├── commands/          # Framework commands
 │   ├── base.py       # Abstract base class
-│   ├── greet.py      # Example: simple menu
-│   ├── files.py      # Example: hierarchical menu
-│   ├── calculator.py # Example: interactive input
-│   ├── info.py       # Example: CLI-only
-│   ├── list_items.py # List configured items
-│   ├── clean.py      # Clean artifacts
-│   └── requirements.py
+│   ├── init.py       # Project initialization
+│   └── __init__.py   # Command discovery
 │
 ├── core/             # Core utilities (shared logic)
+│   ├── discovery.py  # Context detection
 │   ├── logger.py     # Logging functions
 │   ├── colors.py     # Terminal styling
 │   ├── menu.py       # Interactive menu system (fzf)
 │   └── stats.py      # Statistics tracking
 │
+├── templates/        # Project templates
+│   └── basic/        # Default template
+│       ├── commands/ # Example commands
+│       └── config.py # Example config
+│
 ├── cli.py            # CLI entry point (orchestrator)
-├── config.py         # Project-specific configuration
-├── manager.py        # Wrapper script
-└── README.md         # Documentation
+├── cli_builder.py    # Context builder
+└── config.py         # Framework configuration
 ```
 
 ### 3. Imports
@@ -168,13 +167,13 @@ from typing import List, Optional
 from argparse import ArgumentParser, Namespace
 
 # Local
-from manager.commands.base import BaseCommand
-from manager.core.logger import log_error, log_success
-from manager.config import ITEMS
+from manager_core.commands.base import BaseCommand
+from manager_core.core.logger import log_error, log_success
+from manager_core.config import ITEMS
 ```
 
 **Guidelines:**
-- Use absolute imports: `from manager.core.logger import log_info`
+- Use absolute imports: `from manager_core.core.logger import log_info`
 - Group imports by category with blank lines
 - Sort alphabetically within each group
 - Avoid `import *` (always explicit imports)
@@ -241,9 +240,9 @@ def process_item(self, item_name: str, output_dir: str) -> bool:
 **All commands inherit from `BaseCommand`:**
 
 ```python
-from manager.commands.base import BaseCommand
+from manager_core.commands.base import BaseCommand
 from argparse import ArgumentParser, Namespace
-from manager.core.menu import MenuNode
+from manager_core.core.menu import MenuNode
 from typing import Optional
 
 class MyCommand(BaseCommand):
@@ -253,7 +252,7 @@ class MyCommand(BaseCommand):
     help = "Short help text"              # Shown in --help
     description = "Detailed description"  # Optional, defaults to help
     epilog = """Examples:
-  manager.py mycommand --option value
+  manager mycommand --option value
 """
     
     def add_arguments(self, parser: ArgumentParser):
@@ -401,7 +400,7 @@ class MenuNode:
 **Example: Command with Menu:**
 
 ```python
-from manager.core.menu import MenuNode, fzf_select_items
+from manager_core.core.menu import MenuNode, fzf_select_items
 
 class ProcessCommand(BaseCommand):
     name = "process"
@@ -449,7 +448,7 @@ class ProcessCommand(BaseCommand):
 **Fail gracefully with user-friendly messages:**
 
 ```python
-from manager.core.logger import log_error, log_warning, log_info
+from manager_core.core.logger import log_error, log_warning, log_info
 
 # Validate input
 if item_name not in ITEMS:
@@ -479,7 +478,7 @@ except FileNotFoundError:
 **Use logger utilities (NOT print):**
 
 ```python
-from manager.core.logger import (
+from manager_core.core.logger import (
     log_header,   # Major section header
     log_section,  # Subsection header
     log_success,  # Success message (green checkmark)
@@ -505,7 +504,7 @@ print_summary()
 **Never hardcode values.** Use `config.py`:
 
 ```python
-from manager.config import (
+from manager_core.config import (
     ITEMS,           # List of all items
     PROJECT_NAME,    # Project name
     PROJECT_VERSION, # Project version
@@ -541,7 +540,7 @@ def execute(self, args: Namespace) -> bool:
 ### Processing with Stats
 
 ```python
-from manager.core.stats import stats
+from manager_core.core.stats import stats
 
 stats.reset()
 stats.total_items = len(items)
@@ -574,7 +573,7 @@ result = subprocess.run(
 **How fzf integration works:**
 
 ```python
-from manager.core.menu import MenuRenderer, MenuNode
+from manager_core.core.menu import MenuRenderer, MenuNode
 
 # Create menu tree
 root = MenuNode(
@@ -592,12 +591,13 @@ success = renderer.show()
 ```
 
 **User Flow:**
-1. User runs `python manager.py` (no args)
-2. `cli.py:interactive_mode()` builds menu tree from all commands
-3. `MenuRenderer.show()` handles navigation with fzf
-4. When user selects a leaf node, its `action()` is called
-5. After action completes, menu returns to parent
-6. User can navigate back with "← Back" or ESC
+1. User runs `manager` (no args)
+2. Framework detects project and loads commands
+3. `cli.py:interactive_mode()` builds menu tree from all commands
+4. `MenuRenderer.show()` handles navigation with fzf
+5. When user selects a leaf node, its `action()` is called
+6. After action completes, menu returns to parent
+7. User can navigate back with "← Back" or ESC
 
 **Keyboard Shortcuts in fzf:**
 - `↑/↓`: Navigate
@@ -610,11 +610,12 @@ success = renderer.show()
 
 ## Creating Your Own Manager
 
-### Step 1: Clone the Template
+### Step 1: Initialize Project
 
 ```bash
-git clone <this-repo> my-cli-tool
+mkdir my-cli-tool
 cd my-cli-tool
+manager init
 ```
 
 ### Step 2: Customize Configuration
@@ -637,14 +638,14 @@ OUTPUT_DIR = "output"
 
 ### Step 3: Create Your Commands
 
-Create new files in `manager/commands/`:
+Create new files in `commands/`:
 
 ```python
-# manager/commands/mycommand.py
-from manager.commands.base import BaseCommand
+# commands/mycommand.py
+from manager_core.commands.base import BaseCommand
 from argparse import ArgumentParser, Namespace
-from manager.core.menu import MenuNode
-from manager.core.logger import log_success
+from manager_core.core.menu import MenuNode
+from manager_core.core.logger import log_success
 from typing import Optional
 
 class MyCommand(BaseCommand):
@@ -677,7 +678,7 @@ class MyCommand(BaseCommand):
 python manager.py
 
 # CLI mode
-python manager.py mycommand
+manager mycommand
 ```
 
 ### Step 5: Update Documentation

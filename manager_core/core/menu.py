@@ -13,9 +13,9 @@ from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional
 
 # Local
-from manager.core.colors import Colors
-from manager.core.emojis import Emojis
-from manager.core.logger import log_error, log_info
+from manager_core.core.colors import Colors
+from manager_core.core.emojis import Emojis
+from manager_core.core.logger import log_error, log_info
 
 
 @dataclass
@@ -275,7 +275,14 @@ def fzf_select_items(
     Returns:
         List of selected items or None
     """
-    from manager.config import ITEMS
+    # Get ITEMS dynamically
+    try:
+        from config import ITEMS
+    except ImportError:
+        try:
+            from manager_core.config import ITEMS
+        except ImportError:
+            ITEMS = []
 
     options = []
 
@@ -294,7 +301,15 @@ def fzf_select_items(
 
     # If [ALL ITEMS] was selected, return all items
     if any("[ALL ITEMS]" in s for s in selected):
-        return ITEMS
+        # Get ITEMS again (in case it changed)
+        try:
+            from config import ITEMS as all_items
+        except ImportError:
+            try:
+                from manager_core.config import ITEMS as all_items
+            except ImportError:
+                all_items = []
+        return all_items
 
     # Filter control options that may have ANSI codes
     filtered = []

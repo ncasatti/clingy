@@ -3,10 +3,10 @@
 from argparse import ArgumentParser, Namespace
 from typing import Optional
 
-from manager.commands.base import BaseCommand
-from manager.core.emojis import Emojis
-from manager.core.logger import log_error, log_success
-from manager.core.menu import MenuNode, fzf_select
+from manager_core.commands.base import BaseCommand
+from manager_core.core.emojis import Emojis
+from manager_core.core.logger import log_error, log_success
+from manager_core.core.menu import MenuNode, fzf_select
 
 
 class CalculatorCommand(BaseCommand):

@@ -4,11 +4,11 @@ import platform
 import sys
 from argparse import ArgumentParser, Namespace
 
-from manager.commands.base import BaseCommand
-from manager.config import PROJECT_NAME, PROJECT_VERSION
-from manager.core.emojis import Emojis
-from manager.core.logger import log_info, log_section
-from manager.core.menu import MenuNode
+from manager_core.commands.base import BaseCommand
+from manager_core.config import PROJECT_NAME, PROJECT_VERSION
+from manager_core.core.emojis import Emojis
+from manager_core.core.logger import log_info, log_section
+from manager_core.core.menu import MenuNode
 
 
 class InfoCommand(BaseCommand):

@@ -1,9 +1,9 @@
 """Logging functions for enhanced terminal output"""
 
 from datetime import datetime
-from manager.core.colors import Colors
-from manager.core.emojis import Emojis
-from manager.core.stats import stats
+from manager_core.core.colors import Colors
+from manager_core.core.emojis import Emojis
+from manager_core.core.stats import stats
 
 
 def log_header(title: str):

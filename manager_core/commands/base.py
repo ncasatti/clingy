@@ -3,9 +3,28 @@
 from abc import ABC, abstractmethod
 from argparse import ArgumentParser, Namespace
 from typing import Optional, List
-from manager.config import ITEMS
-from manager.core.logger import log_error, log_info
-from manager.core.menu import MenuNode
+from manager_core.core.logger import log_error, log_info
+from manager_core.core.menu import MenuNode
+
+
+def _get_items() -> List[str]:
+    """
+    Get ITEMS list dynamically from project config or framework config
+    
+    Returns:
+        List of items from project config, or empty list if not defined
+    """
+    try:
+        # Try to import from project config first
+        from config import ITEMS
+        return ITEMS
+    except ImportError:
+        # Fall back to framework config
+        try:
+            from manager_core.config import ITEMS
+            return ITEMS
+        except ImportError:
+            return []
 
 
 class BaseCommand(ABC):
@@ -89,14 +108,16 @@ class BaseCommand(ABC):
         Returns:
             List of valid item names (empty list if item doesn't exist)
         """
+        items = _get_items()
+        
         if item_filter is None:
-            return ITEMS
+            return items
 
         # Validate item exists
-        if item_filter not in ITEMS:
+        if item_filter not in items:
             log_error(f"Item '{item_filter}' does not exist in the available items list")
-            log_info(f"Available items: {', '.join(ITEMS[:5])}{'...' if len(ITEMS) > 5 else ''}")
-            log_info("Use 'python manager.py list' to see all available items")
+            log_info(f"Available items: {', '.join(items[:5])}{'...' if len(items) > 5 else ''}")
+            log_info("Use 'manager list' to see all available items")
             return []
 
         return [item_filter]

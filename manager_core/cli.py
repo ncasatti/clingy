@@ -9,10 +9,10 @@ import argparse
 import platform
 import shutil
 import sys
-from manager.commands import discover_commands
-from manager.config import DEPENDENCIES
-from manager.core.colors import Colors
-from manager.core.logger import log_error, log_header, log_info
+from manager_core.cli_builder import create_cli_context
+from manager_core.config import DEPENDENCIES
+from manager_core.core.colors import Colors
+from manager_core.core.logger import log_error, log_header, log_info
 
 
 def check_required_dependencies() -> bool:
@@ -59,6 +59,19 @@ def check_required_dependencies() -> bool:
 
 def main():
     """Main CLI entry point"""
+    # Create CLI context (detects project and discovers commands)
+    ctx = create_cli_context()
+    
+    # Allow 'init' command to run even without a project
+    is_init_command = len(sys.argv) > 1 and sys.argv[1] == "init"
+    
+    # If no project found and not running 'init', show error
+    if not ctx.has_project and not is_init_command:
+        log_error("No manager project found.")
+        log_info("Run 'manager init' to create a new project, or")
+        log_info("navigate to a directory with commands/ and config.py")
+        sys.exit(1)
+    
     # Allow 'requirements' command to run even if dependencies are missing
     # (it's designed to diagnose dependency issues)
     is_requirements_command = len(sys.argv) > 1 and sys.argv[1] == "requirements"
@@ -70,19 +83,19 @@ def main():
 
     # If no arguments provided, enter interactive mode
     if len(sys.argv) == 1:
-        return interactive_mode()
+        return interactive_mode(ctx)
 
     # Traditional CLI mode
-    return cli_mode()
+    return cli_mode(ctx)
 
 
-def cli_mode():
+def cli_mode(ctx):
     """Traditional CLI mode"""
-    # Discover all available commands
-    commands = discover_commands()
+    # Use commands from context
+    commands = ctx.commands
 
     if not commands:
-        log_error("No commands found. Please create command files in manager/commands/")
+        log_error("No commands found. Please create command files in commands/")
         sys.exit(1)
 
     # Create main parser
@@ -142,15 +155,15 @@ def cli_mode():
         sys.exit(1)
 
 
-def interactive_mode():
+def interactive_mode(ctx):
     """Global interactive mode"""
-    from manager.core.menu import MenuNode, MenuRenderer
-    from manager.core.emojis import Emojis
+    from manager_core.core.menu import MenuNode, MenuRenderer
+    from manager_core.core.emojis import Emojis
 
     log_header("CLI MANAGER - INTERACTIVE MODE")
 
-    # Discover commands
-    commands = discover_commands()
+    # Use commands from context
+    commands = ctx.commands
 
     # Build main menu
     menu_items = []

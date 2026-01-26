@@ -2,10 +2,10 @@
 Project-specific configuration
 
 CUSTOMIZE THIS FILE FOR YOUR PROJECT
-This is the only file that needs to be modified when using this manager in a different project.
+This is the only file that needs to be modified when using manager-core in your project.
 """
 
-from manager.core.dependency import Dependency
+from manager_core.core.dependency import Dependency
 
 
 # ============================================================================
@@ -44,7 +44,7 @@ DEPENDENCIES = [
         command="fzf",
         description="Fuzzy finder for interactive menus",
         install_macos="brew install fzf",
-        install_linux="sudo pacman -S fzf", # Arch
+        install_linux="sudo pacman -S fzf",  # Arch
         required=True,
     ),
     Dependency(
@@ -52,7 +52,7 @@ DEPENDENCIES = [
         command="python",
         description="Python 3 interpreter",
         install_macos="brew install python3",
-        install_linux="sudo pacman -S python3", # Arch
+        install_linux="sudo pacman -S python3",  # Arch
         required=True,
     ),
 ]

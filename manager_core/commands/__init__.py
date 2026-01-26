@@ -10,7 +10,7 @@ import inspect
 from pathlib import Path
 from typing import Dict, Type
 
-from manager.commands.base import BaseCommand
+from manager_core.commands.base import BaseCommand
 
 
 def discover_commands() -> Dict[str, Type[BaseCommand]]:
@@ -31,7 +31,7 @@ def discover_commands() -> Dict[str, Type[BaseCommand]]:
 
         try:
             # Import the module
-            module_name = f"manager.commands.{file_path.stem}"
+            module_name = f"manager_core.commands.{file_path.stem}"
             module = importlib.import_module(module_name)
 
             # Find all classes that inherit from BaseCommand

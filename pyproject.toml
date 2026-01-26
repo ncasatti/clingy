@@ -3,9 +3,9 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "manager"
+name = "manager-core"
 version = "1.0.0"
-description = "Interactive CLI manager template with fuzzy search menus"
+description = "Context-aware CLI framework with fuzzy search menus and auto-discovery"
 readme = "README.md"
 requires-python = ">=3.8"
 license = {text = "MIT"}
@@ -37,7 +37,7 @@ dev = [
 ]
 
 [project.scripts]
-manager = "manager.cli:main"
+manager = "manager_core.cli:main"
 
 [project.urls]
 Homepage = "https://github.com/ncasatti/manager"
@@ -61,5 +61,5 @@ extend-exclude = '''
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["manager*"]
+include = ["manager_core*"]
 exclude = ["tests*", "docs*"]
