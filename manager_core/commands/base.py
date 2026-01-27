@@ -2,32 +2,10 @@
 
 from abc import ABC, abstractmethod
 from argparse import ArgumentParser, Namespace
-from typing import List, Optional
+from typing import Optional
 
 from manager_core.core.logger import log_error, log_info
 from manager_core.core.menu import MenuNode
-
-
-def _get_items() -> List[str]:
-    """
-    Get ITEMS list dynamically from project config or framework config
-
-    Returns:
-        List of items from project config, or empty list if not defined
-    """
-    try:
-        # Try to import from project config first
-        from config import ITEMS
-
-        return ITEMS
-    except ImportError:
-        # Fall back to framework config
-        try:
-            from manager_core.config import ITEMS
-
-            return ITEMS
-        except ImportError:
-            return []
 
 
 class BaseCommand(ABC):
@@ -41,6 +19,7 @@ class BaseCommand(ABC):
     - epilog: Usage examples (optional)
     - add_arguments(): Add command-specific arguments
     - execute(): Run the command logic
+    - get_menu_tree(): Return menu tree for interactive mode
     """
 
     name: str = ""
@@ -78,52 +57,6 @@ class BaseCommand(ABC):
     def get_epilog(self) -> Optional[str]:
         """Get command epilog"""
         return self.epilog
-
-    def _resolve_item_list(self, args: Namespace) -> List[str]:
-        """
-        Resolve item list from args, supporting both interactive mode and CLI mode.
-
-        Priority:
-        1. args.item_list (from interactive menu) - takes precedence
-        2. args.item (from CLI) - filtered via _get_filtered_items()
-
-        Args:
-            args: Parsed command-line arguments
-
-        Returns:
-            List of item names to process
-        """
-        # Interactive mode: item_list is provided directly
-        if hasattr(args, "item_list") and args.item_list:
-            return args.item_list
-
-        # CLI mode: filter based on item argument
-        item_arg = getattr(args, "item", None)
-        return self._get_filtered_items(item_arg)
-
-    def _get_filtered_items(self, item_filter: Optional[str]) -> List[str]:
-        """
-        Get list of items to process, filtered if necessary.
-
-        Args:
-            item_filter: Specific item name or None for all
-
-        Returns:
-            List of valid item names (empty list if item doesn't exist)
-        """
-        items = _get_items()
-
-        if item_filter is None:
-            return items
-
-        # Validate item exists
-        if item_filter not in items:
-            log_error(f"Item '{item_filter}' does not exist in the available items list")
-            log_info(f"Available items: {', '.join(items[:5])}{'...' if len(items) > 5 else ''}")
-            log_info("Use 'manager list' to see all available items")
-            return []
-
-        return [item_filter]
 
     @abstractmethod
     def get_menu_tree(self) -> MenuNode:

@@ -22,11 +22,12 @@ from manager_core.core.logger import log_error, log_info
 class MenuNode:
     """Represents a node in the interactive menu tree"""
 
-    label: str  # Menu text
+    label: str = ""  # Menu text (static)
     emoji: str = ""  # Optional emoji
     children: List["MenuNode"] = field(default_factory=list)  # Submenus
     action: Optional[Callable[[], bool]] = None  # Function to execute
     data: Dict[str, Any] = field(default_factory=dict)  # Extra context
+    label_generator: Optional[Callable[[], str]] = None  # Dynamic label generator
 
     def is_leaf(self) -> bool:
         """True if it's an executable action (no children)"""
@@ -37,9 +38,21 @@ class MenuNode:
         return len(self.children) > 0
 
     def display_label(self) -> str:
-        """Formatted label for display in fzf"""
-        prefix = self.emoji + "  " if self.emoji else ""
-        return f"{prefix}{self.label}"
+        """
+        Formatted label for display in fzf.
+
+        Uses label_generator if available (for dynamic content),
+        otherwise uses static label.
+        """
+        # Use dynamic label if generator exists
+        if self.label_generator is not None:
+            text = self.label_generator()
+        else:
+            text = self.label
+
+        # Add emoji prefix if present
+        prefix = self.emoji + " " if self.emoji else ""
+        return f"{prefix}{text}"
 
 
 class MenuRenderer:
@@ -263,26 +276,38 @@ def fzf_select(
 
 
 def fzf_select_items(
-    prompt: str = "Select items: ", include_all: bool = True
+    items: Optional[List[str]] = None,
+    prompt: str = "Select items: ",
+    include_all: bool = True,
 ) -> Optional[List[str]]:
     """
     Specific selector for configured items.
 
     Args:
+        items: List of items to select from (if None, uses ITEMS from config)
         prompt: Prompt text
         include_all: Whether to include [ALL ITEMS] option
 
     Returns:
         List of selected items or None
     """
-    # Get ITEMS dynamically
-    try:
-        from config import ITEMS
-    except ImportError:
+    # If items not provided, get ITEMS dynamically from config
+    if items is None:
         try:
-            from manager_core.config import ITEMS
+            from config import ITEMS
+
+            items = ITEMS
         except ImportError:
-            ITEMS = []
+            try:
+                from manager_core.config import ITEMS
+
+                items = ITEMS
+            except ImportError:
+                items = []
+
+    # If no items available, return None
+    if not items:
+        return None
 
     options = []
 
@@ -291,7 +316,7 @@ def fzf_select_items(
         options.append(f"{Colors.BOLD}{Colors.GREEN}[ALL ITEMS]{Colors.RESET}")
 
     # Add individual items
-    options.extend(ITEMS)
+    options.extend(items)
 
     # Execute fzf with multi-selection
     selected = fzf_select(options, prompt=prompt, header="Use TAB to select multiple", multi=True)
@@ -301,22 +326,14 @@ def fzf_select_items(
 
     # If [ALL ITEMS] was selected, return all items
     if any("[ALL ITEMS]" in s for s in selected):
-        # Get ITEMS again (in case it changed)
-        try:
-            from config import ITEMS as all_items
-        except ImportError:
-            try:
-                from manager_core.config import ITEMS as all_items
-            except ImportError:
-                all_items = []
-        return all_items
+        return items  # Return the items list directly
 
     # Filter control options that may have ANSI codes
     filtered = []
     for s in selected:
         # Remove ANSI codes for comparison
         clean = s.replace(Colors.BOLD, "").replace(Colors.GREEN, "").replace(Colors.RESET, "")
-        if clean in ITEMS:
+        if clean in items:
             filtered.append(clean)
 
     return filtered if filtered else None

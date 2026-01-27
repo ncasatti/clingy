@@ -68,16 +68,17 @@ class BrowseCommand(BaseCommand):
             # Build config items for this group
             config_nodes = []
             for config in configs:
-                status, desc = get_config_status(config, konfig_root)
-                icon = get_status_icon(status)
-
-                # Create submenu for each config
+                # Create submenu for each config with dynamic labels
                 config_nodes.append(
                     MenuNode(
-                        label=f"{icon} {config.get_display_name()}",
+                        label_generator=lambda c=config, kr=konfig_root: self._get_config_label(
+                            c, kr
+                        ),
                         children=[
                             MenuNode(
-                                label=f"Status: {desc}",
+                                label_generator=lambda c=config, kr=konfig_root: self._get_status_label(
+                                    c, kr
+                                ),
                                 action=lambda c=config: self._show_config_info(c, konfig_root),
                             ),
                             MenuNode(
@@ -234,3 +235,14 @@ class BrowseCommand(BaseCommand):
 
         log_info(f"Group {group}: {success_count} unlinked, {fail_count} failed")
         return fail_count == 0
+
+    def _get_config_label(self, config, konfig_root: Path) -> str:
+        """Generate dynamic label for config with current status icon"""
+        status, _ = get_config_status(config, konfig_root)
+        icon = get_status_icon(status)
+        return f"{icon} {config.get_display_name()}"
+
+    def _get_status_label(self, config, konfig_root: Path) -> str:
+        """Generate dynamic status label"""
+        _, desc = get_config_status(config, konfig_root)
+        return f"Status: {desc}"
