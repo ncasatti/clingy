@@ -1,7 +1,7 @@
 """Emoji/Icon definitions for terminal output"""
 
 
-class Emojis:
+class Emoji:
     """
     Emoji/Icon definitions for terminal output
 
@@ -15,21 +15,21 @@ class Emojis:
     # ============================================================================
     # Status Indicators
     # ============================================================================
-    SUCCESS = " "
-    ERROR = ""
-    WARNING = ""
-    INFO = ""
+    SUCCESS = " "
+    ERROR = " "
+    WARNING = " "
+    INFO = "󰋽 "
 
     # ============================================================================
     # Actions
     # ============================================================================
     ROCKET = " "
-    BUILD = ""
+    BUILD = "󱌣"
     CLEAN = ""
-    RUN = ""
+    RUN = " "
     SEARCH = "🔍"
     BACK = "󰁭"
-    EXIT = "󰈆"  # Exit/door icon
+    EXIT = "󰈆"
 
     # ============================================================================
     # Objects
@@ -38,6 +38,10 @@ class Emojis:
     DOCUMENT = "📄"
     LIST = "📋"
     FLOPPY = "💾"
+    COMPUTER = "🖥️"
+    CLOUD = "☁️"
+    GEAR = "⚙️"
+    LAMBDA = "󰘧 "
 
     # ============================================================================
     # Time & Stats
@@ -45,6 +49,7 @@ class Emojis:
     TIME = ""
     STATS = "📊"
     CIRCULAR = ""
+    BOLT = "⚡"
 
     # ============================================================================
     # Server/Monitor
@@ -60,6 +65,7 @@ class Emojis:
     PENCIL = "󰏫 "
     PLUS = " "
     TRASH = " "
+    QUICK_ACTIONS = "󰱑 "
 
     # ============================================================================
     # Commands - Main Menu Icons
@@ -67,8 +73,8 @@ class Emojis:
     FILES = "📁"
     CALCULATOR = " "
     GREET = "󰙊 "
-    CMD_INFO = "󰋽 "
     REQUIREMENTS = " "
+    LOG = ""
 
     # ============================================================================
     # Math Operations
@@ -84,6 +90,8 @@ class Emojis:
     FILE_LIST = "📋"
     FILE_CREATE = "󰻭 "
     FILE_DELETE = "🗑️"
+    LINK = " "
+    UNLINK = "󰌸 "
 
     # ============================================================================
     # Languages/Flags

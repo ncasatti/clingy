@@ -8,6 +8,7 @@ from config import BIN_DIR
 
 from manager_core.commands.base import BaseCommand
 from manager_core.core.logger import log_error, log_header, log_info, log_success
+from manager_core.core.menu import MenuNode
 
 
 class CleanCommand(BaseCommand):
@@ -39,3 +40,6 @@ class CleanCommand(BaseCommand):
         except Exception as e:
             log_error(f"Error removing {BIN_DIR}: {e}")
             return False
+
+    def get_menu_tree(self) -> MenuNode:
+        return super().get_menu_tree()

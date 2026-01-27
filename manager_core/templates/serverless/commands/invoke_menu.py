@@ -1,13 +1,13 @@
 """Invoke menu - Local and Remote Lambda invocation with payload composer"""
 
-from argparse import Namespace
+from argparse import ArgumentParser, Namespace
 from typing import Optional
 
 from commands.core_commands.invoke import InvokeCommand
 from config import GO_FUNCTIONS
 
 from manager_core.commands.base import BaseCommand
-from manager_core.core.emojis import Emojis
+from manager_core.core.emojis import Emoji
 from manager_core.core.logger import log_info, log_section
 from manager_core.core.menu import MenuNode, fzf_select_items
 
@@ -24,15 +24,18 @@ class InvokeMenuCommand(BaseCommand):
         log_info("Use interactive menu to invoke functions")
         return True
 
+    def add_arguments(self, parser: ArgumentParser):
+        return super().add_arguments(parser)
+
     def get_menu_tree(self) -> Optional[MenuNode]:
         """Interactive menu for function invocation"""
         return MenuNode(
             label="Invoke Functions",
-            emoji=Emojis.PLAY,
+            emoji=Emoji.RUN,
             children=[
                 MenuNode(
                     label="Local Invocation",
-                    emoji=Emojis.COMPUTER,
+                    emoji=Emoji.COMPUTER,
                     children=[
                         MenuNode(
                             label="Select Function (Local)",
@@ -42,7 +45,7 @@ class InvokeMenuCommand(BaseCommand):
                 ),
                 MenuNode(
                     label="Remote Invocation (AWS)",
-                    emoji=Emojis.CLOUD,
+                    emoji=Emoji.CLOUD,
                     children=[
                         MenuNode(
                             label="Select Function (Remote)",
@@ -52,7 +55,7 @@ class InvokeMenuCommand(BaseCommand):
                 ),
                 MenuNode(
                     label="Payload Navigator",
-                    emoji=Emojis.DOCUMENT,
+                    emoji=Emoji.DOCUMENT,
                     children=[
                         MenuNode(
                             label="Browse Payloads",

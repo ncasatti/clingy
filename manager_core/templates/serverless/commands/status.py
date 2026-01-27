@@ -2,7 +2,7 @@
 
 import os
 import subprocess
-from argparse import Namespace
+from argparse import ArgumentParser, Namespace
 from typing import Optional
 
 from config import (
@@ -19,7 +19,7 @@ from config import (
 
 from manager_core.commands.base import BaseCommand
 from manager_core.core.colors import Colors
-from manager_core.core.emojis import Emojis
+from manager_core.core.emojis import Emoji
 from manager_core.core.logger import (
     log_error,
     log_header,
@@ -35,7 +35,9 @@ class StatusCommand(BaseCommand):
 
     name = "status"
     help = "Show functions status"
-    description = "Display Lambda functions status, build status, dependencies, and configuration"
+    description = (
+        "Display Lambda functions status, build status, dependencies, and configuration"
+    )
 
     def execute(self, args: Namespace) -> bool:
         """Execute status command"""
@@ -43,35 +45,38 @@ class StatusCommand(BaseCommand):
         self._show_all_status()
         return True
 
+    def add_arguments(self, parser: ArgumentParser):
+        return super().add_arguments(parser)
+
     def get_menu_tree(self) -> Optional[MenuNode]:
         """Interactive menu for status information"""
         return MenuNode(
             label="Status & Info",
-            emoji=Emojis.INFO,
+            emoji=Emoji.INFO,
             children=[
                 MenuNode(
                     label="List All Functions",
-                    emoji=Emojis.LIST,
+                    emoji=Emoji.LIST,
                     action=lambda: self._list_functions(),
                 ),
                 MenuNode(
                     label="Build Status",
-                    emoji=Emojis.HAMMER,
+                    emoji=Emoji.BUILD,
                     action=lambda: self._show_build_status(),
                 ),
                 MenuNode(
                     label="Check Dependencies",
-                    emoji=Emojis.PACKAGE,
+                    emoji=Emoji.PACKAGE,
                     action=lambda: self._check_dependencies(),
                 ),
                 MenuNode(
                     label="Show Configuration",
-                    emoji=Emojis.GEAR,
+                    emoji=Emoji.GEAR,
                     action=lambda: self._show_config(),
                 ),
                 MenuNode(
                     label="Show All Status",
-                    emoji=Emojis.INFO,
+                    emoji=Emoji.INFO,
                     action=lambda: self._show_all_status(),
                 ),
             ],
@@ -99,7 +104,9 @@ class StatusCommand(BaseCommand):
 
             log_info(f"{i:3d}. {status_icon} {build_icon} {func}")
 
-        log_info(f"\nLegend: ✅ Source exists | 📦 Built | ⚠️ Not built | ❌ Missing source")
+        log_info(
+            f"\nLegend: ✅ Source exists | 📦 Built | ⚠️ Not built | ❌ Missing source"
+        )
         return True
 
     def _show_build_status(self) -> bool:

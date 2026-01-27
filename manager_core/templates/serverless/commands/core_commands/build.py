@@ -19,6 +19,7 @@ from manager_core.core.logger import (
     log_warning,
     print_summary,
 )
+from manager_core.core.menu import MenuNode
 from manager_core.core.stats import stats
 
 
@@ -63,6 +64,9 @@ class BuildCommand(BaseCommand):
         print_summary()
 
         return success
+
+    def get_menu_tree(self) -> MenuNode:
+        return super().get_menu_tree()
 
     def _validate_function_exists(self, func_name: str) -> bool:
         """
@@ -146,7 +150,9 @@ class BuildCommand(BaseCommand):
                 else:
                     log_error(f"{func_name} → exit code {result.returncode}", duration)
                     if result.stderr:
-                        print(f"  {Colors.RED}Error: {result.stderr.strip()}{Colors.RESET}")
+                        print(
+                            f"  {Colors.RED}Error: {result.stderr.strip()}{Colors.RESET}"
+                        )
                     stats.add_failure(func_name)
                     overall_success = False
 

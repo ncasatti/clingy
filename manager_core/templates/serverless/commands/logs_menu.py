@@ -1,6 +1,6 @@
 """Logs menu - View, Tail, and Insights for Lambda logs"""
 
-from argparse import Namespace
+from argparse import ArgumentParser, Namespace
 from typing import Optional
 
 from commands.core_commands.insights import InsightsCommand
@@ -8,7 +8,7 @@ from commands.core_commands.logs import LogsCommand
 from config import GO_FUNCTIONS
 
 from manager_core.commands.base import BaseCommand
-from manager_core.core.emojis import Emojis
+from manager_core.core.emojis import Emoji
 from manager_core.core.logger import log_info, log_section
 from manager_core.core.menu import MenuNode, fzf_select_items
 
@@ -25,15 +25,18 @@ class LogsMenuCommand(BaseCommand):
         log_info("Use interactive menu to view logs")
         return True
 
+    def add_arguments(self, parser: ArgumentParser):
+        return super().add_arguments(parser)
+
     def get_menu_tree(self) -> Optional[MenuNode]:
         """Interactive menu for logs management"""
         return MenuNode(
             label="Logs & Monitoring",
-            emoji=Emojis.SEARCH,
+            emoji=Emoji.SEARCH,
             children=[
                 MenuNode(
                     label="View Recent Logs",
-                    emoji=Emojis.DOCUMENT,
+                    emoji=Emoji.DOCUMENT,
                     children=[
                         MenuNode(
                             label="Select Function",
@@ -43,7 +46,7 @@ class LogsMenuCommand(BaseCommand):
                 ),
                 MenuNode(
                     label="Tail Live Logs",
-                    emoji=Emojis.EYES,
+                    emoji=Emoji.LOG,
                     children=[
                         MenuNode(
                             label="Select Function",
@@ -53,7 +56,7 @@ class LogsMenuCommand(BaseCommand):
                 ),
                 MenuNode(
                     label="CloudWatch Insights",
-                    emoji=Emojis.CHART,
+                    emoji=Emoji.STATS,
                     children=[
                         MenuNode(
                             label="Run Insights Query",

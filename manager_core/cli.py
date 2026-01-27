@@ -16,6 +16,38 @@ from manager_core.core.colors import Colors
 from manager_core.core.logger import log_error, log_header, log_info
 
 
+def main():
+    """Main CLI entry point"""
+    # Create CLI context (detects project and discovers commands)
+    ctx = create_cli_context()
+
+    # Allow 'init' command to run even without a project
+    is_init_command = len(sys.argv) > 1 and sys.argv[1] == "init"
+
+    # If no project found and not running 'init', show error
+    if not ctx.has_project and not is_init_command:
+        log_error("No manager project found.")
+        log_info("Run 'manager init' to create a new project, or")
+        log_info("navigate to a directory with commands/ and config.py")
+        sys.exit(1)
+
+    # Allow 'requirements' command to run even if dependencies are missing
+    # (it's designed to diagnose dependency issues)
+    is_requirements_command = len(sys.argv) > 1 and sys.argv[1] == "requirements"
+
+    if not is_requirements_command:
+        # Check required dependencies first
+        if not check_required_dependencies():
+            sys.exit(1)
+
+    # If no arguments provided, enter interactive mode
+    if len(sys.argv) == 1:
+        return interactive_mode(ctx)
+
+    # Traditional CLI mode
+    return cli_mode(ctx)
+
+
 def check_required_dependencies() -> bool:
     """
     Check if all required dependencies are installed.
@@ -58,38 +90,6 @@ def check_required_dependencies() -> bool:
     return False
 
 
-def main():
-    """Main CLI entry point"""
-    # Create CLI context (detects project and discovers commands)
-    ctx = create_cli_context()
-
-    # Allow 'init' command to run even without a project
-    is_init_command = len(sys.argv) > 1 and sys.argv[1] == "init"
-
-    # If no project found and not running 'init', show error
-    if not ctx.has_project and not is_init_command:
-        log_error("No manager project found.")
-        log_info("Run 'manager init' to create a new project, or")
-        log_info("navigate to a directory with commands/ and config.py")
-        sys.exit(1)
-
-    # Allow 'requirements' command to run even if dependencies are missing
-    # (it's designed to diagnose dependency issues)
-    is_requirements_command = len(sys.argv) > 1 and sys.argv[1] == "requirements"
-
-    if not is_requirements_command:
-        # Check required dependencies first
-        if not check_required_dependencies():
-            sys.exit(1)
-
-    # If no arguments provided, enter interactive mode
-    if len(sys.argv) == 1:
-        return interactive_mode(ctx)
-
-    # Traditional CLI mode
-    return cli_mode(ctx)
-
-
 def cli_mode(ctx):
     """Traditional CLI mode"""
     # Use commands from context
@@ -106,10 +106,14 @@ def cli_mode(ctx):
     )
 
     # Global options
-    parser.add_argument("--no-color", action="store_true", help="Disable colored output")
+    parser.add_argument(
+        "--no-color", action="store_true", help="Disable colored output"
+    )
 
     # Create subparsers for commands
-    subparsers = parser.add_subparsers(dest="command", help="Available commands", required=True)
+    subparsers = parser.add_subparsers(
+        dest="command", help="Available commands", required=True
+    )
 
     # Register all discovered commands
     command_instances = {}
@@ -154,7 +158,7 @@ def cli_mode(ctx):
 
 def interactive_mode(ctx):
     """Global interactive mode"""
-    from manager_core.core.emojis import Emojis
+    from manager_core.core.emojis import Emoji
     from manager_core.core.menu import MenuNode, MenuRenderer
 
     log_header("CLI MANAGER - INTERACTIVE MODE")
@@ -174,12 +178,12 @@ def interactive_mode(ctx):
     menu_items.append(
         MenuNode(
             label="Exit",
-            emoji=Emojis.EXIT,
+            emoji=Emoji.EXIT,
             action=lambda: False,  # Return False to exit
         )
     )
 
-    root = MenuNode(label="Main Menu", emoji="🚀", children=menu_items)
+    root = MenuNode(label="Main Menu", emoji="", children=menu_items)
 
     renderer = MenuRenderer(root, header="Select a command")
 

@@ -15,7 +15,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
-from manager.config import FUNCTIONS_DIR
+from config import FUNCTIONS_DIR
 
 # ============================================================================
 # Predefined Query Templates

@@ -89,7 +89,13 @@ PAYLOAD_SHOW_MERGE_SOURCES = True
 #     "getUsers",
 #     "createUser",
 # ]
-GO_FUNCTIONS = []
+GO_FUNCTIONS = [
+    "status",
+    "getClients",
+    "getProducts",
+    "postOrders",
+    "processOrders",
+]
 
 
 # ============================================================================

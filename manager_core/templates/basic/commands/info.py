@@ -6,7 +6,7 @@ from argparse import ArgumentParser, Namespace
 
 from manager_core.commands.base import BaseCommand
 from manager_core.config import PROJECT_NAME, PROJECT_VERSION
-from manager_core.core.emojis import Emojis
+from manager_core.core.emojis import Emoji
 from manager_core.core.logger import log_info, log_section
 from manager_core.core.menu import MenuNode
 
@@ -20,7 +20,9 @@ class InfoCommand(BaseCommand):
 
     def add_arguments(self, parser: ArgumentParser):
         """Add command arguments"""
-        parser.add_argument("--verbose", action="store_true", help="Show verbose information")
+        parser.add_argument(
+            "--verbose", action="store_true", help="Show verbose information"
+        )
 
     def execute(self, args: Namespace) -> bool:
         """Display system information"""
@@ -45,6 +47,6 @@ class InfoCommand(BaseCommand):
         """Interactive menu for info command"""
         return MenuNode(
             label="System Information",
-            emoji=Emojis.CMD_INFO,
+            emoji=Emoji.CMD_INFO,
             action=lambda: self.execute(Namespace()),
         )

@@ -29,6 +29,7 @@ from core.status import (
 from mappings import CONFIGS
 
 from manager_core.commands.base import BaseCommand
+from manager_core.core.emojis import Emoji
 from manager_core.core.logger import (
     log_error,
     log_info,
@@ -84,26 +85,26 @@ class QuickActionsCommand(BaseCommand):
 
         return MenuNode(
             label="Quick Actions",
-            emoji="⚡",
+            emoji=Emoji.QUICK_ACTIONS,
             children=[
                 MenuNode(
                     label="Link All Configurations",
-                    emoji="🔗",
+                    emoji=Emoji.LINK,
                     action=lambda: self._link_all(konfig_root),
                 ),
                 MenuNode(
                     label="Unlink All Configurations",
-                    emoji="🔓",
+                    emoji=Emoji.UNLINK,
                     action=lambda: self._unlink_all(konfig_root),
                 ),
                 MenuNode(
                     label="Show Status Summary",
-                    emoji="📊",
+                    emoji=Emoji.STATS,
                     action=lambda: self._show_status_summary(konfig_root),
                 ),
                 MenuNode(
                     label="Verify Integrity",
-                    emoji="🔍",
+                    emoji=Emoji.SEARCH,
                     action=lambda: self._verify_integrity(konfig_root),
                 ),
             ],
@@ -147,7 +148,9 @@ class QuickActionsCommand(BaseCommand):
             # Remove wrong symlink
             if status == LinkStatus.WRONG_TARGET:
                 if not remove_link(target, needs_sudo):
-                    log_error(f"{config.get_display_name()}: Failed to remove wrong link")
+                    log_error(
+                        f"{config.get_display_name()}: Failed to remove wrong link"
+                    )
                     fail_count += 1
                     continue
 

@@ -8,6 +8,8 @@ import time
 from argparse import ArgumentParser, Namespace
 from typing import Dict, List, Optional
 
+from manager_core.core.menu import MenuNode
+
 try:
     import yaml
 
@@ -31,7 +33,8 @@ from core.payload_composer import ComposedPayload, PayloadComposer, PayloadError
 from core.payload_navigator import PayloadNavigator
 
 from manager_core.commands.base import BaseCommand
-from manager_core.core.colors import Colors, Emojis
+from manager_core.core.colors import Colors
+from manager_core.core.emojis import Emoji
 from manager_core.core.logger import (
     log_error,
     log_header,
@@ -46,9 +49,7 @@ class InvokeCommand(BaseCommand):
 
     name = "invoke"
     help = "Invoke Lambda functions locally or remotely"
-    description = (
-        "Test Lambda functions with optional payloads from function-specific payload directories"
-    )
+    description = "Test Lambda functions with optional payloads from function-specific payload directories"
     epilog = """Examples:
   manager.py invoke                    # Open interactive invoke menu
   manager.py invoke -f status          # Invoke specific function (opens submenu)
@@ -78,7 +79,9 @@ class InvokeCommand(BaseCommand):
             if "statusCode" in response:
                 status_code = response["statusCode"]
                 color = Colors.GREEN if 200 <= status_code < 300 else Colors.RED
-                print(f"{Colors.BOLD}Status Code:{Colors.RESET} {color}{status_code}{Colors.RESET}")
+                print(
+                    f"{Colors.BOLD}Status Code:{Colors.RESET} {color}{status_code}{Colors.RESET}"
+                )
                 yaml_data["statusCode"] = status_code
 
             # Print headers if present
@@ -155,7 +158,9 @@ class InvokeCommand(BaseCommand):
 
             # Get absolute path for display
             abs_path = os.path.abspath(output_file)
-            print(f"\n{Colors.CYAN}💾 Response saved to: {Colors.BOLD}{abs_path}{Colors.RESET}")
+            print(
+                f"\n{Colors.CYAN}💾 Response saved to: {Colors.BOLD}{abs_path}{Colors.RESET}"
+            )
 
         except Exception as e:
             log_warning(f"Could not save YAML file: {e}")
@@ -168,18 +173,24 @@ class InvokeCommand(BaseCommand):
             type=str,
             help="Specific function name to invoke (skips function selection menu)",
         )
-        parser.add_argument("-p", "--payload", type=str, help="Path to JSON payload file")
+        parser.add_argument(
+            "-p", "--payload", type=str, help="Path to JSON payload file"
+        )
         parser.add_argument(
             "--local", action="store_true", help="Invoke locally (default is remote)"
         )
-        parser.add_argument("--remote", action="store_true", help="Invoke remotely (explicit flag)")
+        parser.add_argument(
+            "--remote", action="store_true", help="Invoke remotely (explicit flag)"
+        )
 
     def execute(self, args: Namespace) -> bool:
         """Execute invoke command"""
         # If function and payload are specified, invoke directly
         if hasattr(args, "function") and args.function:
             if args.function not in GO_FUNCTIONS:
-                log_error(f"Function '{args.function}' not found in available functions")
+                log_error(
+                    f"Function '{args.function}' not found in available functions"
+                )
                 return False
 
             # Determine if local or remote
@@ -195,6 +206,9 @@ class InvokeCommand(BaseCommand):
 
         # Otherwise, show interactive menu
         return self._invoke_menu()
+
+    def get_menu_tree(self) -> MenuNode:
+        return super().get_menu_tree()
 
     def _select_function_with_fzf(self) -> Optional[str]:
         """
@@ -403,7 +417,9 @@ class InvokeCommand(BaseCommand):
                         with open(temp_path, "w") as f:
                             json.dump(payload_data, f, indent=2, ensure_ascii=False)
 
-                        log_info(f"Body converted from {type(body).__name__} to JSON string")
+                        log_info(
+                            f"Body converted from {type(body).__name__} to JSON string"
+                        )
                         return (temp_path, None)
 
                 # No modification needed, return original
@@ -483,7 +499,9 @@ class InvokeCommand(BaseCommand):
         if composed and composed.sources:
             print(f"{Colors.CYAN}Merged from:{Colors.RESET}")
             for i, source in enumerate(composed.sources, 1):
-                print(f"  {Colors.GREEN}{i}.{Colors.RESET} {source.relative_to(Path.cwd())}")
+                print(
+                    f"  {Colors.GREEN}{i}.{Colors.RESET} {source.relative_to(Path.cwd())}"
+                )
             print(f"{Colors.YELLOW}{'─' * 60}{Colors.RESET}")
 
         # Mostrar warnings si hay
@@ -563,7 +581,9 @@ class InvokeCommand(BaseCommand):
 
         try:
             # Execute command and capture output
-            result = subprocess.run(command, check=False, capture_output=True, text=True)
+            result = subprocess.run(
+                command, check=False, capture_output=True, text=True
+            )
 
             # Show stderr (logs, debug info) if present
             if result.stderr:
@@ -594,7 +614,9 @@ class InvokeCommand(BaseCommand):
             log_error(f"Error executing command: {e}")
             return False
 
-    def _invoke_remote(self, func_name: str, payload_path: Optional[str] = None) -> bool:
+    def _invoke_remote(
+        self, func_name: str, payload_path: Optional[str] = None
+    ) -> bool:
         """
         Invoke function remotely using configured method (serverless or aws-cli)
 
@@ -614,7 +636,9 @@ class InvokeCommand(BaseCommand):
             log_info("Valid options: 'serverless' or 'aws-cli'")
             return False
 
-    def _invoke_remote_serverless(self, func_name: str, payload_path: Optional[str] = None) -> bool:
+    def _invoke_remote_serverless(
+        self, func_name: str, payload_path: Optional[str] = None
+    ) -> bool:
         """
         Invoke remote function using Serverless Framework
 
@@ -651,7 +675,9 @@ class InvokeCommand(BaseCommand):
             self._preview_payload(payload_data, composed)
 
             command.extend(["--path", processed_payload_path])
-            log_info(f"Invoking {func_name} remotely (serverless) with payload: {payload_path}")
+            log_info(
+                f"Invoking {func_name} remotely (serverless) with payload: {payload_path}"
+            )
         else:
             log_info(f"Invoking {func_name} remotely (serverless) without payload")
 
@@ -660,7 +686,9 @@ class InvokeCommand(BaseCommand):
 
         try:
             # Execute command and capture output
-            result = subprocess.run(command, check=False, capture_output=True, text=True)
+            result = subprocess.run(
+                command, check=False, capture_output=True, text=True
+            )
 
             # Show stderr (logs, debug info) if present
             if result.stderr:
@@ -691,7 +719,9 @@ class InvokeCommand(BaseCommand):
             log_error(f"Error executing command: {e}")
             return False
 
-    def _invoke_remote_aws_cli(self, func_name: str, payload_path: Optional[str] = None) -> bool:
+    def _invoke_remote_aws_cli(
+        self, func_name: str, payload_path: Optional[str] = None
+    ) -> bool:
         """
         Invoke remote function using AWS CLI
 
@@ -734,7 +764,9 @@ class InvokeCommand(BaseCommand):
             self._preview_payload(payload_data, composed)
 
             command.extend(["--payload", f"file://{processed_payload_path}"])
-            log_info(f"Invoking {lambda_name} remotely (aws-cli) with payload: {payload_path}")
+            log_info(
+                f"Invoking {lambda_name} remotely (aws-cli) with payload: {payload_path}"
+            )
         else:
             log_info(f"Invoking {lambda_name} remotely (aws-cli) without payload")
 
@@ -742,7 +774,9 @@ class InvokeCommand(BaseCommand):
         print(f"{Colors.YELLOW}{'─' * 80}{Colors.RESET}\n")
 
         try:
-            result = subprocess.run(command, check=False, capture_output=True, text=True)
+            result = subprocess.run(
+                command, check=False, capture_output=True, text=True
+            )
 
             # Show response metadata
             if result.stdout:
@@ -792,19 +826,19 @@ class InvokeCommand(BaseCommand):
         options = []
         option_map = {}  # Map display text to option number
 
-        options.append(f"{Emojis.SERVER_MINUS}  Remote")
+        options.append(f"{Emoji.SERVER_MINUS}  Remote")
         option_map[options[-1]] = "1"
 
-        options.append(f"{Emojis.SERVER_PLUS}  Remote with payload")
+        options.append(f"{Emoji.SERVER_PLUS}  Remote with payload")
         option_map[options[-1]] = "2"
 
-        options.append(f"{Emojis.MONITOR}  Local")
+        options.append(f"{Emoji.MONITOR}  Local")
         option_map[options[-1]] = "3"
 
-        options.append(f"{Emojis.MONITOR_IN}  Local with payload")
+        options.append(f"{Emoji.MONITOR_IN}  Local with payload")
         option_map[options[-1]] = "4"
 
-        options.append(f"{Emojis.BACK}  Back to function selection")
+        options.append(f"{Emoji.BACK}  Back to function selection")
         option_map[options[-1]] = "0"
 
         # Create fzf input

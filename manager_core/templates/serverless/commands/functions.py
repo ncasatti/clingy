@@ -1,6 +1,6 @@
 """Functions menu - Build, Zip, Deploy, Clean Lambda functions"""
 
-from argparse import Namespace
+from argparse import ArgumentParser, Namespace
 from typing import Optional
 
 from commands.core_commands.build import BuildCommand
@@ -10,7 +10,7 @@ from commands.core_commands.zip import ZipCommand
 from config import GO_FUNCTIONS
 
 from manager_core.commands.base import BaseCommand
-from manager_core.core.emojis import Emojis
+from manager_core.core.emojis import Emoji
 from manager_core.core.logger import log_error, log_info, log_section, log_success
 from manager_core.core.menu import MenuNode, fzf_select_items
 
@@ -27,15 +27,18 @@ class FunctionsCommand(BaseCommand):
         log_info("Use interactive menu to manage functions")
         return True
 
+    def add_arguments(self, parser: ArgumentParser):
+        return super().add_arguments(parser)
+
     def get_menu_tree(self) -> Optional[MenuNode]:
         """Interactive menu for functions management"""
         return MenuNode(
             label="Functions",
-            emoji=Emojis.PACKAGE,
+            emoji=Emoji.LAMBDA,
             children=[
                 MenuNode(
                     label="Build Functions",
-                    emoji=Emojis.HAMMER,
+                    emoji=Emoji.GREET,
                     children=[
                         MenuNode(
                             label="Build All",
@@ -49,7 +52,7 @@ class FunctionsCommand(BaseCommand):
                 ),
                 MenuNode(
                     label="Zip Functions",
-                    emoji=Emojis.PACKAGE,
+                    emoji=Emoji.PACKAGE,
                     children=[
                         MenuNode(
                             label="Zip All",
@@ -63,7 +66,7 @@ class FunctionsCommand(BaseCommand):
                 ),
                 MenuNode(
                     label="Deploy Functions",
-                    emoji=Emojis.ROCKET,
+                    emoji=Emoji.ROCKET,
                     children=[
                         MenuNode(
                             label="Deploy All",
@@ -77,7 +80,7 @@ class FunctionsCommand(BaseCommand):
                 ),
                 MenuNode(
                     label="Full Pipeline (Build → Zip → Deploy)",
-                    emoji=Emojis.ROCKET,
+                    emoji=Emoji.ROCKET,
                     children=[
                         MenuNode(
                             label="Full Pipeline - All Functions",
@@ -91,7 +94,7 @@ class FunctionsCommand(BaseCommand):
                 ),
                 MenuNode(
                     label="Clean Build Artifacts",
-                    emoji=Emojis.TRASH,
+                    emoji=Emoji.TRASH,
                     children=[
                         MenuNode(
                             label="Clean All",

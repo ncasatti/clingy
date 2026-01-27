@@ -4,7 +4,7 @@ from argparse import ArgumentParser, Namespace
 from typing import Optional
 
 from manager_core.commands.base import BaseCommand
-from manager_core.core.emojis import Emojis
+from manager_core.core.emojis import Emoji
 from manager_core.core.logger import log_error, log_success
 from manager_core.core.menu import MenuNode, fzf_select
 
@@ -19,7 +19,9 @@ class CalculatorCommand(BaseCommand):
     def add_arguments(self, parser: ArgumentParser):
         """Add command arguments"""
         parser.add_argument("num1", type=float, nargs="?", help="First number")
-        parser.add_argument("operation", nargs="?", choices=["+", "-", "*", "/"], help="Operation")
+        parser.add_argument(
+            "operation", nargs="?", choices=["+", "-", "*", "/"], help="Operation"
+        )
         parser.add_argument("num2", type=float, nargs="?", help="Second number")
 
     def execute(self, args: Namespace) -> bool:
@@ -34,26 +36,26 @@ class CalculatorCommand(BaseCommand):
         """Interactive menu for calculator"""
         return MenuNode(
             label="Calculator",
-            emoji=Emojis.CALCULATOR,
+            emoji=Emoji.CALCULATOR,
             children=[
                 MenuNode(
                     label="Add",
-                    emoji=Emojis.ADD,
+                    emoji=Emoji.ADD,
                     action=lambda: self._calculate_interactive("+"),
                 ),
                 MenuNode(
                     label="Subtract",
-                    emoji=Emojis.SUBTRACT,
+                    emoji=Emoji.SUBTRACT,
                     action=lambda: self._calculate_interactive("-"),
                 ),
                 MenuNode(
                     label="Multiply",
-                    emoji=Emojis.MULTIPLY,
+                    emoji=Emoji.MULTIPLY,
                     action=lambda: self._calculate_interactive("*"),
                 ),
                 MenuNode(
                     label="Divide",
-                    emoji=Emojis.DIVIDE,
+                    emoji=Emoji.DIVIDE,
                     action=lambda: self._calculate_interactive("/"),
                 ),
             ],
