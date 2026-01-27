@@ -75,10 +75,21 @@ class InitCommand(BaseCommand):
             # Copy template files
             template_commands = template_dir / "commands"
             if template_commands.exists():
+                # Copy Python files in root
                 for file in template_commands.glob("*.py"):
                     dest = commands_dir / file.name
                     shutil.copy2(file, dest)
                     log_success(f"Created {dest.relative_to(current_dir)}")
+                
+                # Copy subdirectories (e.g., core_commands/)
+                for subdir in template_commands.iterdir():
+                    if subdir.is_dir() and not subdir.name.startswith("__"):
+                        dest_subdir = commands_dir / subdir.name
+                        if dest_subdir.exists() and args.force:
+                            shutil.rmtree(dest_subdir)
+                        if not dest_subdir.exists():
+                            shutil.copytree(subdir, dest_subdir)
+                            log_success(f"Created {dest_subdir.relative_to(current_dir)}/")
 
             # Copy config.py
             template_config = template_dir / "config.py"
@@ -87,6 +98,26 @@ class InitCommand(BaseCommand):
                     config_file.unlink()
                 shutil.copy2(template_config, config_file)
                 log_success(f"Created {config_file.relative_to(current_dir)}")
+
+            # Copy additional template files (*.md, mappings.py, etc.)
+            for pattern in ["*.md", "mappings.py"]:
+                for file in template_dir.glob(pattern):
+                    dest = current_dir / file.name
+                    if dest.exists() and args.force:
+                        dest.unlink()
+                    if not dest.exists():
+                        shutil.copy2(file, dest)
+                        log_success(f"Created {dest.relative_to(current_dir)}")
+
+            # Copy core directory if exists (for konfig template)
+            template_core = template_dir / "core"
+            if template_core.exists():
+                core_dir = current_dir / "core"
+                if core_dir.exists() and args.force:
+                    shutil.rmtree(core_dir)
+                if not core_dir.exists():
+                    shutil.copytree(template_core, core_dir)
+                    log_success(f"Created {core_dir.relative_to(current_dir)}/")
 
             log_success("Project initialized successfully!")
             log_info("")
