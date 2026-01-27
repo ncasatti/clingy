@@ -89,9 +89,7 @@ class InitCommand(BaseCommand):
                             shutil.rmtree(dest_subdir)
                         if not dest_subdir.exists():
                             shutil.copytree(subdir, dest_subdir)
-                            log_success(
-                                f"Created {dest_subdir.relative_to(current_dir)}/"
-                            )
+                            log_success(f"Created {dest_subdir.relative_to(current_dir)}/")
 
             # Copy config.py
             template_config = template_dir / "config.py"
@@ -156,6 +154,5 @@ class InitCommand(BaseCommand):
     def get_menu_tree(self) -> Optional[MenuNode]:
         """
         Init command is not available in interactive mode
-        (it only makes sense to run from CLI)
         """
         return None

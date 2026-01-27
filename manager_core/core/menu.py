@@ -175,7 +175,7 @@ class MenuRenderer:
             node_map[display] = child
 
         # Add "Back" option at the end if not at root
-        back_label = f"{Emoji.BACK}  Back"
+        back_label = f"{Emoji.EXIT} Back"
         if len(self.navigation_stack) > 1:
             options.append(back_label)
 

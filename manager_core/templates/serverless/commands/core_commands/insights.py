@@ -42,7 +42,9 @@ class InsightsCommand(BaseCommand):
 
     name = "insights"
     help = "Run CloudWatch Insights queries"
-    description = "Query and analyze CloudWatch logs using Insights queries with templates and custom queries"
+    description = (
+        "Query and analyze CloudWatch logs using Insights queries with templates and custom queries"
+    )
     epilog = """Examples:
   manager.py insights                    # Open interactive insights menu
   manager.py insights -f getArticulos    # Query specific function
@@ -64,9 +66,7 @@ class InsightsCommand(BaseCommand):
             if args.function in GO_FUNCTIONS:
                 return self._show_action_menu([args.function]) or True
             else:
-                log_error(
-                    f"Function '{args.function}' not found in available functions"
-                )
+                log_error(f"Function '{args.function}' not found in available functions")
                 return False
 
         # Otherwise, show interactive menu
@@ -89,9 +89,7 @@ class InsightsCommand(BaseCommand):
         log_header("CLOUDWATCH LOGS INSIGHTS - INTERACTIVE")
 
         while True:
-            print(
-                f"\n{Colors.BOLD}{Colors.CYAN}🔍 Select target for insights query{Colors.RESET}"
-            )
+            print(f"\n{Colors.BOLD}{Colors.CYAN}🔍 Select target for insights query{Colors.RESET}")
             print(f"{Colors.CYAN}Press ESC or Ctrl+C to exit{Colors.RESET}\n")
 
             # Select target (single, all, multi)
@@ -194,9 +192,7 @@ class InsightsCommand(BaseCommand):
             Action number or None if cancelled
         """
         func_display = (
-            ", ".join(functions)
-            if len(functions) <= 3
-            else f"{len(functions)} functions"
+            ", ".join(functions) if len(functions) <= 3 else f"{len(functions)} functions"
         )
 
         options = []
@@ -217,7 +213,7 @@ class InsightsCommand(BaseCommand):
         options.append(f"{Emoji.TRASH} Manage saved queries")
         action_map[options[-1]] = "5"
 
-        options.append(f"{Emoji.BACK}  Back")
+        options.append(f"{Emoji.EXIT} Back")
         action_map[options[-1]] = "0"
 
         selected = self._fzf_select(
@@ -235,9 +231,7 @@ class InsightsCommand(BaseCommand):
     def _run_predefined_template(self, functions: List[str]) -> bool:
         """Run a predefined template query"""
         # Select template
-        template_options = [
-            f"{template['name']}" for template in PREDEFINED_TEMPLATES.values()
-        ]
+        template_options = [f"{template['name']}" for template in PREDEFINED_TEMPLATES.values()]
 
         selected = self._fzf_select(
             template_options,
@@ -262,9 +256,7 @@ class InsightsCommand(BaseCommand):
             return False
 
         # Select time range
-        time_range = self._select_time_range_with_fzf(
-            default=template.get("time_range", "30m")
-        )
+        time_range = self._select_time_range_with_fzf(default=template.get("time_range", "30m"))
         if not time_range:
             return False
 
@@ -318,9 +310,7 @@ class InsightsCommand(BaseCommand):
             return False
 
         # Select time range (use query default)
-        time_range = self._select_time_range_with_fzf(
-            default=query_data.get("time_range", "30m")
-        )
+        time_range = self._select_time_range_with_fzf(default=query_data.get("time_range", "30m"))
         if not time_range:
             return False
 
@@ -360,9 +350,7 @@ class InsightsCommand(BaseCommand):
                 log_warning("Empty name, query not saved")
                 return False
 
-            description = input(
-                f"{Colors.BOLD}Description (optional): {Colors.RESET}"
-            ).strip()
+            description = input(f"{Colors.BOLD}Description (optional): {Colors.RESET}").strip()
 
             # Ask if global or function-specific
             save_location = self._select_save_location(functions)
@@ -413,7 +401,7 @@ class InsightsCommand(BaseCommand):
             display_items.append(display_text)
             query_map[display_text] = query_path
 
-        display_items.append(f"{Emoji.BACK} Back")
+        display_items.append(f"{Emoji.EXIT} Back")
 
         selected = self._fzf_select(
             display_items,
@@ -421,7 +409,7 @@ class InsightsCommand(BaseCommand):
             header="Saved queries (select to view/delete)",
         )
 
-        if not selected or Emoji.BACK in selected:
+        if not selected or Emoji.EXIT in selected:
             return False
 
         query_path = query_map[selected]
@@ -438,9 +426,7 @@ class InsightsCommand(BaseCommand):
             print(query_data["query"])
 
         confirm = (
-            input(f"\n{Colors.YELLOW}Delete this query? (y/N): {Colors.RESET}")
-            .strip()
-            .lower()
+            input(f"\n{Colors.YELLOW}Delete this query? (y/N): {Colors.RESET}").strip().lower()
         )
         if confirm == "y":
             if delete_query(query_path):
@@ -476,8 +462,7 @@ class InsightsCommand(BaseCommand):
 
             # Build log group names
             log_groups = [
-                f"/aws/lambda/{SERVICE_NAME}-{SERVERLESS_STAGE}-{func}"
-                for func in functions
+                f"/aws/lambda/{SERVICE_NAME}-{SERVERLESS_STAGE}-{func}" for func in functions
             ]
 
             log_info(f"Executing query: {query_name}")
@@ -569,9 +554,7 @@ class InsightsCommand(BaseCommand):
                 ]
             )
 
-            result = subprocess.run(
-                command, capture_output=True, text=True, check=False
-            )
+            result = subprocess.run(command, capture_output=True, text=True, check=False)
 
             if result.returncode == 0 and result.stdout.strip():
                 return result.stdout.strip()
@@ -611,9 +594,7 @@ class InsightsCommand(BaseCommand):
                     "json",
                 ]
 
-                result = subprocess.run(
-                    command, capture_output=True, text=True, check=False
-                )
+                result = subprocess.run(command, capture_output=True, text=True, check=False)
 
                 if result.returncode == 0:
                     data = json.loads(result.stdout)
@@ -627,9 +608,7 @@ class InsightsCommand(BaseCommand):
                         return None
                     else:
                         # Still running
-                        print(
-                            f"{Colors.YELLOW}⏳ Query running... ({elapsed}s){Colors.RESET}"
-                        )
+                        print(f"{Colors.YELLOW}⏳ Query running... ({elapsed}s){Colors.RESET}")
 
                 time.sleep(poll_interval)
                 elapsed += poll_interval
@@ -766,9 +745,7 @@ class InsightsCommand(BaseCommand):
             if header:
                 cmd.extend(["--header", header])
 
-            result = subprocess.run(
-                cmd, input=options_text, text=True, capture_output=True
-            )
+            result = subprocess.run(cmd, input=options_text, text=True, capture_output=True)
 
             if result.returncode == 0:
                 return result.stdout.strip()
@@ -815,9 +792,7 @@ class InsightsCommand(BaseCommand):
 
             if result.returncode == 0:
                 selected = [
-                    line.strip()
-                    for line in result.stdout.strip().split("\n")
-                    if line.strip()
+                    line.strip() for line in result.stdout.strip().split("\n") if line.strip()
                 ]
                 return selected if selected else None
 

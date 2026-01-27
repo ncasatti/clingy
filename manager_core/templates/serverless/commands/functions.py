@@ -38,7 +38,7 @@ class FunctionsCommand(BaseCommand):
             children=[
                 MenuNode(
                     label="Build Functions",
-                    emoji=Emoji.GREET,
+                    emoji=Emoji.BUILD,
                     children=[
                         MenuNode(
                             label="Build All",
@@ -52,7 +52,7 @@ class FunctionsCommand(BaseCommand):
                 ),
                 MenuNode(
                     label="Zip Functions",
-                    emoji=Emoji.PACKAGE,
+                    emoji=Emoji.ZIP,
                     children=[
                         MenuNode(
                             label="Zip All",
@@ -66,7 +66,7 @@ class FunctionsCommand(BaseCommand):
                 ),
                 MenuNode(
                     label="Deploy Functions",
-                    emoji=Emoji.ROCKET,
+                    emoji=Emoji.DEPLOY,
                     children=[
                         MenuNode(
                             label="Deploy All",
@@ -80,7 +80,7 @@ class FunctionsCommand(BaseCommand):
                 ),
                 MenuNode(
                     label="Full Pipeline (Build → Zip → Deploy)",
-                    emoji=Emoji.ROCKET,
+                    emoji=Emoji.ALL,
                     children=[
                         MenuNode(
                             label="Full Pipeline - All Functions",

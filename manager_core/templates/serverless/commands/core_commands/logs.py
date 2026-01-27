@@ -24,9 +24,7 @@ class LogsCommand(BaseCommand):
 
     name = "logs"
     help = "Interactive logs menu"
-    description = (
-        "View CloudWatch logs for Lambda functions with multiple viewing options"
-    )
+    description = "View CloudWatch logs for Lambda functions with multiple viewing options"
     epilog = """Examples:
   manager.py logs           # Open interactive logs menu
 """
@@ -47,9 +45,7 @@ class LogsCommand(BaseCommand):
             if args.function in GO_FUNCTIONS:
                 return self._show_logs_submenu(args.function) or True
             else:
-                log_error(
-                    f"Function '{args.function}' not found in available functions"
-                )
+                log_error(f"Function '{args.function}' not found in available functions")
                 return False
 
         # Otherwise, show interactive menu
@@ -93,9 +89,7 @@ class LogsCommand(BaseCommand):
         abs_path = os.path.abspath(log_file_path)
         print(f"\n{Colors.CYAN}💾 Logs saved to: {abs_path}{Colors.RESET}")
 
-    def _execute_logs_command(
-        self, func_name: str, option: str, query: str = None
-    ) -> bool:
+    def _execute_logs_command(self, func_name: str, option: str, query: str = None) -> bool:
         """
         Execute AWS CLI command to get logs based on selected option
 
@@ -143,9 +137,7 @@ class LogsCommand(BaseCommand):
         try:
             if capture_output:
                 # Capture output for saving to file
-                result = subprocess.run(
-                    command, check=False, capture_output=True, text=True
-                )
+                result = subprocess.run(command, check=False, capture_output=True, text=True)
 
                 # Display output
                 if result.stdout:
@@ -174,9 +166,7 @@ class LogsCommand(BaseCommand):
                 result = subprocess.run(command, check=False)
 
                 print(f"\n{Colors.YELLOW}{'─' * 80}{Colors.RESET}")
-                print(
-                    f"{Colors.YELLOW}Note: --follow mode output not saved to file{Colors.RESET}"
-                )
+                print(f"{Colors.YELLOW}Note: --follow mode output not saved to file{Colors.RESET}")
 
                 if result.returncode == 0:
                     log_success("Command executed successfully")
@@ -222,7 +212,7 @@ class LogsCommand(BaseCommand):
         options.append(f"{Emoji.SEARCH} Filter logs with custom query")
         option_map[options[-1]] = "4"
 
-        options.append(f"{Emoji.BACK}  Back to function selection")
+        options.append(f"{Emoji.EXIT} Back to function selection")
         option_map[options[-1]] = "0"
 
         # Create fzf input

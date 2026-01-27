@@ -36,7 +36,7 @@ class LogsMenuCommand(BaseCommand):
             children=[
                 MenuNode(
                     label="View Recent Logs",
-                    emoji=Emoji.DOCUMENT,
+                    emoji=Emoji.LOG,
                     children=[
                         MenuNode(
                             label="Select Function",
@@ -46,7 +46,7 @@ class LogsMenuCommand(BaseCommand):
                 ),
                 MenuNode(
                     label="Tail Live Logs",
-                    emoji=Emoji.LOG,
+                    emoji=Emoji.LOG_REALTIME,
                     children=[
                         MenuNode(
                             label="Select Function",
