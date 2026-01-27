@@ -8,7 +8,6 @@ Version 3.0 - Named tuple format (no type field, inline groups).
 
 from typing import NamedTuple, Optional
 
-
 # Metadata
 METADATA = {
     "version": "3.0",
@@ -31,6 +30,7 @@ class Config(NamedTuple):
         display_name: Human-readable name (optional)
         requires_sudo: Whether sudo is required (optional, auto-detected)
     """
+
     name: str
     source: str
     target: str
@@ -40,83 +40,141 @@ class Config(NamedTuple):
 
     def get_display_name(self):
         """Get display name with fallback to formatted name"""
-        return self.display_name or self.name.replace('-', ' ').replace('_', ' ').title()
+        return self.display_name or self.name.replace("-", " ").replace("_", " ").title()
 
 
 # All configurations in simple list format
 CONFIGS = [
     # Hyprland ecosystem - Window manager and related components
-    Config('hyprland', 'hypr', '~/.config/hypr', 'hyprland', 'Hyprland'),
-    Config('swaync', 'swaync', '~/.config/swaync', 'hyprland', 'Swaync'),
-    Config('hyprshade', 'hyprshade', '/usr/share/hyprshade', 'hyprland', 'Hyprshade', requires_sudo=True),
-    Config('waybar', 'waybar', '~/.config/waybar', 'hyprland', 'Waybar'),
-    Config('rofi', 'rofi', '~/.config/rofi', 'hyprland', 'Rofi'),
-    Config('wallust', 'wallust', '~/.config/wallust', 'hyprland', 'Wallust'),
-    Config('kitty', 'kitty', '~/.config/kitty', 'hyprland', 'Kitty'),
-
+    Config("hyprland", "hypr", "~/.config/hypr", "hyprland", "Hyprland"),
+    Config("swaync", "swaync", "~/.config/swaync", "hyprland", "Swaync"),
+    Config(
+        "hyprshade",
+        "hyprshade",
+        "/usr/share/hyprshade",
+        "hyprland",
+        "Hyprshade",
+        requires_sudo=True,
+    ),
+    Config("waybar", "waybar", "~/.config/waybar", "hyprland", "Waybar"),
+    Config("rofi", "rofi", "~/.config/rofi", "hyprland", "Rofi"),
+    Config("wallust", "wallust", "~/.config/wallust", "hyprland", "Wallust"),
+    Config("kitty", "kitty", "~/.config/kitty", "hyprland", "Kitty"),
     # System themes - GTK, fonts, icons, wallpapers
-    Config('icons', 'themes/icons', '~/.icons', 'themes', 'Icons'),
-    Config('fonts', 'themes/fonts', '~/.local/share/fonts', 'themes', 'Fonts'),
-    Config('gtk-2.0', 'themes/gtk-2.0', '~/.config/gtk-2.0', 'themes', 'GTK 2.0'),
-    Config('gtk-3.0', 'themes/gtk-3.0', '~/.config/gtk-3.0', 'themes', 'GTK 3.0'),
-    Config('gtk-4.0', 'themes/gtk-4.0', '~/.config/gtk-4.0', 'themes', 'GTK 4.0'),
-    Config('kvantum', 'themes/kvantum', '~/.config/Kvantum', 'themes', 'Kvantum'),
-    Config('themes', 'themes/themes', '~/.themes', 'themes', 'Themes'),
+    Config("icons", "themes/icons", "~/.icons", "themes", "Icons"),
+    Config("fonts", "themes/fonts", "~/.local/share/fonts", "themes", "Fonts"),
+    Config("gtk-2.0", "themes/gtk-2.0", "~/.config/gtk-2.0", "themes", "GTK 2.0"),
+    Config("gtk-3.0", "themes/gtk-3.0", "~/.config/gtk-3.0", "themes", "GTK 3.0"),
+    Config("gtk-4.0", "themes/gtk-4.0", "~/.config/gtk-4.0", "themes", "GTK 4.0"),
+    Config("kvantum", "themes/kvantum", "~/.config/Kvantum", "themes", "Kvantum"),
+    Config("themes", "themes/themes", "~/.themes", "themes", "Themes"),
     # Config('wallpapers', 'themes/wallpapers', '~/Pictures/wallpapers', 'themes', 'Wallpapers'),
-
     # System configurations requiring sudo
-    Config('keyd', 'keyd', '/etc/keyd', 'sudo', 'Keyd', requires_sudo=True),
-
+    Config("keyd", "keyd", "/etc/keyd", "sudo", "Keyd", requires_sudo=True),
     # Core system configurations
-    Config('rclone', 'rclone', '~/.config/rclone', 'main', 'Rclone'),
-    Config('gitconfig', '.gitconfig', '~/.gitconfig', 'main', 'Git Config'),
-    Config('git-credentials', '.git-credentials', '~/.git-credentials', 'main', 'Git Credentials'),
-    Config('aws', 'aws', '~/.aws', 'main', 'AWS'),
-
+    Config("rclone", "rclone", "~/.config/rclone", "main", "Rclone"),
+    Config("gitconfig", ".gitconfig", "~/.gitconfig", "main", "Git Config"),
+    Config("git-credentials", ".git-credentials", "~/.git-credentials", "main", "Git Credentials"),
+    Config("aws", "aws", "~/.aws", "main", "AWS"),
     # Shell configurations
-    Config('zsh', '.zshrc', '~/.zshrc', 'shell', 'Zsh'),
-    Config('zsh-custom', 'zsh/custom', '~/.oh-my-zsh/custom', 'shell', 'Zsh Custom Folder'),
-    Config('p10k', '.p10k.zsh', '~/.p10k.zsh', 'shell', 'P10K'),
-    Config('nvim', 'nvim', '~/.config/nvim', 'shell', 'Nvim'),
-    Config('fish-shell', 'fish', '~/.config/fish', 'shell'),
-    Config('starship', 'starship/starship.toml', '~/.config/starship.toml', 'shell', 'Starship'),
-    Config('lazygit', 'lazygit', '~/.config/lazygit', 'shell', 'Lazygit'),
-    Config('opencode', 'opencode/opencode.json', '~/.config/opencode/opencode.json', 'agents', 'OpenCode'),
-    Config('opencode agents', 'opencode/agent', '~/.config/opencode/agent', 'agents', 'OpenCode Agents'),
-    Config('opencode skill', 'opencode/skill', '~/.config/opencode/skill', 'agents', 'OpenCode Skills'),
-    Config('opencode themes', 'opencode/themes', '~/.config/opencode/themes', 'agents', 'OpenCode Themes'),
-    Config('claude', 'claude/CLAUDE.md', '~/.claude/CLAUDE.md', 'agents', 'Claude Main Agent'),
-    Config('claude agents', 'claude/agents', '~/.claude/agents', 'agents', 'Claude Agents'),
-    Config('claude skill', 'claude/skills', '~/.claude/skills', 'agents', 'Claude Skills'),
-
+    Config("zsh", ".zshrc", "~/.zshrc", "shell", "Zsh"),
+    Config("zsh-custom", "zsh/custom", "~/.oh-my-zsh/custom", "shell", "Zsh Custom Folder"),
+    Config("p10k", ".p10k.zsh", "~/.p10k.zsh", "shell", "P10K"),
+    Config("nvim", "nvim", "~/.config/nvim", "shell", "Nvim"),
+    Config("fish-shell", "fish", "~/.config/fish", "shell"),
+    Config("starship", "starship/starship.toml", "~/.config/starship.toml", "shell", "Starship"),
+    Config("lazygit", "lazygit", "~/.config/lazygit", "shell", "Lazygit"),
+    Config(
+        "opencode",
+        "opencode/opencode.json",
+        "~/.config/opencode/opencode.json",
+        "agents",
+        "OpenCode",
+    ),
+    Config(
+        "opencode agents", "opencode/agent", "~/.config/opencode/agent", "agents", "OpenCode Agents"
+    ),
+    Config(
+        "opencode skill", "opencode/skill", "~/.config/opencode/skill", "agents", "OpenCode Skills"
+    ),
+    Config(
+        "opencode themes",
+        "opencode/themes",
+        "~/.config/opencode/themes",
+        "agents",
+        "OpenCode Themes",
+    ),
+    Config("claude", "claude/CLAUDE.md", "~/.claude/CLAUDE.md", "agents", "Claude Main Agent"),
+    Config("claude agents", "claude/agents", "~/.claude/agents", "agents", "Claude Agents"),
+    Config("claude skill", "claude/skills", "~/.claude/skills", "agents", "Claude Skills"),
     # Terminal multiplexer
-    Config('tmux-config', 'tmux/tmux.conf', '~/.tmux.conf', 'tmux', 'Tmux'),
-    Config('tmux-plugins', 'tmux/tmux', '~/.tmux', 'tmux', 'Tmux Plugins'),
-
+    Config("tmux-config", "tmux/tmux.conf", "~/.tmux.conf", "tmux", "Tmux"),
+    Config("tmux-plugins", "tmux/tmux", "~/.tmux", "tmux", "Tmux Plugins"),
     # Editor configurations
-    Config('windsurf-keybindings', 'code/keybindings.json', '~/.config/Windsurf/User/keybindings.json', 'code', 'Windsurf Keybindings'),
-    Config('windsurf-settings', 'code/settings.json', '~/.config/Windsurf/User/settings.json', 'code', 'Windsurf Settings'),
-    Config('vscode-keybindings', 'code/keybindings.json', '~/.config/Code/User/keybindings.json', 'code', 'VSCode Keybindings'),
-    Config('vscode-settings', 'code/settings.json', '~/.config/Code/User/settings.json', 'code', 'VSCode Settings'),
-    Config('antigravity-keybindings', 'code/keybindings.json', '~/.config/Antigravity/User/keybindings.json', 'code', 'Google Antigravity Keybindings'),
-    Config('antigravity-settings', 'code/settings.json', '~/.config/Antigravity/User/settings.json', 'code', 'Google Antigravity Settings'),
-
+    Config(
+        "windsurf-keybindings",
+        "code/keybindings.json",
+        "~/.config/Windsurf/User/keybindings.json",
+        "code",
+        "Windsurf Keybindings",
+    ),
+    Config(
+        "windsurf-settings",
+        "code/settings.json",
+        "~/.config/Windsurf/User/settings.json",
+        "code",
+        "Windsurf Settings",
+    ),
+    Config(
+        "vscode-keybindings",
+        "code/keybindings.json",
+        "~/.config/Code/User/keybindings.json",
+        "code",
+        "VSCode Keybindings",
+    ),
+    Config(
+        "vscode-settings",
+        "code/settings.json",
+        "~/.config/Code/User/settings.json",
+        "code",
+        "VSCode Settings",
+    ),
+    Config(
+        "antigravity-keybindings",
+        "code/keybindings.json",
+        "~/.config/Antigravity/User/keybindings.json",
+        "code",
+        "Google Antigravity Keybindings",
+    ),
+    Config(
+        "antigravity-settings",
+        "code/settings.json",
+        "~/.config/Antigravity/User/settings.json",
+        "code",
+        "Google Antigravity Settings",
+    ),
     # Other development tools
-    Config('idea-vim', '.ideavimrc', '~/.ideavimrc', 'others', 'IDEA Vim'),
-    Config('obsidian-vim', '.obsidian.vimrc', '~/Documents/Zettelkasten/.obsidian.vimrc', 'others', 'Obsidian Vim'),
+    Config("idea-vim", ".ideavimrc", "~/.ideavimrc", "others", "IDEA Vim"),
+    Config(
+        "obsidian-vim",
+        ".obsidian.vimrc",
+        "~/Documents/Zettelkasten/.obsidian.vimrc",
+        "others",
+        "Obsidian Vim",
+    ),
 ]
 
 
 # Group descriptions (optional - for CLI help text)
 GROUP_DESCRIPTIONS = {
-    'sudo': 'Configurations requiring sudo privileges',
-    'main': 'Core system configurations',
-    'hyprland': 'Hyprland window manager and related components',
-    'themes': 'System theming configurations',
-    'shell': 'Shell and terminal configurations',
-    'code': 'VSCode based editors configurations',
-    'tmux': 'Tmux terminal multiplexer',
-    'others': 'Other development tools',
+    "sudo": "Configurations requiring sudo privileges",
+    "main": "Core system configurations",
+    "hyprland": "Hyprland window manager and related components",
+    "themes": "System theming configurations",
+    "shell": "Shell and terminal configurations",
+    "code": "VSCode based editors configurations",
+    "tmux": "Tmux terminal multiplexer",
+    "others": "Other development tools",
 }
 
 
@@ -148,12 +206,8 @@ def get_config_data():
         if config.group not in groups:
             groups[config.group] = {
                 "description": GROUP_DESCRIPTIONS.get(config.group, ""),
-                "configurations": []
+                "configurations": [],
             }
         groups[config.group]["configurations"].append(config.name)
 
-    return {
-        "metadata": METADATA,
-        "configurations": configurations,
-        "groups": groups
-    }
+    return {"metadata": METADATA, "configurations": configurations, "groups": groups}

@@ -127,7 +127,7 @@ class InvokeMenuCommand(BaseCommand):
         """Browse and compose payloads"""
         log_section("PAYLOAD NAVIGATOR")
         log_info("Payload navigator will be launched in interactive mode")
-        
+
         # The InvokeCommand has built-in payload navigation
         # When no payload is specified, it will show the PayloadNavigator
         invoke_cmd = InvokeCommand()

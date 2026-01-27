@@ -7,7 +7,6 @@ Project-specific configuration should be in the project's config.py.
 
 from manager_core.core.dependency import Dependency
 
-
 # ============================================================================
 # Framework Metadata
 # ============================================================================

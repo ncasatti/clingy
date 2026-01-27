@@ -10,18 +10,20 @@ from manager_core.core.menu import MenuNode
 def _get_items() -> List[str]:
     """
     Get ITEMS list dynamically from project config or framework config
-    
+
     Returns:
         List of items from project config, or empty list if not defined
     """
     try:
         # Try to import from project config first
         from config import ITEMS
+
         return ITEMS
     except ImportError:
         # Fall back to framework config
         try:
             from manager_core.config import ITEMS
+
             return ITEMS
         except ImportError:
             return []
@@ -109,7 +111,7 @@ class BaseCommand(ABC):
             List of valid item names (empty list if item doesn't exist)
         """
         items = _get_items()
-        
+
         if item_filter is None:
             return items
 

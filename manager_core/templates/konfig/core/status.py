@@ -4,6 +4,7 @@ Status Checking and Summaries
 
 Functions for checking configuration status and generating summaries.
 """
+
 import os
 from pathlib import Path
 from typing import Dict, List, Tuple
@@ -15,10 +16,10 @@ from core.link_core import LinkStatus, get_link_status, requires_sudo
 def expand_path(path: str) -> Path:
     """
     Expand path with ~ and environment variables.
-    
+
     Args:
         path: Path string (may contain ~ or $VAR)
-        
+
     Returns:
         Expanded Path object
     """
@@ -28,27 +29,27 @@ def expand_path(path: str) -> Path:
 def get_config_status(config: Config, konfig_root: Path) -> Tuple[LinkStatus, str]:
     """
     Get status of a single configuration.
-    
+
     Args:
         config: Configuration object
         konfig_root: Root path of konfig repository
-        
+
     Returns:
         Tuple of (LinkStatus, description)
     """
     source = konfig_root / config.source
     target = expand_path(config.target)
-    
+
     return get_link_status(target, source)
 
 
 def get_all_statuses(konfig_root: Path) -> Dict[str, Tuple[LinkStatus, str]]:
     """
     Get status of all configurations.
-    
+
     Args:
         konfig_root: Root path of konfig repository
-        
+
     Returns:
         Dict mapping config name to (LinkStatus, description)
     """
@@ -61,11 +62,11 @@ def get_all_statuses(konfig_root: Path) -> Dict[str, Tuple[LinkStatus, str]]:
 def get_group_statuses(group: str, konfig_root: Path) -> Dict[str, Tuple[LinkStatus, str]]:
     """
     Get status of all configurations in a group.
-    
+
     Args:
         group: Group name
         konfig_root: Root path of konfig repository
-        
+
     Returns:
         Dict mapping config name to (LinkStatus, description)
     """
@@ -79,10 +80,10 @@ def get_group_statuses(group: str, konfig_root: Path) -> Dict[str, Tuple[LinkSta
 def get_status_summary(konfig_root: Path) -> Dict[str, int]:
     """
     Get summary counts of all statuses.
-    
+
     Args:
         konfig_root: Root path of konfig repository
-        
+
     Returns:
         Dict with counts: {
             'total': int,
@@ -94,95 +95,95 @@ def get_status_summary(konfig_root: Path) -> Dict[str, int]:
         }
     """
     statuses = get_all_statuses(konfig_root)
-    
+
     summary = {
-        'total': len(statuses),
-        'linked': 0,
-        'not_linked': 0,
-        'conflicts': 0,
-        'wrong_target': 0,
-        'missing_source': 0
+        "total": len(statuses),
+        "linked": 0,
+        "not_linked": 0,
+        "conflicts": 0,
+        "wrong_target": 0,
+        "missing_source": 0,
     }
-    
+
     for status, _ in statuses.values():
         if status == LinkStatus.LINKED:
-            summary['linked'] += 1
+            summary["linked"] += 1
         elif status == LinkStatus.NOT_LINKED:
-            summary['not_linked'] += 1
+            summary["not_linked"] += 1
         elif status == LinkStatus.CONFLICT:
-            summary['conflicts'] += 1
+            summary["conflicts"] += 1
         elif status == LinkStatus.WRONG_TARGET:
-            summary['wrong_target'] += 1
+            summary["wrong_target"] += 1
         elif status == LinkStatus.MISSING_SOURCE:
-            summary['missing_source'] += 1
-    
+            summary["missing_source"] += 1
+
     return summary
 
 
 def get_group_summary(group: str, konfig_root: Path) -> Dict[str, int]:
     """
     Get summary counts for a specific group.
-    
+
     Args:
         group: Group name
         konfig_root: Root path of konfig repository
-        
+
     Returns:
         Dict with counts (same format as get_status_summary)
     """
     statuses = get_group_statuses(group, konfig_root)
-    
+
     summary = {
-        'total': len(statuses),
-        'linked': 0,
-        'not_linked': 0,
-        'conflicts': 0,
-        'wrong_target': 0,
-        'missing_source': 0
+        "total": len(statuses),
+        "linked": 0,
+        "not_linked": 0,
+        "conflicts": 0,
+        "wrong_target": 0,
+        "missing_source": 0,
     }
-    
+
     for status, _ in statuses.values():
         if status == LinkStatus.LINKED:
-            summary['linked'] += 1
+            summary["linked"] += 1
         elif status == LinkStatus.NOT_LINKED:
-            summary['not_linked'] += 1
+            summary["not_linked"] += 1
         elif status == LinkStatus.CONFLICT:
-            summary['conflicts'] += 1
+            summary["conflicts"] += 1
         elif status == LinkStatus.WRONG_TARGET:
-            summary['wrong_target'] += 1
+            summary["wrong_target"] += 1
         elif status == LinkStatus.MISSING_SOURCE:
-            summary['missing_source'] += 1
-    
+            summary["missing_source"] += 1
+
     return summary
 
 
 def get_problems(konfig_root: Path) -> List[Tuple[Config, LinkStatus, str]]:
     """
     Get list of configurations with problems (not linked correctly).
-    
+
     Args:
         konfig_root: Root path of konfig repository
-        
+
     Returns:
         List of tuples: (Config, LinkStatus, description)
     """
     problems = []
-    
+
     for config in CONFIGS:
         status, desc = get_config_status(config, konfig_root)
         if status != LinkStatus.LINKED:
             problems.append((config, status, desc))
-    
+
     return problems
 
 
 def get_status_icon(status: LinkStatus) -> str:
     """
     Get emoji icon for status.
-    
+
     Args:
         status: LinkStatus enum
-        
+
     Returns:
         Emoji string
     """
@@ -191,7 +192,7 @@ def get_status_icon(status: LinkStatus) -> str:
         LinkStatus.NOT_LINKED: "✗",
         LinkStatus.CONFLICT: "⚠",
         LinkStatus.WRONG_TARGET: "⚠",
-        LinkStatus.MISSING_SOURCE: "⚠"
+        LinkStatus.MISSING_SOURCE: "⚠",
     }
     return icons.get(status, "?")
 
@@ -199,7 +200,7 @@ def get_status_icon(status: LinkStatus) -> str:
 def get_all_groups() -> List[str]:
     """
     Get list of all unique groups.
-    
+
     Returns:
         List of group names
     """
@@ -212,10 +213,10 @@ def get_all_groups() -> List[str]:
 def get_configs_by_group(group: str) -> List[Config]:
     """
     Get all configurations in a group.
-    
+
     Args:
         group: Group name
-        
+
     Returns:
         List of Config objects
     """
@@ -225,10 +226,10 @@ def get_configs_by_group(group: str) -> List[Config]:
 def get_group_description(group: str) -> str:
     """
     Get description for a group.
-    
+
     Args:
         group: Group name
-        
+
     Returns:
         Description string
     """

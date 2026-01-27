@@ -240,12 +240,8 @@ def save_results_yaml(
                 f.write(f"  query_name: {query_name}\n")
                 f.write(f"  function: {func_name}\n")
                 f.write(f"  executed_at: {datetime.now().isoformat()}\n")
-                f.write(
-                    f"  records_matched: {int(statistics.get('recordsMatched', 0))}\n"
-                )
-                f.write(
-                    f"  records_scanned: {int(statistics.get('recordsScanned', 0))}\n"
-                )
+                f.write(f"  records_matched: {int(statistics.get('recordsMatched', 0))}\n")
+                f.write(f"  records_scanned: {int(statistics.get('recordsScanned', 0))}\n")
                 f.write(f"  bytes_scanned: {statistics.get('bytesScanned', 0)}\n\n")
                 f.write("results:\n")
                 for row in clean_results:
@@ -293,9 +289,7 @@ def save_results_csv(results: List[List[Dict]], func_name: str) -> Optional[Path
 
             # Rows
             for row in results:
-                values = [
-                    item["value"].replace(",", ";") for item in row
-                ]  # Escape commas
+                values = [item["value"].replace(",", ";") for item in row]  # Escape commas
                 f.write(",".join(values) + "\n")
 
         return output_file.resolve()

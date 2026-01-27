@@ -4,6 +4,7 @@ Browse Configurations Command
 
 Interactive navigation through configuration groups with fzf.
 """
+
 import os
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
@@ -21,7 +22,7 @@ from core.status import (
     get_config_status,
     get_configs_by_group,
     get_group_description,
-    get_status_icon
+    get_status_icon,
 )
 from core.link_core import (
     LinkStatus,
@@ -29,105 +30,98 @@ from core.link_core import (
     create_backup,
     create_link,
     remove_link,
-    requires_sudo
+    requires_sudo,
 )
 
 
 class BrowseCommand(BaseCommand):
     """Browse and manage configurations by group"""
-    
+
     name = "browse"
     help = "Browse configurations by group"
     description = "Interactive navigation through configuration groups with status display"
-    
+
     def add_arguments(self, parser: ArgumentParser):
         """Add command-specific arguments"""
-        parser.add_argument(
-            '--group',
-            help='Specific group to browse',
-            choices=get_all_groups()
-        )
-    
+        parser.add_argument("--group", help="Specific group to browse", choices=get_all_groups())
+
     def execute(self, args: Namespace) -> bool:
         """Execute browse command (CLI mode)"""
         # In CLI mode, just show the menu
         return True
-    
+
     def get_menu_tree(self) -> Optional[MenuNode]:
         """Build interactive menu tree"""
         konfig_root = expand_path(KONFIG_PATH)
-        
+
         if not konfig_root.exists():
             log_error(f"Konfig path not found: {konfig_root}")
             log_info("Edit config.py and set KONFIG_PATH to your dotfiles repository")
             return None
-        
+
         # Build group menus
         group_nodes = []
         for group in get_all_groups():
             group_desc = get_group_description(group)
             configs = get_configs_by_group(group)
-            
+
             # Build config items for this group
             config_nodes = []
             for config in configs:
                 status, desc = get_config_status(config, konfig_root)
                 icon = get_status_icon(status)
-                
+
                 # Create submenu for each config
-                config_nodes.append(MenuNode(
-                    label=f"{icon} {config.get_display_name()}",
-                    children=[
-                        MenuNode(
-                            label=f"Status: {desc}",
-                            action=lambda c=config: self._show_config_info(c, konfig_root)
-                        ),
-                        MenuNode(
-                            label="Link",
-                            action=lambda c=config: self._link_config(c, konfig_root)
-                        ),
-                        MenuNode(
-                            label="Unlink",
-                            action=lambda c=config: self._unlink_config(c, konfig_root)
-                        ),
-                    ]
-                ))
-            
+                config_nodes.append(
+                    MenuNode(
+                        label=f"{icon} {config.get_display_name()}",
+                        children=[
+                            MenuNode(
+                                label=f"Status: {desc}",
+                                action=lambda c=config: self._show_config_info(c, konfig_root),
+                            ),
+                            MenuNode(
+                                label="Link",
+                                action=lambda c=config: self._link_config(c, konfig_root),
+                            ),
+                            MenuNode(
+                                label="Unlink",
+                                action=lambda c=config: self._unlink_config(c, konfig_root),
+                            ),
+                        ],
+                    )
+                )
+
             # Add group-level actions
-            config_nodes.extend([
-                MenuNode(label="───────────────"),  # Separator
-                MenuNode(
-                    label="Link All in Group",
-                    action=lambda g=group: self._link_group(g, konfig_root)
-                ),
-                MenuNode(
-                    label="Unlink All in Group",
-                    action=lambda g=group: self._unlink_group(g, konfig_root)
-                ),
-            ])
-            
+            config_nodes.extend(
+                [
+                    MenuNode(label="───────────────"),  # Separator
+                    MenuNode(
+                        label="Link All in Group",
+                        action=lambda g=group: self._link_group(g, konfig_root),
+                    ),
+                    MenuNode(
+                        label="Unlink All in Group",
+                        action=lambda g=group: self._unlink_group(g, konfig_root),
+                    ),
+                ]
+            )
+
             # Create group node
             group_label = f"📁 {group.title()}"
             if group_desc:
                 group_label += f" - {group_desc}"
-            
-            group_nodes.append(MenuNode(
-                label=group_label,
-                children=config_nodes
-            ))
-        
-        return MenuNode(
-            label="Browse Configurations",
-            emoji="🔍",
-            children=group_nodes
-        )
-    
+
+            group_nodes.append(MenuNode(label=group_label, children=config_nodes))
+
+        return MenuNode(label="Browse Configurations", emoji="🔍", children=group_nodes)
+
     def _show_config_info(self, config, konfig_root: Path) -> bool:
         """Show detailed info about a configuration"""
         source = konfig_root / config.source
         target = expand_path(config.target)
         status, desc = get_config_status(config, konfig_root)
-        
+
         log_info(f"Configuration: {config.get_display_name()}")
         log_info(f"  Name: {config.name}")
         log_info(f"  Group: {config.group}")
@@ -135,22 +129,22 @@ class BrowseCommand(BaseCommand):
         log_info(f"  Target: {target}")
         log_info(f"  Status: {desc}")
         log_info(f"  Requires sudo: {requires_sudo(target)}")
-        
+
         return True
-    
+
     def _link_config(self, config, konfig_root: Path) -> bool:
         """Link a single configuration"""
         source = konfig_root / config.source
         target = expand_path(config.target)
         needs_sudo = requires_sudo(target)
-        
+
         # Check current status
         status, desc = get_config_status(config, konfig_root)
-        
+
         if status == LinkStatus.LINKED:
             log_success(f"{config.get_display_name()}: Already correctly linked")
             return True
-        
+
         # Auto-copy if source missing
         if status == LinkStatus.MISSING_SOURCE:
             log_info(f"{config.get_display_name()}: Auto-copying from system...")
@@ -158,21 +152,21 @@ class BrowseCommand(BaseCommand):
                 log_error(f"{config.get_display_name()}: Failed to copy from system")
                 return False
             log_success(f"{config.get_display_name()}: Copied from system")
-        
+
         # Handle conflicts
         if status == LinkStatus.CONFLICT:
             log_warning(f"{config.get_display_name()}: File exists, creating backup...")
             if not create_backup(target, needs_sudo):
                 log_error(f"{config.get_display_name()}: Failed to create backup")
                 return False
-        
+
         # Remove wrong symlink
         if status == LinkStatus.WRONG_TARGET:
             log_info(f"{config.get_display_name()}: Removing wrong symlink...")
             if not remove_link(target, needs_sudo):
                 log_error(f"{config.get_display_name()}: Failed to remove wrong symlink")
                 return False
-        
+
         # Create link
         if create_link(source, target, needs_sudo):
             log_success(f"{config.get_display_name()}: Linked successfully")
@@ -180,23 +174,23 @@ class BrowseCommand(BaseCommand):
         else:
             log_error(f"{config.get_display_name()}: Failed to create link")
             return False
-    
+
     def _unlink_config(self, config, konfig_root: Path) -> bool:
         """Unlink a single configuration"""
         target = expand_path(config.target)
         needs_sudo = requires_sudo(target)
-        
+
         # Check current status
         status, desc = get_config_status(config, konfig_root)
-        
+
         if status == LinkStatus.NOT_LINKED:
             log_info(f"{config.get_display_name()}: Already not linked")
             return True
-        
+
         if status != LinkStatus.LINKED and status != LinkStatus.WRONG_TARGET:
             log_warning(f"{config.get_display_name()}: Not a symlink, skipping")
             return False
-        
+
         # Remove link
         if remove_link(target, needs_sudo):
             log_success(f"{config.get_display_name()}: Unlinked successfully")
@@ -204,39 +198,39 @@ class BrowseCommand(BaseCommand):
         else:
             log_error(f"{config.get_display_name()}: Failed to unlink")
             return False
-    
+
     def _link_group(self, group: str, konfig_root: Path) -> bool:
         """Link all configurations in a group"""
         configs = get_configs_by_group(group)
-        
+
         log_info(f"Linking all configurations in group: {group}")
-        
+
         success_count = 0
         fail_count = 0
-        
+
         for config in configs:
             if self._link_config(config, konfig_root):
                 success_count += 1
             else:
                 fail_count += 1
-        
+
         log_info(f"Group {group}: {success_count} linked, {fail_count} failed")
         return fail_count == 0
-    
+
     def _unlink_group(self, group: str, konfig_root: Path) -> bool:
         """Unlink all configurations in a group"""
         configs = get_configs_by_group(group)
-        
+
         log_info(f"Unlinking all configurations in group: {group}")
-        
+
         success_count = 0
         fail_count = 0
-        
+
         for config in configs:
             if self._unlink_config(config, konfig_root):
                 success_count += 1
             else:
                 fail_count += 1
-        
+
         log_info(f"Group {group}: {success_count} unlinked, {fail_count} failed")
         return fail_count == 0

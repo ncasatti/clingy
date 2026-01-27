@@ -7,7 +7,6 @@ This is the only file that needs to be modified when using manager-core in your 
 
 from manager_core.core.dependency import Dependency
 
-
 # ============================================================================
 # Project Metadata
 # ============================================================================

@@ -40,12 +40,8 @@ class DeployCommand(BaseCommand):
 
     def add_arguments(self, parser: ArgumentParser):
         """Add command-specific arguments"""
-        parser.add_argument(
-            "--debug", action="store_true", help="Enable debug mode for deployment"
-        )
-        parser.add_argument(
-            "--all", action="store_true", help="Build, zip, and deploy in one step"
-        )
+        parser.add_argument("--debug", action="store_true", help="Enable debug mode for deployment")
+        parser.add_argument("--all", action="store_true", help="Build, zip, and deploy in one step")
         parser.add_argument(
             "-f",
             "--function",
@@ -131,9 +127,7 @@ class DeployCommand(BaseCommand):
 
         return True
 
-    def _deploy(
-        self, debug: bool = False, functions: Optional[List[str]] = None
-    ) -> bool:
+    def _deploy(self, debug: bool = False, functions: Optional[List[str]] = None) -> bool:
         """
         Execute the actual deployment with smart strategy selection.
 
@@ -202,16 +196,12 @@ class DeployCommand(BaseCommand):
         start_time = time.time()
 
         try:
-            result = subprocess.run(
-                command, check=True, capture_output=False, text=True
-            )
+            result = subprocess.run(command, check=True, capture_output=False, text=True)
 
             duration = time.time() - start_time
 
             if result.returncode == 0:
-                log_success(
-                    f"Function '{function_name}' deployed successfully to AWS", duration
-                )
+                log_success(f"Function '{function_name}' deployed successfully to AWS", duration)
                 return True
             else:
                 log_error(f"Deployment failed with code {result.returncode}", duration)
@@ -260,9 +250,7 @@ class DeployCommand(BaseCommand):
         start_time = time.time()
 
         try:
-            result = subprocess.run(
-                command, check=True, capture_output=False, text=True
-            )
+            result = subprocess.run(command, check=True, capture_output=False, text=True)
 
             duration = time.time() - start_time
 

@@ -45,7 +45,9 @@ class InvokeCommand(BaseCommand):
 
     name = "invoke"
     help = "Invoke Lambda functions locally or remotely"
-    description = "Test Lambda functions with optional payloads from function-specific payload directories"
+    description = (
+        "Test Lambda functions with optional payloads from function-specific payload directories"
+    )
     epilog = """Examples:
   manager.py invoke                    # Open interactive invoke menu
   manager.py invoke -f status          # Invoke specific function (opens submenu)
@@ -75,9 +77,7 @@ class InvokeCommand(BaseCommand):
             if "statusCode" in response:
                 status_code = response["statusCode"]
                 color = Colors.GREEN if 200 <= status_code < 300 else Colors.RED
-                print(
-                    f"{Colors.BOLD}Status Code:{Colors.RESET} {color}{status_code}{Colors.RESET}"
-                )
+                print(f"{Colors.BOLD}Status Code:{Colors.RESET} {color}{status_code}{Colors.RESET}")
                 yaml_data["statusCode"] = status_code
 
             # Print headers if present
@@ -154,9 +154,7 @@ class InvokeCommand(BaseCommand):
 
             # Get absolute path for display
             abs_path = os.path.abspath(output_file)
-            print(
-                f"\n{Colors.CYAN}💾 Response saved to: {Colors.BOLD}{abs_path}{Colors.RESET}"
-            )
+            print(f"\n{Colors.CYAN}💾 Response saved to: {Colors.BOLD}{abs_path}{Colors.RESET}")
 
         except Exception as e:
             log_warning(f"Could not save YAML file: {e}")
@@ -169,24 +167,18 @@ class InvokeCommand(BaseCommand):
             type=str,
             help="Specific function name to invoke (skips function selection menu)",
         )
-        parser.add_argument(
-            "-p", "--payload", type=str, help="Path to JSON payload file"
-        )
+        parser.add_argument("-p", "--payload", type=str, help="Path to JSON payload file")
         parser.add_argument(
             "--local", action="store_true", help="Invoke locally (default is remote)"
         )
-        parser.add_argument(
-            "--remote", action="store_true", help="Invoke remotely (explicit flag)"
-        )
+        parser.add_argument("--remote", action="store_true", help="Invoke remotely (explicit flag)")
 
     def execute(self, args: Namespace) -> bool:
         """Execute invoke command"""
         # If function and payload are specified, invoke directly
         if hasattr(args, "function") and args.function:
             if args.function not in GO_FUNCTIONS:
-                log_error(
-                    f"Function '{args.function}' not found in available functions"
-                )
+                log_error(f"Function '{args.function}' not found in available functions")
                 return False
 
             # Determine if local or remote
@@ -289,18 +281,18 @@ class InvokeCommand(BaseCommand):
             List of tuples: (payload_path, label)
         """
         from pathlib import Path
-        
+
         payloads = []
-        
+
         # 1. Discover composable payloads using PayloadNavigator
         navigator = PayloadNavigator(Path(PAYLOADS_DIR))
         composable_entries = navigator.discover_all(func_name)
-        
+
         for entry in composable_entries:
             # Convertir PayloadEntry a tupla (path_str, label)
             label = entry.label if entry.label else "COMPOSABLE"
             payloads.append((str(entry.path), label))
-        
+
         return payloads
 
     def _select_payload_with_fzf(self, func_name: str) -> Optional[str]:
@@ -314,17 +306,17 @@ class InvokeCommand(BaseCommand):
             Selected payload file path or None if cancelled
         """
         from pathlib import Path
-        
+
         try:
             # Use PayloadNavigator for hierarchical navigation
             navigator = PayloadNavigator(Path(PAYLOADS_DIR))
             selected_path = navigator.navigate_with_fzf(func_name)
-            
+
             if selected_path:
                 return str(selected_path)
-            
+
             return None
-        
+
         except FileNotFoundError:
             log_error("fzf is not installed on the system")
             return None
@@ -357,17 +349,17 @@ class InvokeCommand(BaseCommand):
             True if legacy, False if composable
         """
         from pathlib import Path
-        
+
         path = Path(payload_path)
-        
+
         # Legacy: JSON en test-payloads/ o functions/*/payloads/
         if "test-payloads" in str(path) or "functions" in str(path):
             return True
-        
+
         # Composable: Archivos en payloads/
         if str(path).startswith(PAYLOADS_DIR):
             return False
-        
+
         # Default: legacy
         return True
 
@@ -384,10 +376,10 @@ class InvokeCommand(BaseCommand):
             - composed_payload_or_none: ComposedPayload if composable, None if legacy
         """
         from pathlib import Path
-        
+
         try:
             is_legacy = self._is_legacy_payload(payload_path)
-            
+
             if is_legacy:
                 # LEGACY: Solo convertir body a string si es dict/list
                 with open(payload_path, "r") as f:
@@ -396,67 +388,71 @@ class InvokeCommand(BaseCommand):
                 # Check if body exists and is dict or list
                 if "body" in payload_data:
                     body = payload_data["body"]
-                    
+
                     # If body is dict or list, convert to JSON string
                     if isinstance(body, (dict, list)):
-                        payload_data["body"] = json.dumps(body, ensure_ascii=False, separators=(',', ':'))
-                        
+                        payload_data["body"] = json.dumps(
+                            body, ensure_ascii=False, separators=(",", ":")
+                        )
+
                         # Create temp file with processed payload
                         timestamp = int(time.time() * 1000)
                         temp_path = f"/tmp/manager-invoke-payload-{timestamp}.json"
-                        
+
                         with open(temp_path, "w") as f:
                             json.dump(payload_data, f, indent=2, ensure_ascii=False)
-                        
+
                         log_info(f"Body converted from {type(body).__name__} to JSON string")
                         return (temp_path, None)
-                
+
                 # No modification needed, return original
                 return (payload_path, None)
-            
+
             else:
                 # COMPOSABLE: Usar PayloadComposer
                 composer = PayloadComposer(Path(PAYLOADS_DIR))
-                
+
                 # Componer payload
                 composed = composer.compose(Path(payload_path), PAYLOAD_DEFAULT_STAGE)
-                
+
                 # Mostrar fuentes del merge si está habilitado
                 if PAYLOAD_SHOW_MERGE_SOURCES and composed.sources:
                     print(f"\n{Colors.CYAN}📦 Merged from:{Colors.RESET}")
                     for i, source in enumerate(composed.sources, 1):
                         print(f"  {i}. {source.relative_to(Path.cwd())}")
-                
+
                 # Validar payload final
                 validation = composer.validate(composed.data)
-                
+
                 # Mostrar warnings de validación
                 if validation.warnings:
                     print(f"\n{Colors.YELLOW}⚠️  Validation Warnings:{Colors.RESET}")
                     for warning in validation.warnings:
                         print(f"  - {warning}")
-                
+
                 # Mostrar errores de validación (CRÍTICO)
                 if validation.errors:
                     print(f"\n{Colors.RED}❌ Validation Errors:{Colors.RESET}")
                     for error in validation.errors:
                         print(f"  - {error}")
                     raise PayloadError("Payload validation failed. Cannot invoke.")
-                
+
                 # Convertir body a string si es dict/list
                 payload_data = composed.data.copy()
                 if "body" in payload_data:
                     body = payload_data["body"]
                     if isinstance(body, (dict, list)):
-                        payload_data["body"] = json.dumps(body, ensure_ascii=False, separators=(',', ':'))
-                
+                        payload_data["body"] = json.dumps(
+                            body, ensure_ascii=False, separators=(",", ":")
+                        )
+
                 # Crear archivo temporal con payload compuesto
                 timestamp = int(time.time() * 1000)
                 temp_path = f"/tmp/manager-invoke-payload-{timestamp}.json"
-                
+
                 with open(temp_path, "w") as f:
                     json.dump(payload_data, f, indent=2, ensure_ascii=False)
-                
+
                 log_success("Payload composed successfully")
                 return (temp_path, composed)
 
@@ -467,7 +463,9 @@ class InvokeCommand(BaseCommand):
             log_warning(f"Could not process payload: {e}")
             return (payload_path, None)
 
-    def _preview_payload(self, payload_data: Dict, composed: Optional[ComposedPayload] = None) -> None:
+    def _preview_payload(
+        self, payload_data: Dict, composed: Optional[ComposedPayload] = None
+    ) -> None:
         """
         Display payload preview with formatting
 
@@ -476,24 +474,24 @@ class InvokeCommand(BaseCommand):
             composed: ComposedPayload if this is a composable payload (optional)
         """
         from pathlib import Path
-        
+
         print(f"\n{Colors.BOLD}{Colors.CYAN}📄 Payload Preview:{Colors.RESET}")
         print(f"{Colors.YELLOW}{'─' * 60}{Colors.RESET}")
-        
+
         # Si es composable, mostrar fuentes del merge
         if composed and composed.sources:
             print(f"{Colors.CYAN}Merged from:{Colors.RESET}")
             for i, source in enumerate(composed.sources, 1):
                 print(f"  {Colors.GREEN}{i}.{Colors.RESET} {source.relative_to(Path.cwd())}")
             print(f"{Colors.YELLOW}{'─' * 60}{Colors.RESET}")
-        
+
         # Mostrar warnings si hay
         if composed and composed.warnings:
             print(f"{Colors.YELLOW}⚠️  Warnings:{Colors.RESET}")
             for warning in composed.warnings:
                 print(f"  {Colors.YELLOW}-{Colors.RESET} {warning}")
             print(f"{Colors.YELLOW}{'─' * 60}{Colors.RESET}")
-        
+
         # Mostrar payload
         print(json.dumps(payload_data, indent=2, ensure_ascii=False))
         print(f"{Colors.YELLOW}{'─' * 60}{Colors.RESET}\n")
@@ -545,15 +543,15 @@ class InvokeCommand(BaseCommand):
             if not os.path.isfile(payload_path):
                 log_error(f"Payload file not found: {payload_path}")
                 return False
-            
+
             # Process payload (convert body if needed, compose if composable)
             processed_payload_path, composed = self._process_payload(payload_path)
-            
+
             # Preview payload
             with open(processed_payload_path, "r") as f:
                 payload_data = json.load(f)
             self._preview_payload(payload_data, composed)
-            
+
             command.extend(["--path", processed_payload_path])
             log_info(f"Invoking {func_name} locally with payload: {payload_path}")
         else:
@@ -564,9 +562,7 @@ class InvokeCommand(BaseCommand):
 
         try:
             # Execute command and capture output
-            result = subprocess.run(
-                command, check=False, capture_output=True, text=True
-            )
+            result = subprocess.run(command, check=False, capture_output=True, text=True)
 
             # Show stderr (logs, debug info) if present
             if result.stderr:
@@ -597,9 +593,7 @@ class InvokeCommand(BaseCommand):
             log_error(f"Error executing command: {e}")
             return False
 
-    def _invoke_remote(
-        self, func_name: str, payload_path: Optional[str] = None
-    ) -> bool:
+    def _invoke_remote(self, func_name: str, payload_path: Optional[str] = None) -> bool:
         """
         Invoke function remotely using configured method (serverless or aws-cli)
 
@@ -619,9 +613,7 @@ class InvokeCommand(BaseCommand):
             log_info("Valid options: 'serverless' or 'aws-cli'")
             return False
 
-    def _invoke_remote_serverless(
-        self, func_name: str, payload_path: Optional[str] = None
-    ) -> bool:
+    def _invoke_remote_serverless(self, func_name: str, payload_path: Optional[str] = None) -> bool:
         """
         Invoke remote function using Serverless Framework
 
@@ -648,19 +640,17 @@ class InvokeCommand(BaseCommand):
             if not os.path.isfile(payload_path):
                 log_error(f"Payload file not found: {payload_path}")
                 return False
-            
+
             # Process payload (convert body if needed, compose if composable)
             processed_payload_path, composed = self._process_payload(payload_path)
-            
+
             # Preview payload
             with open(processed_payload_path, "r") as f:
                 payload_data = json.load(f)
             self._preview_payload(payload_data, composed)
-            
+
             command.extend(["--path", processed_payload_path])
-            log_info(
-                f"Invoking {func_name} remotely (serverless) with payload: {payload_path}"
-            )
+            log_info(f"Invoking {func_name} remotely (serverless) with payload: {payload_path}")
         else:
             log_info(f"Invoking {func_name} remotely (serverless) without payload")
 
@@ -669,9 +659,7 @@ class InvokeCommand(BaseCommand):
 
         try:
             # Execute command and capture output
-            result = subprocess.run(
-                command, check=False, capture_output=True, text=True
-            )
+            result = subprocess.run(command, check=False, capture_output=True, text=True)
 
             # Show stderr (logs, debug info) if present
             if result.stderr:
@@ -702,9 +690,7 @@ class InvokeCommand(BaseCommand):
             log_error(f"Error executing command: {e}")
             return False
 
-    def _invoke_remote_aws_cli(
-        self, func_name: str, payload_path: Optional[str] = None
-    ) -> bool:
+    def _invoke_remote_aws_cli(self, func_name: str, payload_path: Optional[str] = None) -> bool:
         """
         Invoke remote function using AWS CLI
 
@@ -737,19 +723,17 @@ class InvokeCommand(BaseCommand):
             if not os.path.isfile(payload_path):
                 log_error(f"Payload file not found: {payload_path}")
                 return False
-            
+
             # Process payload (convert body if needed, compose if composable)
             processed_payload_path, composed = self._process_payload(payload_path)
-            
+
             # Preview payload
             with open(processed_payload_path, "r") as f:
                 payload_data = json.load(f)
             self._preview_payload(payload_data, composed)
-            
+
             command.extend(["--payload", f"file://{processed_payload_path}"])
-            log_info(
-                f"Invoking {lambda_name} remotely (aws-cli) with payload: {payload_path}"
-            )
+            log_info(f"Invoking {lambda_name} remotely (aws-cli) with payload: {payload_path}")
         else:
             log_info(f"Invoking {lambda_name} remotely (aws-cli) without payload")
 
@@ -757,9 +741,7 @@ class InvokeCommand(BaseCommand):
         print(f"{Colors.YELLOW}{'─' * 80}{Colors.RESET}\n")
 
         try:
-            result = subprocess.run(
-                command, check=False, capture_output=True, text=True
-            )
+            result = subprocess.run(command, check=False, capture_output=True, text=True)
 
             # Show response metadata
             if result.stdout:

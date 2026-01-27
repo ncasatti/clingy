@@ -1,6 +1,7 @@
 """
 Pytest configuration and shared fixtures
 """
+
 import pytest
 from pathlib import Path
 
@@ -9,18 +10,18 @@ from pathlib import Path
 def temp_project(tmp_path):
     """
     Create a temporary manager project structure.
-    
+
     Returns:
         Path: Root directory of the temporary project
     """
     project = tmp_path / "test-project"
     project.mkdir()
-    
+
     # Create commands directory
     commands_dir = project / "commands"
     commands_dir.mkdir()
     (commands_dir / "__init__.py").write_text("")
-    
+
     # Create config.py
     config_content = '''"""Test project configuration"""
 
@@ -40,7 +41,7 @@ DEPENDENCIES = [
 ]
 '''
     (project / "config.py").write_text(config_content)
-    
+
     return project
 
 
@@ -48,7 +49,7 @@ DEPENDENCIES = [
 def temp_project_with_command(temp_project):
     """
     Create a temporary project with a sample command.
-    
+
     Returns:
         Path: Root directory of the project with a command
     """
@@ -82,10 +83,10 @@ class TestCommand(BaseCommand):
             action=lambda: self.execute(Namespace(value="menu"))
         )
 '''
-    
+
     commands_dir = temp_project / "commands"
     (commands_dir / "test_command.py").write_text(command_content)
-    
+
     return temp_project
 
 
@@ -93,7 +94,7 @@ class TestCommand(BaseCommand):
 def empty_dir(tmp_path):
     """
     Create an empty temporary directory (no project).
-    
+
     Returns:
         Path: Empty directory
     """

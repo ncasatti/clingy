@@ -151,9 +151,7 @@ class BuildCommand(BaseCommand):
                 else:
                     log_error(f"{func_name} → exit code {result.returncode}", duration)
                     if result.stderr:
-                        print(
-                            f"  {Colors.RED}Error: {result.stderr.strip()}{Colors.RESET}"
-                        )
+                        print(f"  {Colors.RED}Error: {result.stderr.strip()}{Colors.RESET}")
                     stats.add_failure(func_name)
                     overall_success = False
 

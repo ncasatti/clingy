@@ -21,4 +21,4 @@ BACKUP_SUFFIX = ".backup"
 BACKUP_TIMESTAMP_FORMAT = "%Y%m%d_%H%M%S"
 
 # System paths that require sudo
-SUDO_PATHS = ['/etc/', '/usr/', '/opt/', '/var/', '/sys/', '/boot/']
+SUDO_PATHS = ["/etc/", "/usr/", "/opt/", "/var/", "/sys/", "/boot/"]

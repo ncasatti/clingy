@@ -80,7 +80,7 @@ class InitCommand(BaseCommand):
                     dest = commands_dir / file.name
                     shutil.copy2(file, dest)
                     log_success(f"Created {dest.relative_to(current_dir)}")
-                
+
                 # Copy subdirectories (e.g., core_commands/)
                 for subdir in template_commands.iterdir():
                     if subdir.is_dir() and not subdir.name.startswith("__"):
