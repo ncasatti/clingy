@@ -1,6 +1,7 @@
 """Logging functions for enhanced terminal output"""
 
 from datetime import datetime
+
 from manager_core.core.colors import Colors
 from manager_core.core.emojis import Emojis
 from manager_core.core.stats import stats

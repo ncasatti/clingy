@@ -4,24 +4,24 @@ import os
 import subprocess
 import time
 from argparse import ArgumentParser, Namespace
-from typing import Optional, List
-
-from manager_core.commands.base import BaseCommand
-from manager_core.core.logger import (
-    log_header,
-    log_section,
-    log_success,
-    log_error,
-    log_info,
-    log_warning,
-    print_summary,
-)
-from manager_core.core.stats import stats
-from config import SERVERLESS_STAGE, SERVERLESS_PROFILE, GO_FUNCTIONS, BIN_DIR
+from typing import List, Optional
 
 # Import build and zip commands for --all flag
 from commands.core_commands.build import BuildCommand
 from commands.core_commands.zip import ZipCommand
+from config import BIN_DIR, GO_FUNCTIONS, SERVERLESS_PROFILE, SERVERLESS_STAGE
+
+from manager_core.commands.base import BaseCommand
+from manager_core.core.logger import (
+    log_error,
+    log_header,
+    log_info,
+    log_section,
+    log_success,
+    log_warning,
+    print_summary,
+)
+from manager_core.core.stats import stats
 
 
 class DeployCommand(BaseCommand):

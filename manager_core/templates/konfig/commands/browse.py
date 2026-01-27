@@ -10,20 +10,7 @@ from argparse import ArgumentParser, Namespace
 from pathlib import Path
 from typing import Optional
 
-from manager_core.commands.base import BaseCommand
-from manager_core.core.logger import log_error, log_info, log_success, log_warning
-from manager_core.core.menu import MenuNode
-
 from config import KONFIG_PATH
-from mappings import CONFIGS
-from core.status import (
-    expand_path,
-    get_all_groups,
-    get_config_status,
-    get_configs_by_group,
-    get_group_description,
-    get_status_icon,
-)
 from core.link_core import (
     LinkStatus,
     auto_copy_from_system,
@@ -32,6 +19,19 @@ from core.link_core import (
     remove_link,
     requires_sudo,
 )
+from core.status import (
+    expand_path,
+    get_all_groups,
+    get_config_status,
+    get_configs_by_group,
+    get_group_description,
+    get_status_icon,
+)
+from mappings import CONFIGS
+
+from manager_core.commands.base import BaseCommand
+from manager_core.core.logger import log_error, log_info, log_success, log_warning
+from manager_core.core.menu import MenuNode
 
 
 class BrowseCommand(BaseCommand):

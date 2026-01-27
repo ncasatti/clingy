@@ -2,12 +2,14 @@
 Tests for context detection and project discovery
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
+
 from manager_core.core.discovery import (
     find_manager_root,
-    load_project_config,
     get_project_context,
+    load_project_config,
 )
 
 

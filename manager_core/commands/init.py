@@ -9,7 +9,7 @@ from typing import Optional
 
 from manager_core.commands.base import BaseCommand
 from manager_core.core.emojis import Emojis
-from manager_core.core.logger import log_error, log_info, log_success, log_section
+from manager_core.core.logger import log_error, log_info, log_section, log_success
 from manager_core.core.menu import MenuNode
 
 

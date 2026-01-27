@@ -1,12 +1,12 @@
 """Interactive invoke menu for Lambda functions"""
 
-import subprocess
-import os
 import glob
 import json
+import os
+import subprocess
 import time
 from argparse import ArgumentParser, Namespace
-from typing import Optional, List, Dict
+from typing import Dict, List, Optional
 
 try:
     import yaml
@@ -15,29 +15,30 @@ try:
 except ImportError:
     YAML_AVAILABLE = False
 
-from manager_core.commands.base import BaseCommand
-from manager_core.core.logger import (
-    log_header,
-    log_error,
-    log_warning,
-    log_info,
-    log_success,
-)
-from manager_core.core.colors import Colors, Emojis
 from config import (
-    GO_FUNCTIONS,
     AWS_PROFILE,
-    SERVICE_NAME,
-    SERVERLESS_STAGE,
     FUNCTIONS_DIR,
-    INVOKE_REMOTE_METHOD,
+    GO_FUNCTIONS,
     INVOKE_AWS_REGION,
-    PAYLOADS_DIR,
+    INVOKE_REMOTE_METHOD,
     PAYLOAD_DEFAULT_STAGE,
     PAYLOAD_SHOW_MERGE_SOURCES,
+    PAYLOADS_DIR,
+    SERVERLESS_STAGE,
+    SERVICE_NAME,
 )
-from core.payload_composer import PayloadComposer, ComposedPayload, PayloadError
+from core.payload_composer import ComposedPayload, PayloadComposer, PayloadError
 from core.payload_navigator import PayloadNavigator
+
+from manager_core.commands.base import BaseCommand
+from manager_core.core.colors import Colors, Emojis
+from manager_core.core.logger import (
+    log_error,
+    log_header,
+    log_info,
+    log_success,
+    log_warning,
+)
 
 
 class InvokeCommand(BaseCommand):

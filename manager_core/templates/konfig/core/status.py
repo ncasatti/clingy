@@ -9,8 +9,8 @@ import os
 from pathlib import Path
 from typing import Dict, List, Tuple
 
-from mappings import CONFIGS, Config, GROUP_DESCRIPTIONS
 from core.link_core import LinkStatus, get_link_status, requires_sudo
+from mappings import CONFIGS, GROUP_DESCRIPTIONS, Config
 
 
 def expand_path(path: str) -> Path:

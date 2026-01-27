@@ -4,16 +4,17 @@ import subprocess
 from argparse import ArgumentParser, Namespace
 from typing import Optional
 
+from config import AWS_PROFILE, GO_FUNCTIONS, SERVERLESS_STAGE, SERVICE_NAME
+
 from manager_core.commands.base import BaseCommand
+from manager_core.core.colors import Colors, Emojis
 from manager_core.core.logger import (
-    log_header,
     log_error,
-    log_warning,
+    log_header,
     log_info,
     log_success,
+    log_warning,
 )
-from manager_core.core.colors import Colors, Emojis
-from config import GO_FUNCTIONS, AWS_PROFILE, SERVICE_NAME, SERVERLESS_STAGE
 
 
 class LogsCommand(BaseCommand):

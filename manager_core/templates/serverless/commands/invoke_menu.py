@@ -3,13 +3,13 @@
 from argparse import Namespace
 from typing import Optional
 
+from commands.core_commands.invoke import InvokeCommand
+from config import GO_FUNCTIONS
+
 from manager_core.commands.base import BaseCommand
 from manager_core.core.emojis import Emojis
 from manager_core.core.logger import log_info, log_section
 from manager_core.core.menu import MenuNode, fzf_select_items
-
-from commands.core_commands.invoke import InvokeCommand
-from config import GO_FUNCTIONS
 
 
 class InvokeMenuCommand(BaseCommand):

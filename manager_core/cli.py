@@ -9,6 +9,7 @@ import argparse
 import platform
 import shutil
 import sys
+
 from manager_core.cli_builder import create_cli_context
 from manager_core.config import DEPENDENCIES
 from manager_core.core.colors import Colors
@@ -153,8 +154,8 @@ def cli_mode(ctx):
 
 def interactive_mode(ctx):
     """Global interactive mode"""
-    from manager_core.core.menu import MenuNode, MenuRenderer
     from manager_core.core.emojis import Emojis
+    from manager_core.core.menu import MenuNode, MenuRenderer
 
     log_header("CLI MANAGER - INTERACTIVE MODE")
 

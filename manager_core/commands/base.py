@@ -2,7 +2,8 @@
 
 from abc import ABC, abstractmethod
 from argparse import ArgumentParser, Namespace
-from typing import Optional, List
+from typing import List, Optional
+
 from manager_core.core.logger import log_error, log_info
 from manager_core.core.menu import MenuNode
 

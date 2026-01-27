@@ -5,11 +5,11 @@ Permite navegar interactivamente por la estructura de directorios de payloads
 y descubrir payloads legacy.
 """
 
+import subprocess
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from typing import List, Optional
-import subprocess
 
 # ============================================================================
 # Enums

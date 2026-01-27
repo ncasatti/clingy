@@ -4,10 +4,10 @@ Payload Composer - Sistema de composición de payloads YAML/JSON
 Permite componer payloads Lambda desde múltiples archivos base con merge profundo.
 """
 
+import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Dict, List, Optional
-import json
 
 try:
     import yaml

@@ -74,7 +74,13 @@ CONFIGS = [
     # Core system configurations
     Config("rclone", "rclone", "~/.config/rclone", "main", "Rclone"),
     Config("gitconfig", ".gitconfig", "~/.gitconfig", "main", "Git Config"),
-    Config("git-credentials", ".git-credentials", "~/.git-credentials", "main", "Git Credentials"),
+    Config(
+        "git-credentials",
+        ".git-credentials",
+        "~/.git-credentials",
+        "main",
+        "Git Credentials",
+    ),
     Config("aws", "aws", "~/.aws", "main", "AWS"),
     # Shell configurations
     Config("zsh", ".zshrc", "~/.zshrc", "shell", "Zsh"),
@@ -82,7 +88,13 @@ CONFIGS = [
     Config("p10k", ".p10k.zsh", "~/.p10k.zsh", "shell", "P10K"),
     Config("nvim", "nvim", "~/.config/nvim", "shell", "Nvim"),
     Config("fish-shell", "fish", "~/.config/fish", "shell"),
-    Config("starship", "starship/starship.toml", "~/.config/starship.toml", "shell", "Starship"),
+    Config(
+        "starship",
+        "starship/starship.toml",
+        "~/.config/starship.toml",
+        "shell",
+        "Starship",
+    ),
     Config("lazygit", "lazygit", "~/.config/lazygit", "shell", "Lazygit"),
     Config(
         "opencode",
@@ -92,10 +104,18 @@ CONFIGS = [
         "OpenCode",
     ),
     Config(
-        "opencode agents", "opencode/agent", "~/.config/opencode/agent", "agents", "OpenCode Agents"
+        "opencode agents",
+        "opencode/agent",
+        "~/.config/opencode/agent",
+        "agents",
+        "OpenCode Agents",
     ),
     Config(
-        "opencode skill", "opencode/skill", "~/.config/opencode/skill", "agents", "OpenCode Skills"
+        "opencode skill",
+        "opencode/skill",
+        "~/.config/opencode/skill",
+        "agents",
+        "OpenCode Skills",
     ),
     Config(
         "opencode themes",
@@ -104,7 +124,13 @@ CONFIGS = [
         "agents",
         "OpenCode Themes",
     ),
-    Config("claude", "claude/CLAUDE.md", "~/.claude/CLAUDE.md", "agents", "Claude Main Agent"),
+    Config(
+        "claude",
+        "claude/CLAUDE.md",
+        "~/.claude/CLAUDE.md",
+        "agents",
+        "Claude Main Agent",
+    ),
     Config("claude agents", "claude/agents", "~/.claude/agents", "agents", "Claude Agents"),
     Config("claude skill", "claude/skills", "~/.claude/skills", "agents", "Claude Skills"),
     # Terminal multiplexer

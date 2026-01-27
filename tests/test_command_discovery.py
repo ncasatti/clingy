@@ -2,8 +2,10 @@
 Tests for command auto-discovery system
 """
 
-import pytest
 from pathlib import Path
+
+import pytest
+
 from manager_core.commands import discover_commands
 from manager_core.commands.base import BaseCommand
 

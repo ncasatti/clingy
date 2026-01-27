@@ -6,18 +6,19 @@ import time
 from argparse import ArgumentParser, Namespace
 from typing import List, Optional
 
+from config import BIN_DIR, GO_FUNCTIONS
+
 from manager_core.commands.base import BaseCommand
+from manager_core.core.colors import Colors
 from manager_core.core.logger import (
+    log_error,
     log_header,
+    log_info,
     log_section,
     log_success,
-    log_error,
-    log_info,
     print_summary,
 )
-from manager_core.core.colors import Colors
 from manager_core.core.stats import stats
-from config import GO_FUNCTIONS, BIN_DIR
 
 
 class ZipCommand(BaseCommand):

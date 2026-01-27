@@ -2,9 +2,11 @@
 Tests for the init command
 """
 
-import pytest
-from pathlib import Path
 from argparse import Namespace
+from pathlib import Path
+
+import pytest
+
 from manager_core.commands.init import InitCommand
 
 

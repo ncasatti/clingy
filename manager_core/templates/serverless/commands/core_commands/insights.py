@@ -1,36 +1,37 @@
 """Interactive CloudWatch Logs Insights menu"""
 
-import subprocess
 import json
-import time
 import os
+import subprocess
+import time
 from argparse import ArgumentParser, Namespace
-from typing import Optional, List, Dict, Tuple
 from datetime import datetime
+from typing import Dict, List, Optional, Tuple
 
-from manager_core.commands.base import BaseCommand
-from manager_core.core.logger import (
-    log_header,
-    log_error,
-    log_warning,
-    log_info,
-    log_success,
-)
-from manager_core.core.colors import Colors, Emojis
-from config import GO_FUNCTIONS, AWS_PROFILE, SERVICE_NAME, SERVERLESS_STAGE
-from core.insights_queries import (
-    PREDEFINED_TEMPLATES,
-    discover_queries,
-    load_query,
-    save_query,
-    delete_query,
-    parse_time_range,
-    format_time_range,
-)
+from config import AWS_PROFILE, GO_FUNCTIONS, SERVERLESS_STAGE, SERVICE_NAME
 from core.insights_formatter import (
     format_results_table,
-    save_results_yaml,
     save_results_csv,
+    save_results_yaml,
+)
+from core.insights_queries import (
+    PREDEFINED_TEMPLATES,
+    delete_query,
+    discover_queries,
+    format_time_range,
+    load_query,
+    parse_time_range,
+    save_query,
+)
+
+from manager_core.commands.base import BaseCommand
+from manager_core.core.colors import Colors, Emojis
+from manager_core.core.logger import (
+    log_error,
+    log_header,
+    log_info,
+    log_success,
+    log_warning,
 )
 
 

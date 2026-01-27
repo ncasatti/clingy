@@ -1,12 +1,13 @@
 """Clean build artifacts"""
 
-import shutil
 import os
+import shutil
 from argparse import ArgumentParser, Namespace
 
-from manager_core.commands.base import BaseCommand
-from manager_core.core.logger import log_header, log_success, log_error, log_info
 from config import BIN_DIR
+
+from manager_core.commands.base import BaseCommand
+from manager_core.core.logger import log_error, log_header, log_info, log_success
 
 
 class CleanCommand(BaseCommand):

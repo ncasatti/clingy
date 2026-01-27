@@ -7,7 +7,7 @@ by searching for manager projects in the directory tree.
 
 import sys
 from pathlib import Path
-from typing import Optional, Dict, Any
+from typing import Any, Dict, Optional
 
 
 def find_manager_root(start_path: Optional[Path] = None) -> Optional[Path]:

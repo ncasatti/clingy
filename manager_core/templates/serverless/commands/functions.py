@@ -3,16 +3,16 @@
 from argparse import Namespace
 from typing import Optional
 
+from commands.core_commands.build import BuildCommand
+from commands.core_commands.clean import CleanCommand
+from commands.core_commands.deploy import DeployCommand
+from commands.core_commands.zip import ZipCommand
+from config import GO_FUNCTIONS
+
 from manager_core.commands.base import BaseCommand
 from manager_core.core.emojis import Emojis
-from manager_core.core.logger import log_info, log_success, log_error, log_section
+from manager_core.core.logger import log_error, log_info, log_section, log_success
 from manager_core.core.menu import MenuNode, fzf_select_items
-
-from commands.core_commands.build import BuildCommand
-from commands.core_commands.zip import ZipCommand
-from commands.core_commands.deploy import DeployCommand
-from commands.core_commands.clean import CleanCommand
-from config import GO_FUNCTIONS
 
 
 class FunctionsCommand(BaseCommand):

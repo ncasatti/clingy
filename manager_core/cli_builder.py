@@ -10,7 +10,7 @@ import inspect
 import sys
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Dict, Type, Optional
+from typing import Dict, Optional, Type
 
 from manager_core.commands.base import BaseCommand
 from manager_core.core.discovery import find_manager_root, load_project_config

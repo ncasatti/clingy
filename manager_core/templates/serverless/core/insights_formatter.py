@@ -9,16 +9,16 @@ Handles:
 
 import json
 import os
-from typing import List, Dict, Optional
 from pathlib import Path
+from typing import Dict, List, Optional
 
 from manager.config import FUNCTIONS_DIR
 
 # Try to import rich, fallback to simple formatting if not available
 try:
+    from rich import box
     from rich.console import Console
     from rich.table import Table
-    from rich import box
 
     RICH_AVAILABLE = True
 except ImportError:
