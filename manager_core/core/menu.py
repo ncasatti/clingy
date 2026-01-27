@@ -14,7 +14,7 @@ from typing import Any, Callable, Dict, List, Optional
 
 # Local
 from manager_core.core.colors import Colors
-from manager_core.core.emojis import Emojis
+from manager_core.core.emojis import Emoji
 from manager_core.core.logger import log_error, log_info
 
 
@@ -86,6 +86,12 @@ class MenuRenderer:
                 if current_node.action:
                     try:
                         result = current_node.action()
+
+                        # If action returns False at root level, exit menu (e.g., Exit button)
+                        # If at deeper levels, just go back (e.g., failed action in submenu)
+                        if result is False and len(self.navigation_stack) <= 2:
+                            return False
+
                         # Return to parent node after execution
                         if len(self.navigation_stack) > 1:
                             self.navigation_stack.pop()
@@ -169,7 +175,7 @@ class MenuRenderer:
             node_map[display] = child
 
         # Add "Back" option at the end if not at root
-        back_label = f"{Emojis.BACK}  Back"
+        back_label = f"{Emoji.BACK}  Back"
         if len(self.navigation_stack) > 1:
             options.append(back_label)
 
