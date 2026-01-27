@@ -170,7 +170,8 @@ def interactive_mode(ctx):
     for cmd_name, cmd_class in sorted(commands.items()):
         cmd_instance = cmd_class()
         node = cmd_instance.get_menu_tree()
-        menu_items.append(node)
+        if node is not None:
+            menu_items.append(node)
 
     # Add Exit option at the end
     menu_items.append(
