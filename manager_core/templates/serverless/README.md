@@ -47,30 +47,72 @@ manager
 
 ## Menu Structure
 
-```
-🚀 SERVERLESS MANAGER
-├── 📦 Functions
-│   ├── Build Functions (All / Select)
-│   ├── Zip Functions (All / Select)
-│   ├── Deploy Functions (All / Select)
-│   ├── Full Pipeline (Build → Zip → Deploy)
-│   └── Clean Build Artifacts
-│
-├── 🔍 Logs & Monitoring
-│   ├── View Recent Logs
-│   ├── Tail Live Logs
-│   └── CloudWatch Insights
-│
-├── ▶️ Invoke Functions
-│   ├── Local Invocation
-│   ├── Remote Invocation (AWS)
-│   └── Payload Navigator
-│
-└── 📊 Status & Info
-    ├── List All Functions
-    ├── Build Status
-    ├── Check Dependencies
-    └── Show Configuration
+```mermaid
+graph TB
+    Root["🚀 Serverless Manager"]
+    
+    Root --> Functions["📦 Functions"]
+    Root --> Logs["🔍 Logs & Monitoring"]
+    Root --> Invoke["▶️ Invoke Functions"]
+    Root --> Status["📊 Status & Info"]
+    
+    %% Functions Menu
+    Functions --> BuildMenu["Build Functions"]
+    Functions --> ZipMenu["Zip Functions"]
+    Functions --> DeployMenu["Deploy Functions"]
+    Functions --> PipelineMenu["Full Pipeline<br/>Build → Zip → Deploy"]
+    Functions --> CleanMenu["Clean Build Artifacts"]
+    
+    BuildMenu --> BuildAll["Build All"]
+    BuildMenu --> BuildSelect["Select Functions to Build"]
+    
+    ZipMenu --> ZipAll["Zip All"]
+    ZipMenu --> ZipSelect["Select Functions to Zip"]
+    
+    DeployMenu --> DeployAll["Deploy All"]
+    DeployMenu --> DeploySelect["Select Functions to Deploy"]
+    
+    PipelineMenu --> PipelineAll["Full Pipeline - All Functions"]
+    PipelineMenu --> PipelineSelect["Full Pipeline - Select Functions"]
+    
+    CleanMenu --> CleanAll["Clean All"]
+    CleanMenu --> CleanSelect["Select Functions to Clean"]
+    
+    %% Logs & Monitoring Menu
+    Logs --> ViewLogs["View Recent Logs"]
+    Logs --> TailLogs["Tail Live Logs"]
+    Logs --> Insights["CloudWatch Insights"]
+    
+    ViewLogs --> ViewSelect["Select Function"]
+    TailLogs --> TailSelect["Select Function"]
+    Insights --> InsightsQuery["Run Insights Query"]
+    
+    %% Invoke Functions Menu
+    Invoke --> LocalInvoke["Local Invocation"]
+    Invoke --> RemoteInvoke["Remote Invocation AWS"]
+    Invoke --> PayloadNav["Payload Navigator"]
+    
+    LocalInvoke --> LocalSelect["Select Function Local"]
+    RemoteInvoke --> RemoteSelect["Select Function Remote"]
+    PayloadNav --> BrowsePayloads["Browse Payloads"]
+    
+    %% Status & Info Menu
+    Status --> ListFuncs["List All Functions"]
+    Status --> BuildStatus["Build Status"]
+    Status --> CheckDeps["Check Dependencies"]
+    Status --> ShowConfig["Show Configuration"]
+    Status --> ShowAll["Show All Status"]
+    
+    %% Styling
+    classDef root fill:#ff6b6b,stroke:#c92a2a,color:#fff
+    classDef menu fill:#4ecdc4,stroke:#1a9b8e,color:#fff
+    classDef submenu fill:#95e1d3,stroke:#38a169,color:#000
+    classDef action fill:#f0f0f0,stroke:#999,color:#000
+    
+    class Root root
+    class Functions,Logs,Invoke,Status menu
+    class BuildMenu,ZipMenu,DeployMenu,PipelineMenu,CleanMenu,ViewLogs,TailLogs,Insights,LocalInvoke,RemoteInvoke,PayloadNav submenu
+    class BuildAll,BuildSelect,ZipAll,ZipSelect,DeployAll,DeploySelect,PipelineAll,PipelineSelect,CleanAll,CleanSelect,ViewSelect,TailSelect,InsightsQuery,LocalSelect,RemoteSelect,BrowsePayloads,ListFuncs,BuildStatus,CheckDeps,ShowConfig,ShowAll action
 ```
 
 ## Project Structure

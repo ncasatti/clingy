@@ -53,7 +53,8 @@ class DeployCommand(BaseCommand):
 
     def execute(self, args: Namespace) -> bool:
         """Execute deploy command"""
-        if args.all:
+        # Check if --all flag is set (CLI mode)
+        if hasattr(args, "all") and args.all:
             return self._execute_all(args)
 
         # Resolve function list (supports both dev mode and CLI mode)
@@ -61,7 +62,9 @@ class DeployCommand(BaseCommand):
         if not functions:
             return False
 
-        return self._deploy(args.debug, functions)
+        # Check debug flag (may not exist in interactive mode)
+        debug = getattr(args, "debug", False)
+        return self._deploy(debug, functions)
 
     def get_menu_tree(self) -> MenuNode:
         return super().get_menu_tree()
@@ -98,7 +101,8 @@ class DeployCommand(BaseCommand):
 
         # Step 3: Deploy
         log_section("STEP 3: DEPLOYING")
-        if not self._deploy(args.debug, functions):
+        debug = getattr(args, "debug", False)
+        if not self._deploy(debug, functions):
             log_error("Deployment failed.")
             return False
 

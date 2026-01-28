@@ -316,10 +316,11 @@ def fzf_select_items(
         return None
 
     options = []
+    all_items_label = f"{Emoji.ALL} All"
 
-    # Add [ALL ITEMS] option at the beginning
+    # Add "All" option at the beginning
     if include_all:
-        options.append(f"{Colors.BOLD}{Colors.GREEN}[ALL ITEMS]{Colors.RESET}")
+        options.append(f"{Colors.BOLD}{Colors.GREEN}{all_items_label}{Colors.RESET}")
 
     # Add individual items
     options.extend(items)
@@ -330,15 +331,19 @@ def fzf_select_items(
     if not selected:
         return None
 
-    # If [ALL ITEMS] was selected, return all items
-    if any("[ALL ITEMS]" in s for s in selected):
+    # If "All" was selected, return all items
+    if any(all_items_label in s for s in selected):
         return items  # Return the items list directly
 
     # Filter control options that may have ANSI codes
     filtered = []
     for s in selected:
         # Remove ANSI codes for comparison
-        clean = s.replace(Colors.BOLD, "").replace(Colors.GREEN, "").replace(Colors.RESET, "")
+        clean = (
+            s.replace(Colors.BOLD, "")
+            .replace(Colors.GREEN, "")
+            .replace(Colors.RESET, "")
+        )
         if clean in items:
             filtered.append(clean)
 
