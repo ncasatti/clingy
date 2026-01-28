@@ -148,9 +148,7 @@ class QuickActionsCommand(BaseCommand):
             # Remove wrong symlink
             if status == LinkStatus.WRONG_TARGET:
                 if not remove_link(target, needs_sudo):
-                    log_error(
-                        f"{config.get_display_name()}: Failed to remove wrong link"
-                    )
+                    log_error(f"{config.get_display_name()}: Failed to remove wrong link")
                     fail_count += 1
                     continue
 

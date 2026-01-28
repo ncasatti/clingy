@@ -40,9 +40,7 @@ class Config(NamedTuple):
 
     def get_display_name(self):
         """Get display name with fallback to formatted name"""
-        return (
-            self.display_name or self.name.replace("-", " ").replace("_", " ").title()
-        )
+        return self.display_name or self.name.replace("-", " ").replace("_", " ").title()
 
 
 # Group descriptions (optional - for CLI help text)
@@ -108,9 +106,7 @@ CONFIGS = [
     # Shell configurations
     ##########
     Config("zsh", ".zshrc", "~/.zshrc", "shell", "Zsh"),
-    Config(
-        "zsh-custom", "zsh/custom", "~/.oh-my-zsh/custom", "shell", "Zsh Custom Folder"
-    ),
+    Config("zsh-custom", "zsh/custom", "~/.oh-my-zsh/custom", "shell", "Zsh Custom Folder"),
     Config("p10k", ".p10k.zsh", "~/.p10k.zsh", "shell", "P10K"),
     Config("nvim", "nvim", "~/.config/nvim", "shell", "Nvim"),
     Config("fish-shell", "fish", "~/.config/fish", "shell"),
@@ -160,12 +156,8 @@ CONFIGS = [
         "agents",
         "Claude Main Agent (opencode arch)",
     ),
-    Config(
-        "claude agents", "opencode/agent", "~/.claude/agents", "agents", "Claude Agents"
-    ),
-    Config(
-        "claude skill", "opencode/skill", "~/.claude/skills", "agents", "Claude Skills"
-    ),
+    Config("claude agents", "opencode/agent", "~/.claude/agents", "agents", "Claude Agents"),
+    Config("claude skill", "opencode/skill", "~/.claude/skills", "agents", "Claude Skills"),
     ############################################################
     # Terminal multiplexer
     ##########

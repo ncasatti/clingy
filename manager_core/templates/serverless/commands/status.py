@@ -35,9 +35,7 @@ class StatusCommand(BaseCommand):
 
     name = "status"
     help = "Show functions status"
-    description = (
-        "Display Lambda functions status, build status, dependencies, and configuration"
-    )
+    description = "Display Lambda functions status, build status, dependencies, and configuration"
 
     def execute(self, args: Namespace) -> bool:
         """Execute status command"""
@@ -104,9 +102,7 @@ class StatusCommand(BaseCommand):
 
             log_info(f"{i:3d}. {status_icon} {build_icon} {func}")
 
-        log_info(
-            f"\nLegend: ✅ Source exists | 📦 Built | ⚠️ Not built | ❌ Missing source"
-        )
+        log_info(f"\nLegend: ✅ Source exists | 📦 Built | ⚠️ Not built | ❌ Missing source")
         return True
 
     def _show_build_status(self) -> bool:

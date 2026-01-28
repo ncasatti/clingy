@@ -339,11 +339,7 @@ def fzf_select_items(
     filtered = []
     for s in selected:
         # Remove ANSI codes for comparison
-        clean = (
-            s.replace(Colors.BOLD, "")
-            .replace(Colors.GREEN, "")
-            .replace(Colors.RESET, "")
-        )
+        clean = s.replace(Colors.BOLD, "").replace(Colors.GREEN, "").replace(Colors.RESET, "")
         if clean in items:
             filtered.append(clean)
 
