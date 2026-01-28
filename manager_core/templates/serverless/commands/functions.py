@@ -124,7 +124,7 @@ class FunctionsCommand(BaseCommand):
         functions = fzf_select_items(
             items=GO_FUNCTIONS,
             prompt="Select functions to build: ",
-            include_all=True,
+            include_all=False,
         )
         if not functions:
             log_info("No functions selected")
@@ -153,7 +153,7 @@ class FunctionsCommand(BaseCommand):
         functions = fzf_select_items(
             items=GO_FUNCTIONS,
             prompt="Select functions to zip: ",
-            include_all=True,
+            include_all=False,
         )
         if not functions:
             log_info("No functions selected")
@@ -182,7 +182,7 @@ class FunctionsCommand(BaseCommand):
         functions = fzf_select_items(
             items=GO_FUNCTIONS,
             prompt="Select functions to deploy: ",
-            include_all=True,
+            include_all=False,
         )
         if not functions:
             log_info("No functions selected")
@@ -233,7 +233,7 @@ class FunctionsCommand(BaseCommand):
         functions = fzf_select_items(
             items=GO_FUNCTIONS,
             prompt="Select functions for full pipeline: ",
-            include_all=True,
+            include_all=False,
         )
         if not functions:
             log_info("No functions selected")
@@ -285,7 +285,7 @@ class FunctionsCommand(BaseCommand):
         functions = fzf_select_items(
             items=GO_FUNCTIONS,
             prompt="Select functions to clean: ",
-            include_all=True,
+            include_all=False,
         )
         if not functions:
             log_info("No functions selected")
