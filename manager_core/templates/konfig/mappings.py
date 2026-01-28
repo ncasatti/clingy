@@ -40,14 +40,29 @@ class Config(NamedTuple):
 
     def get_display_name(self):
         """Get display name with fallback to formatted name"""
-        return self.display_name or self.name.replace("-", " ").replace("_", " ").title()
+        return (
+            self.display_name or self.name.replace("-", " ").replace("_", " ").title()
+        )
 
+
+# Group descriptions (optional - for CLI help text)
+GROUP_DESCRIPTIONS = {
+    "hyprland": "Hyprland window manager and related components",
+    "sudo": "Configurations requiring sudo privileges",
+    "main": "Core system configurations",
+    "themes": "System theming configurations",
+    "shell": "Shell and terminal configurations",
+    "code": "VSCode based editors configurations",
+    "tmux": "Tmux terminal multiplexer",
+    "others": "Other development tools",
+}
 
 # All configurations in simple list format
 CONFIGS = [
+    ############################################################
     # Hyprland ecosystem - Window manager and related components
+    ##########
     Config("hyprland", "hypr", "~/.config/hypr", "hyprland", "Hyprland"),
-    Config("swaync", "swaync", "~/.config/swaync", "hyprland", "Swaync"),
     Config(
         "hyprshade",
         "hyprshade",
@@ -56,11 +71,14 @@ CONFIGS = [
         "Hyprshade",
         requires_sudo=True,
     ),
+    Config("swaync", "swaync", "~/.config/swaync", "hyprland", "Swaync"),
     Config("waybar", "waybar", "~/.config/waybar", "hyprland", "Waybar"),
     Config("rofi", "rofi", "~/.config/rofi", "hyprland", "Rofi"),
     Config("wallust", "wallust", "~/.config/wallust", "hyprland", "Wallust"),
     Config("kitty", "kitty", "~/.config/kitty", "hyprland", "Kitty"),
+    ############################################################
     # System themes - GTK, fonts, icons, wallpapers
+    ##########
     Config("icons", "themes/icons", "~/.icons", "themes", "Icons"),
     Config("fonts", "themes/fonts", "~/.local/share/fonts", "themes", "Fonts"),
     Config("gtk-2.0", "themes/gtk-2.0", "~/.config/gtk-2.0", "themes", "GTK 2.0"),
@@ -69,9 +87,13 @@ CONFIGS = [
     Config("kvantum", "themes/kvantum", "~/.config/Kvantum", "themes", "Kvantum"),
     Config("themes", "themes/themes", "~/.themes", "themes", "Themes"),
     # Config('wallpapers', 'themes/wallpapers', '~/Pictures/wallpapers', 'themes', 'Wallpapers'),
+    ############################################################
     # System configurations requiring sudo
+    ##########
     Config("keyd", "keyd", "/etc/keyd", "sudo", "Keyd", requires_sudo=True),
+    ############################################################
     # Core system configurations
+    ##########
     Config("rclone", "rclone", "~/.config/rclone", "main", "Rclone"),
     Config("gitconfig", ".gitconfig", "~/.gitconfig", "main", "Git Config"),
     Config(
@@ -82,9 +104,13 @@ CONFIGS = [
         "Git Credentials",
     ),
     Config("aws", "aws", "~/.aws", "main", "AWS"),
+    ############################################################
     # Shell configurations
+    ##########
     Config("zsh", ".zshrc", "~/.zshrc", "shell", "Zsh"),
-    Config("zsh-custom", "zsh/custom", "~/.oh-my-zsh/custom", "shell", "Zsh Custom Folder"),
+    Config(
+        "zsh-custom", "zsh/custom", "~/.oh-my-zsh/custom", "shell", "Zsh Custom Folder"
+    ),
     Config("p10k", ".p10k.zsh", "~/.p10k.zsh", "shell", "P10K"),
     Config("nvim", "nvim", "~/.config/nvim", "shell", "Nvim"),
     Config("fish-shell", "fish", "~/.config/fish", "shell"),
@@ -96,6 +122,9 @@ CONFIGS = [
         "Starship",
     ),
     Config("lazygit", "lazygit", "~/.config/lazygit", "shell", "Lazygit"),
+    ############################################################
+    # Agents configurations
+    ##########
     Config(
         "opencode",
         "opencode/opencode.json",
@@ -126,17 +155,25 @@ CONFIGS = [
     ),
     Config(
         "claude",
-        "claude/CLAUDE.md",
+        "opencode/agent/architect.md",
         "~/.claude/CLAUDE.md",
         "agents",
-        "Claude Main Agent",
+        "Claude Main Agent (opencode arch)",
     ),
-    Config("claude agents", "claude/agents", "~/.claude/agents", "agents", "Claude Agents"),
-    Config("claude skill", "claude/skills", "~/.claude/skills", "agents", "Claude Skills"),
+    Config(
+        "claude agents", "opencode/agent", "~/.claude/agents", "agents", "Claude Agents"
+    ),
+    Config(
+        "claude skill", "opencode/skill", "~/.claude/skills", "agents", "Claude Skills"
+    ),
+    ############################################################
     # Terminal multiplexer
+    ##########
     Config("tmux-config", "tmux/tmux.conf", "~/.tmux.conf", "tmux", "Tmux"),
     Config("tmux-plugins", "tmux/tmux", "~/.tmux", "tmux", "Tmux Plugins"),
+    ############################################################
     # Editor configurations
+    ##########
     Config(
         "windsurf-keybindings",
         "code/keybindings.json",
@@ -179,7 +216,9 @@ CONFIGS = [
         "code",
         "Google Antigravity Settings",
     ),
+    ############################################################
     # Other development tools
+    ##########
     Config("idea-vim", ".ideavimrc", "~/.ideavimrc", "others", "IDEA Vim"),
     Config(
         "obsidian-vim",
@@ -189,19 +228,6 @@ CONFIGS = [
         "Obsidian Vim",
     ),
 ]
-
-
-# Group descriptions (optional - for CLI help text)
-GROUP_DESCRIPTIONS = {
-    "sudo": "Configurations requiring sudo privileges",
-    "main": "Core system configurations",
-    "hyprland": "Hyprland window manager and related components",
-    "themes": "System theming configurations",
-    "shell": "Shell and terminal configurations",
-    "code": "VSCode based editors configurations",
-    "tmux": "Tmux terminal multiplexer",
-    "others": "Other development tools",
-}
 
 
 # Helper function for backward compatibility
