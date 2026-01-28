@@ -7,6 +7,7 @@ from argparse import ArgumentParser, Namespace
 from typing import List, Optional
 
 from config import BIN_DIR, GO_FUNCTIONS
+from core.function_utils import resolve_function_list
 
 from manager_core.commands.base import BaseCommand
 from manager_core.core.colors import Colors
@@ -48,7 +49,7 @@ class ZipCommand(BaseCommand):
         # log_header("COMPRESSING FUNCTIONS")
 
         # Resolve function list (supports both dev mode and CLI mode)
-        functions_to_zip = self._resolve_function_list(args)
+        functions_to_zip = resolve_function_list(args)
         if not functions_to_zip:
             return False
 
@@ -93,9 +94,7 @@ class ZipCommand(BaseCommand):
             # Validate bootstrap file exists
             if not os.path.exists(bootstrap_file):
                 duration = time.time() - start_time
-                log_error(
-                    f"{func_name} → bootstrap not found: {bootstrap_file}", duration
-                )
+                log_error(f"{func_name} → bootstrap not found: {bootstrap_file}", duration)
                 stats.add_failure(func_name)
                 overall_success = False
                 continue
@@ -108,9 +107,7 @@ class ZipCommand(BaseCommand):
             zip_command = ["zip", "-j", zip_file, bootstrap_file]
 
             try:
-                result = subprocess.run(
-                    zip_command, check=True, capture_output=True, text=True
-                )
+                result = subprocess.run(zip_command, check=True, capture_output=True, text=True)
 
                 duration = time.time() - start_time
 
@@ -118,9 +115,7 @@ class ZipCommand(BaseCommand):
                     zip_size = os.path.getsize(zip_file)
                     bootstrap_size = os.path.getsize(bootstrap_file)
                     compression_ratio = (
-                        (1 - zip_size / bootstrap_size) * 100
-                        if bootstrap_size > 0
-                        else 0
+                        (1 - zip_size / bootstrap_size) * 100 if bootstrap_size > 0 else 0
                     )
 
                     log_success(
@@ -133,9 +128,7 @@ class ZipCommand(BaseCommand):
                 else:
                     log_error(f"{func_name} → compression failed", duration)
                     if result.stderr:
-                        print(
-                            f"  {Colors.RED}Error: {result.stderr.strip()}{Colors.RESET}"
-                        )
+                        print(f"  {Colors.RED}Error: {result.stderr.strip()}{Colors.RESET}")
                     stats.add_failure(func_name)
                     overall_success = False
 

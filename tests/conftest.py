@@ -58,7 +58,7 @@ def temp_project_with_command(temp_project):
 from argparse import ArgumentParser, Namespace
 from manager_core.commands.base import BaseCommand
 from manager_core.core.menu import MenuNode
-from manager_core.core.emojis import Emojis
+from manager_core.core.emojis import Emoji
 
 
 class TestCommand(BaseCommand):
@@ -80,7 +80,7 @@ class TestCommand(BaseCommand):
         """Get menu tree"""
         return MenuNode(
             label="Test Command",
-            emoji=Emojis.INFO,
+            emoji=Emoji.INFO,
             action=lambda: self.execute(Namespace(value="menu"))
         )
 '''

@@ -7,6 +7,7 @@ from argparse import ArgumentParser, Namespace
 from typing import List, Optional
 
 from config import BIN_DIR, BUILD_FLAGS, BUILD_SETTINGS, FUNCTIONS_DIR, GO_FUNCTIONS
+from core.function_utils import resolve_function_list
 
 from manager_core.commands.base import BaseCommand
 from manager_core.core.colors import Colors
@@ -49,7 +50,7 @@ class BuildCommand(BaseCommand):
         # log_header("BUILDING GO FUNCTIONS")
 
         # Resolve function list (supports both dev mode and CLI mode)
-        functions_to_build = self._resolve_function_list(args)
+        functions_to_build = resolve_function_list(args)
         if not functions_to_build:
             return False
 
@@ -150,9 +151,7 @@ class BuildCommand(BaseCommand):
                 else:
                     log_error(f"{func_name} → exit code {result.returncode}", duration)
                     if result.stderr:
-                        print(
-                            f"  {Colors.RED}Error: {result.stderr.strip()}{Colors.RESET}"
-                        )
+                        print(f"  {Colors.RED}Error: {result.stderr.strip()}{Colors.RESET}")
                     stats.add_failure(func_name)
                     overall_success = False
 

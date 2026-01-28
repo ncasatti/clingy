@@ -5,6 +5,9 @@ CUSTOMIZE THIS FILE FOR YOUR PROJECT
 This is the only file that needs to be modified when using manager-core in your project.
 """
 
+import os
+from pathlib import Path
+
 from manager_core.core.dependency import Dependency
 
 # ============================================================================
@@ -36,10 +39,20 @@ BUILD_FLAGS = ["-ldflags", "-s -w"]
 
 
 # ============================================================================
+# Project Root Detection
+# ============================================================================
+# Root del proyecto serverless (donde están functions/, .bin/, serverless.yaml)
+# Default: Parent directory de manager/ (estructura estándar XSI)
+# Override: Setear variable de entorno PROJECT_ROOT=/custom/path
+_manager_dir = Path(__file__).parent
+PROJECT_ROOT = os.getenv("PROJECT_ROOT", str(_manager_dir.parent))
+
+
+# ============================================================================
 # Paths
 # ============================================================================
-FUNCTIONS_DIR = "functions"
-BIN_DIR = ".bin"
+FUNCTIONS_DIR = os.path.join(PROJECT_ROOT, "functions")
+BIN_DIR = os.path.join(PROJECT_ROOT, ".bin")
 
 
 # ============================================================================
@@ -66,7 +79,7 @@ INVOKE_AWS_REGION = "us-west-2"
 # Payload Settings
 # ============================================================================
 # Directory for composable payloads
-PAYLOADS_DIR = "payloads"
+PAYLOADS_DIR = os.path.join(PROJECT_ROOT, "payloads")
 
 # Default stage for payload composition (uses current environment)
 PAYLOAD_DEFAULT_STAGE = SERVERLESS_STAGE
