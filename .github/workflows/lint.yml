@@ -33,7 +33,7 @@ jobs:
 
       - name: Check import sorting with isort
         run: |
-          isort --check-only manager_core/ tests/
+          isort --check-only manager_core/ tests/ --profile black
 
       - name: Lint with flake8
         run: |
