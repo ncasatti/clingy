@@ -68,15 +68,15 @@ class Emoji:
     # ============================================================================
     PENCIL = "󰏫 "
     PLUS = " "
-    TRASH = " "
+    TRASH = "󰗨 "
     QUICK_ACTIONS = "󰱑 "
 
     # ============================================================================
     # Sync Operations
     # ============================================================================
-    SYNC = " "  # Sync/Refresh
-    UPLOAD = " "  # Upload to cloud
-    DOWNLOAD = " "  # Download from cloud
+    SYNC = " "  # Sync/Refresh
+    UPLOAD = "󱃭 "  # Upload to cloud
+    DOWNLOAD = "󱃩 "  # Download from cloud
 
     # ============================================================================
     # Commands - Main Menu Icons
