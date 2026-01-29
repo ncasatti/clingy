@@ -9,7 +9,13 @@ from typing import List, Optional
 # Import build and zip commands for --all flag
 from commands.core_commands.build import BuildCommand
 from commands.core_commands.zip import ZipCommand
-from config import BIN_DIR, GO_FUNCTIONS, SERVERLESS_PROFILE, SERVERLESS_STAGE
+from config import (
+    BIN_DIR,
+    GO_FUNCTIONS,
+    PROJECT_ROOT,
+    SERVERLESS_PROFILE,
+    SERVERLESS_STAGE,
+)
 from core.function_utils import resolve_function_list
 
 from manager_core.commands.base import BaseCommand
@@ -205,7 +211,9 @@ class DeployCommand(BaseCommand):
         start_time = time.time()
 
         try:
-            result = subprocess.run(command, check=True, capture_output=False, text=True)
+            result = subprocess.run(
+                command, check=True, capture_output=False, text=True, cwd=PROJECT_ROOT
+            )
 
             duration = time.time() - start_time
 
@@ -259,7 +267,9 @@ class DeployCommand(BaseCommand):
         start_time = time.time()
 
         try:
-            result = subprocess.run(command, check=True, capture_output=False, text=True)
+            result = subprocess.run(
+                command, check=True, capture_output=False, text=True, cwd=PROJECT_ROOT
+            )
 
             duration = time.time() - start_time
 
