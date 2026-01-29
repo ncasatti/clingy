@@ -1,4 +1,4 @@
-# manager-core
+# clingy
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
@@ -57,21 +57,21 @@
 ### From PyPI (Recommended)
 
 ```bash
-pip install manager-core
+pip install clingy
 ```
 
 ### From Source
 
 ```bash
-git clone https://github.com/ncasatti/manager-core.git
-cd manager-core
+git clone https://github.com/ncasatti/clingy.git
+cd clingy
 pip install -e .
 ```
 
 ### Verify Installation
 
 ```bash
-manager --version
+clingy --version
 ```
 
 ### Dependencies
@@ -105,7 +105,7 @@ sudo pacman -S fzf
 ```bash
 mkdir my-cli-tool
 cd my-cli-tool
-manager init
+clingy init
 ```
 
 This creates a project structure:
@@ -135,7 +135,7 @@ This launches an interactive menu where you can:
 ### 3. Run CLI Mode
 
 ```bash
-manager greet --language es
+clingy greet --language es
 ```
 
 ### 4. Create Your First Command
@@ -163,19 +163,19 @@ The default template for learning and simple projects.
 **Initialize:**
 
 ```bash
-manager init --template basic
+clingy init --template basic
 ```
 
 **Example:**
 
 ```bash
-manager greet --language es
+clingy greet --language es
 # Output: ¡Hola! 👋
 
-manager info
+clingy info
 # Output: System information...
 
-manager calculator
+clingy calculator
 # Output: Interactive calculator menu
 ```
 
@@ -183,7 +183,7 @@ manager calculator
 
 ### Konfig Template
 
-A dotfiles and symlink manager for Linux configuration files.
+A dotfiles and symlink clingy for Linux configuration files.
 
 **Features:**
 - 🔗 Manage symlinks for dotfiles (`.bashrc`, `.vimrc`, `.config/`, etc.)
@@ -200,19 +200,19 @@ A dotfiles and symlink manager for Linux configuration files.
 **Initialize:**
 
 ```bash
-manager init --template konfig
+clingy init --template konfig
 ```
 
 **Example:**
 
 ```bash
-manager status
+clingy status
 # Output: Linked: 12 | Unlinked: 3 | Broken: 0
 
-manager link --file ~/.bashrc
+clingy link --file ~/.bashrc
 # Output: ✓ ~/.bashrc → /path/to/repo/bashrc
 
-manager browse
+clingy browse
 # Output: Interactive file browser with quick actions
 ```
 
@@ -220,7 +220,7 @@ manager browse
 
 ### Serverless Template
 
-An AWS Lambda + Go function manager for serverless deployments.
+An AWS Lambda + Go function clingy for serverless deployments.
 
 **Features:**
 - 🚀 Build, deploy, and invoke Lambda functions
@@ -238,22 +238,22 @@ An AWS Lambda + Go function manager for serverless deployments.
 **Initialize:**
 
 ```bash
-manager init --template serverless
+clingy init --template serverless
 ```
 
 **Example:**
 
 ```bash
-manager build
+clingy build
 # Output: Building Lambda functions...
 
-manager deploy --function my-function
+clingy deploy --function my-function
 # Output: ✓ Deployed my-function (v1.2.3)
 
-manager invoke --function my-function --payload '{"key": "value"}'
+clingy invoke --function my-function --payload '{"key": "value"}'
 # Output: Invocation result...
 
-manager logs --function my-function --tail
+clingy logs --function my-function --tail
 # Output: Real-time CloudWatch logs
 ```
 
@@ -266,10 +266,10 @@ All commands inherit from `BaseCommand` and are automatically discovered.
 ### Basic Command Structure
 
 ```python
-from manager_core.commands.base import BaseCommand
+from clingy.commands.base import BaseCommand
 from argparse import ArgumentParser, Namespace
-from manager_core.core.menu import MenuNode
-from manager_core.core.logger import log_success, log_error
+from clingy.core.menu import MenuNode
+from clingy.core.logger import log_success, log_error
 
 class GreetCommand(BaseCommand):
     """Greet users in different languages"""
@@ -341,8 +341,8 @@ class GreetCommand(BaseCommand):
 ### Command with Submenus
 
 ```python
-from manager_core.core.menu import MenuNode, fzf_select_items
-from manager_core.config import ITEMS
+from clingy.core.menu import MenuNode, fzf_select_items
+from clingy.config import ITEMS
 
 class ProcessCommand(BaseCommand):
     """Process items with hierarchical menu"""
@@ -409,7 +409,7 @@ class ProcessCommand(BaseCommand):
 ### Command with Multi-Select
 
 ```python
-from manager_core.core.menu import fzf_select_items
+from clingy.core.menu import fzf_select_items
 
 class DeployCommand(BaseCommand):
     """Deploy with multi-select support"""
@@ -461,7 +461,7 @@ class DeployCommand(BaseCommand):
 
 | Component | Required | Purpose |
 |-----------|----------|---------|
-| `name` | ✅ | CLI command name (e.g., `manager greet`) |
+| `name` | ✅ | CLI command name (e.g., `clingy greet`) |
 | `help` | ✅ | Short help text for `--help` |
 | `description` | ❌ | Detailed description (defaults to `help`) |
 | `execute()` | ✅ | Main command logic, returns `bool` |
@@ -475,7 +475,7 @@ class DeployCommand(BaseCommand):
 ### Logger Functions
 
 ```python
-from manager_core.core.logger import (
+from clingy.core.logger import (
     log_header,    # Major section header
     log_section,   # Subsection header
     log_success,   # Success message (green ✓)
@@ -503,8 +503,8 @@ print_summary()  # Shows stats: ✓ 5 | ✗ 1 | ⏭ 2
 ### Stats Tracking
 
 ```python
-from manager_core.core.stats import stats
-from manager_core.core.logger import print_summary
+from clingy.core.stats import stats
+from clingy.core.logger import print_summary
 
 stats.reset()
 stats.total_items = len(items)
@@ -559,7 +559,7 @@ log_info("Downloading dependencies...")
 ### config.py Structure
 
 ```python
-from manager_core.core.dependency import Dependency
+from clingy.core.dependency import Dependency
 
 # Project metadata
 PROJECT_NAME = "My CLI Tool"
@@ -599,7 +599,7 @@ DEPENDENCIES = [
 ### Dependency Objects
 
 ```python
-from manager_core.core.dependency import Dependency
+from clingy.core.dependency import Dependency
 
 # Required dependency
 Dependency(
@@ -624,7 +624,7 @@ Dependency(
 ### Accessing Configuration
 
 ```python
-from manager_core.config import (
+from clingy.config import (
     PROJECT_NAME,
     PROJECT_VERSION,
     ITEMS,
@@ -652,7 +652,7 @@ graph TD
     B --> C["Dependency Check<br/>check_required_dependencies"]
     C -->|Missing deps| D["Show error &<br/>installation guide"]
     C -->|All OK| E["Context Detection<br/>discovery.py"]
-    E -->|No project found| F["Show error:<br/>No manager project"]
+    E -->|No project found| F["Show error:<br/>No clingy project"]
     E -->|Project found| G["Command Discovery<br/>Auto-load commands/"]
     G --> H["Build Menu Tree<br/>from all commands"]
     H --> I{User Input}
@@ -668,7 +668,7 @@ graph TD
 ### Directory Structure
 
 ```
-manager_core/                    # Framework package
+clingy/                    # Framework package
 ├── commands/
 │   ├── base.py                 # BaseCommand abstract class
 │   ├── init.py                 # Project initialization command
@@ -688,11 +688,11 @@ manager_core/                    # Framework package
 │   │   ├── commands/
 │   │   ├── config.py
 │   │   └── README.md
-│   ├── konfig/                 # Dotfiles manager template
+│   ├── konfig/                 # Dotfiles clingy template
 │   │   ├── commands/
 │   │   ├── config.py
 │   │   └── README.md
-│   └── serverless/             # AWS Lambda manager template
+│   └── serverless/             # AWS Lambda clingy template
 │       ├── commands/
 │       ├── config.py
 │       └── README.md
@@ -738,7 +738,7 @@ The framework automatically finds your project by searching up the directory tre
 ```bash
 # Works from any subdirectory
 cd my-project/src/utils
-manager  # Still finds project root!
+clingy  # Still finds project root!
 ```
 
 **How it works:**
@@ -752,7 +752,7 @@ manager  # Still finds project root!
 ### MenuNode API
 
 ```python
-from manager_core.core.menu import MenuNode
+from clingy.core.menu import MenuNode
 from typing import List, Dict, Any, Optional, Callable
 
 @dataclass
@@ -777,7 +777,7 @@ class MenuNode:
 ### fzf Selection Helpers
 
 ```python
-from manager_core.core.menu import fzf_select_items
+from clingy.core.menu import fzf_select_items
 
 # Single selection
 item = fzf_select_items(
@@ -803,7 +803,7 @@ items = fzf_select_items(
 ### BaseCommand Helpers
 
 ```python
-from manager_core.commands.base import BaseCommand
+from clingy.commands.base import BaseCommand
 
 class MyCommand(BaseCommand):
     def execute(self, args: Namespace) -> bool:
@@ -824,14 +824,14 @@ class MyCommand(BaseCommand):
 ### Clone and Setup
 
 ```bash
-git clone https://github.com/ncasatti/manager-core.git
-cd manager-core
+git clone https://github.com/ncasatti/clingy.git
+cd clingy
 
 # Install in editable mode
 pip install -e .
 
 # Verify installation
-manager --version
+clingy --version
 ```
 
 ### Running Tests
@@ -867,7 +867,7 @@ black . --line-length 100
 black . --check --line-length 100
 
 # Format specific directory
-black manager_core/ --line-length 100
+black clingy/ --line-length 100
 ```
 
 ### Type Checking (Optional)
@@ -899,9 +899,9 @@ isort . --profile black
 Manage infrastructure, deployments, and monitoring:
 
 ```bash
-manager deploy --service api
-manager logs --function my-lambda --tail
-manager status --all
+clingy deploy --service api
+clingy logs --function my-lambda --tail
+clingy status --all
 ```
 
 ### System Configuration
@@ -909,9 +909,9 @@ manager status --all
 Manage dotfiles, symlinks, and system settings:
 
 ```bash
-manager link --file ~/.bashrc
-manager sync --all
-manager status
+clingy link --file ~/.bashrc
+clingy sync --all
+clingy status
 ```
 
 ### Data Pipelines
@@ -919,9 +919,9 @@ manager status
 Orchestrate data processing workflows:
 
 ```bash
-manager extract --source database
-manager transform --pipeline etl-v2
-manager load --destination warehouse
+clingy extract --source database
+clingy transform --pipeline etl-v2
+clingy load --destination warehouse
 ```
 
 ### Development Utilities
@@ -929,9 +929,9 @@ manager load --destination warehouse
 Build custom tools for your team:
 
 ```bash
-manager scaffold --template service
-manager test --coverage
-manager lint --fix
+clingy scaffold --template service
+clingy test --coverage
+clingy lint --fix
 ```
 
 ### Admin Dashboards
@@ -939,23 +939,23 @@ manager lint --fix
 Create interactive admin interfaces:
 
 ```bash
-manager users --list
-manager users --create --email user@example.com
-manager audit --date 2024-01-01
+clingy users --list
+clingy users --create --email user@example.com
+clingy audit --date 2024-01-01
 ```
 
 ---
 
 ## Troubleshooting
 
-### "No manager project found"
+### "No clingy project found"
 
-**Problem:** You're not in a manager project directory.
+**Problem:** You're not in a clingy project directory.
 
 **Solution:**
 ```bash
 # Initialize a new project
-manager init
+clingy init
 
 # Or navigate to an existing project
 cd /path/to/my-project
@@ -981,18 +981,18 @@ sudo dnf install fzf
 sudo pacman -S fzf
 ```
 
-### "ModuleNotFoundError: No module named 'manager_core'"
+### "ModuleNotFoundError: No module named 'clingy'"
 
 **Problem:** The framework is not installed.
 
 **Solution:**
 ```bash
 # Install from PyPI
-pip install manager-core
+pip install clingy
 
 # Or install from source in editable mode
-git clone https://github.com/ncasatti/manager-core.git
-cd manager-core
+git clone https://github.com/ncasatti/clingy.git
+cd clingy
 pip install -e .
 ```
 

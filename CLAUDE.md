@@ -78,16 +78,17 @@ pytest --pdb                           # Drop into debugger on failure
 
 ### Linting/Formatting
 
-**Configured:** Black (line-length: 100) + isort (profile: black)
+**Configured:** Black (line-length: 100)
 
 ```bash
 # Format code
 black . --line-length 100
-isort . --profile black
 
-# Check without modifying (CI checks)
+# Check without modifying
 black . --check --line-length 100
-isort . --check-only --profile black
+
+# Format specific files
+black clingy/
 ```
 
 **Optional (not configured):**
@@ -98,29 +99,10 @@ flake8 . --max-line-length=100
 
 # MyPy (type checking)
 mypy . --strict
+
+# isort (import sorting)
+isort . --profile black
 ```
-
-### Pre-Commit Checks
-
-**IMPORTANT:** Before committing, run these commands to ensure CI will pass:
-
-```bash
-# Run ALL CI checks locally (same as GitHub Actions)
-black clingy/ tests/ --check --line-length 100
-isort clingy/ tests/ --check-only --profile black
-
-# If checks fail, format the code:
-black clingy/ tests/ --line-length 100
-isort clingy/ tests/ --profile black
-
-# Then verify tests still pass:
-pytest tests/ -v
-```
-
-**Why this matters:**
-- GitHub Actions will fail if code is not formatted correctly
-- Running checks locally saves CI time and prevents failed builds
-- These are the EXACT commands that run in `.github/workflows/lint.yml`
 
 ### Utility Commands
 

@@ -6,19 +6,19 @@ from pathlib import Path
 
 import pytest
 
-from manager_core.core.discovery import (
-    find_manager_root,
+from clingy.core.discovery import (
+    find_clingy_root,
     get_project_context,
     load_project_config,
 )
 
 
 class TestFindManagerRoot:
-    """Tests for find_manager_root function"""
+    """Tests for find_clingy_root function"""
 
     def test_finds_project_in_current_directory(self, temp_project):
         """Should find project in current directory"""
-        result = find_manager_root(start_path=temp_project)
+        result = find_clingy_root(start_path=temp_project)
         assert result == temp_project
 
     def test_finds_project_walking_up_directories(self, temp_project):
@@ -27,7 +27,7 @@ class TestFindManagerRoot:
         deep_dir = temp_project / "src" / "deep" / "nested"
         deep_dir.mkdir(parents=True)
 
-        result = find_manager_root(start_path=deep_dir)
+        result = find_clingy_root(start_path=deep_dir)
         assert result == temp_project
 
     def test_returns_none_if_no_project_found(self, tmp_path):
@@ -36,7 +36,7 @@ class TestFindManagerRoot:
         no_project = tmp_path / "no-project"
         no_project.mkdir()
 
-        result = find_manager_root(start_path=no_project)
+        result = find_clingy_root(start_path=no_project)
         # Result should be None or a parent project (if one exists above)
         # The key is: it should not find a project in no_project itself
         if result is not None:
@@ -48,7 +48,7 @@ class TestFindManagerRoot:
         deep_dir = tmp_path / "a" / "b" / "c" / "d" / "e"
         deep_dir.mkdir(parents=True)
 
-        result = find_manager_root(start_path=deep_dir)
+        result = find_clingy_root(start_path=deep_dir)
         # Should either find nothing or find a project above tmp_path
         # But should not crash
         assert result is None or isinstance(result, Path)
@@ -60,7 +60,7 @@ class TestFindManagerRoot:
         project_no_config.mkdir()
         (project_no_config / "commands").mkdir()
 
-        result = find_manager_root(start_path=project_no_config)
+        result = find_clingy_root(start_path=project_no_config)
         # Should not find project_no_config as a valid project
         if result is not None:
             assert result != project_no_config
@@ -70,7 +70,7 @@ class TestFindManagerRoot:
         project_no_commands.mkdir()
         (project_no_commands / "config.py").write_text("PROJECT_NAME = 'Test'")
 
-        result = find_manager_root(start_path=project_no_commands)
+        result = find_clingy_root(start_path=project_no_commands)
         # Should not find project_no_commands as a valid project
         if result is not None:
             assert result != project_no_commands
@@ -81,7 +81,7 @@ class TestValidProjectDetection:
 
     def test_valid_project_root_found(self, temp_project_with_command):
         """Should find valid project root"""
-        result = find_manager_root(start_path=temp_project_with_command)
+        result = find_clingy_root(start_path=temp_project_with_command)
         assert result == temp_project_with_command
 
     def test_missing_commands_directory(self, tmp_path):
@@ -90,7 +90,7 @@ class TestValidProjectDetection:
         project.mkdir()
         (project / "config.py").write_text("PROJECT_NAME = 'Test'")
 
-        result = find_manager_root(start_path=project)
+        result = find_clingy_root(start_path=project)
         # Should not identify this as a valid project
         if result is not None:
             assert result != project
@@ -103,20 +103,25 @@ class TestValidProjectDetection:
         commands.mkdir()
         (commands / "test.py").write_text("# test")
 
-        result = find_manager_root(start_path=project)
+        result = find_clingy_root(start_path=project)
         # Should not identify this as a valid project
         if result is not None:
             assert result != project
 
     def test_empty_commands_directory(self, tmp_path):
         """Should find project even if commands/ is empty"""
+        import json
+
         project = tmp_path / "project"
         project.mkdir()
         (project / "commands").mkdir()
         (project / "commands" / "__init__.py").write_text("")
         (project / "config.py").write_text("PROJECT_NAME = 'Test'")
+        (project / ".clingy").write_text(
+            json.dumps({"version": "1.0", "type": "clingy-project"}, indent=2) + "\n"
+        )
 
-        result = find_manager_root(start_path=project)
+        result = find_clingy_root(start_path=project)
         assert result == project
 
 
@@ -158,8 +163,8 @@ class TestGetProjectContext:
 
     def test_returns_context_for_valid_project(self, temp_project, monkeypatch):
         """Should return context dict with root and config for valid project"""
-        # Mock find_manager_root to return our temp project
-        monkeypatch.setattr("manager_core.core.discovery.find_manager_root", lambda: temp_project)
+        # Mock find_clingy_root to return our temp project
+        monkeypatch.setattr("clingy.core.discovery.find_clingy_root", lambda: temp_project)
 
         context = get_project_context()
 
@@ -172,8 +177,8 @@ class TestGetProjectContext:
 
     def test_returns_none_for_no_project(self, monkeypatch):
         """Should return None if no project found"""
-        # Mock find_manager_root to return None
-        monkeypatch.setattr("manager_core.core.discovery.find_manager_root", lambda: None)
+        # Mock find_clingy_root to return None
+        monkeypatch.setattr("clingy.core.discovery.find_clingy_root", lambda: None)
 
         context = get_project_context()
         assert context is None

@@ -46,27 +46,27 @@ Los badges dan una primera impresión profesional y muestran el estado del proye
 
 ```markdown
 <!-- PyPI -->
-[![PyPI version](https://badge.fury.io/py/manager-core.svg)](https://badge.fury.io/py/manager-core)
-[![Downloads](https://pepy.tech/badge/manager-core)](https://pepy.tech/project/manager-core)
-[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/manager-core)](https://pypi.org/project/manager-core/)
+[![PyPI version](https://badge.fury.io/py/clingy.svg)](https://badge.fury.io/py/clingy)
+[![Downloads](https://pepy.tech/badge/clingy)](https://pepy.tech/project/clingy)
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/clingy)](https://pypi.org/project/clingy/)
 
 <!-- npm -->
 [![npm version](https://badge.fury.io/js/package-name.svg)](https://badge.fury.io/js/package-name)
 [![npm downloads](https://img.shields.io/npm/dm/package-name.svg)](https://npmjs.org/package/package-name)
 
 <!-- GitHub -->
-[![Stars](https://img.shields.io/github/stars/ncasatti/manager-core.svg?style=social)](https://github.com/ncasatti/manager-core)
-[![Forks](https://img.shields.io/github/forks/ncasatti/manager-core.svg?style=social)](https://github.com/ncasatti/manager-core)
-[![Watchers](https://img.shields.io/github/watchers/ncasatti/manager-core.svg?style=social)](https://github.com/ncasatti/manager-core)
+[![Stars](https://img.shields.io/github/stars/ncasatti/clingy.svg?style=social)](https://github.com/ncasatti/clingy)
+[![Forks](https://img.shields.io/github/forks/ncasatti/clingy.svg?style=social)](https://github.com/ncasatti/clingy)
+[![Watchers](https://img.shields.io/github/watchers/ncasatti/clingy.svg?style=social)](https://github.com/ncasatti/clingy)
 
 <!-- CI/CD (GitHub Actions) -->
-[![Tests](https://github.com/ncasatti/manager-core/workflows/Tests/badge.svg)](https://github.com/ncasatti/manager-core/actions)
-[![Build](https://github.com/ncasatti/manager-core/workflows/Build/badge.svg)](https://github.com/ncasatti/manager-core/actions)
-[![Lint](https://github.com/ncasatti/manager-core/workflows/Lint/badge.svg)](https://github.com/ncasatti/manager-core/actions)
+[![Tests](https://github.com/ncasatti/clingy/workflows/Tests/badge.svg)](https://github.com/ncasatti/clingy/actions)
+[![Build](https://github.com/ncasatti/clingy/workflows/Build/badge.svg)](https://github.com/ncasatti/clingy/actions)
+[![Lint](https://github.com/ncasatti/clingy/workflows/Lint/badge.svg)](https://github.com/ncasatti/clingy/actions)
 
 <!-- Codecov (cobertura de tests) -->
-[![codecov](https://codecov.io/gh/ncasatti/manager-core/branch/main/graph/badge.svg)](https://codecov.io/gh/ncasatti/manager-core)
-[![Coverage Status](https://coveralls.io/repos/github/ncasatti/manager-core/badge.svg?branch=main)](https://coveralls.io/github/ncasatti/manager-core?branch=main)
+[![codecov](https://codecov.io/gh/ncasatti/clingy/branch/main/graph/badge.svg)](https://codecov.io/gh/ncasatti/clingy)
+[![Coverage Status](https://coveralls.io/repos/github/ncasatti/clingy/badge.svg?branch=main)](https://coveralls.io/github/ncasatti/clingy?branch=main)
 
 <!-- Code quality -->
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -78,11 +78,11 @@ Los badges dan una primera impresión profesional y muestran el estado del proye
 [![Documentation Status](https://readthedocs.org/projects/project-name/badge/?version=latest)](https://project-name.readthedocs.io/en/latest/?badge=latest)
 
 <!-- Dependencies -->
-[![Dependencies](https://img.shields.io/librariesio/github/ncasatti/manager-core)](https://libraries.io/github/ncasatti/manager-core)
+[![Dependencies](https://img.shields.io/librariesio/github/ncasatti/clingy)](https://libraries.io/github/ncasatti/clingy)
 
 <!-- Activity -->
-[![Last Commit](https://img.shields.io/github/last-commit/ncasatti/manager-core)](https://github.com/ncasatti/manager-core/commits/main)
-[![Commits](https://img.shields.io/github/commit-activity/m/ncasatti/manager-core)](https://github.com/ncasatti/manager-core/graphs/commit-activity)
+[![Last Commit](https://img.shields.io/github/last-commit/ncasatti/clingy)](https://github.com/ncasatti/clingy/commits/main)
+[![Commits](https://img.shields.io/github/commit-activity/m/ncasatti/clingy)](https://github.com/ncasatti/clingy/graphs/commit-activity)
 ```
 
 ### 1.3 Customizar Badges
@@ -381,7 +381,7 @@ classDiagram
 stateDiagram-v2
     [*] --> Idle
     
-    Idle --> LoadingProject : manager executed
+    Idle --> LoadingProject : clingy executed
     LoadingProject --> ProjectFound : project detected
     LoadingProject --> NoProject : no project found
     
@@ -526,7 +526,7 @@ erDiagram
 ### 4.2 Tabla Comparativa
 
 ```markdown
-| Feature | manager-core | Click | Typer | argparse |
+| Feature | clingy | Click | Typer | argparse |
 |---------|:------------:|:-----:|:-----:|:--------:|
 | **Interactive Menus** | ✅ | ❌ | ❌ | ❌ |
 | **Auto-discovery** | ✅ | ❌ | ❌ | ❌ |
@@ -641,7 +641,7 @@ ITEMS = ["item1", "item2"]
 Create a file in `commands/`:
 
 \`\`\`python
-from manager_core.commands.base import BaseCommand
+from clingy.commands.base import BaseCommand
 
 class MyCommand(BaseCommand):
     name = "mycommand"
@@ -654,14 +654,14 @@ class MyCommand(BaseCommand):
 <details>
 <summary>Can I use this with Python 3.7?</summary>
 
-No, manager-core requires Python 3.8+ for type hints and other features.
+No, clingy requires Python 3.8+ for type hints and other features.
 
 </details>
 
 <details>
 <summary>How do I add custom templates?</summary>
 
-Create a directory in `manager_core/templates/` with the template structure.
+Create a directory in `clingy/templates/` with the template structure.
 
 </details>
 ```
@@ -768,14 +768,14 @@ if __name__ == "__main__":
 
 \`\`\`bash
 # Bash
-npm install -g manager-core
-manager init --template serverless
+npm install -g clingy
+clingy init --template serverless
 cd my-project && manager
 \`\`\`
 
 \`\`\`yaml
 # YAML
-name: manager-core
+name: clingy
 version: 1.0.0
 dependencies:
   - fzf
@@ -785,7 +785,7 @@ dependencies:
 \`\`\`json
 // JSON (comentarios no válidos, solo ilustrativo)
 {
-  "name": "manager-core",
+  "name": "clingy",
   "version": "1.0.0",
   "templates": ["basic", "konfig", "serverless"]
 }
@@ -810,7 +810,7 @@ interface Config {
 }
 
 const config: Config = {
-  name: "manager-core",
+  name: "clingy",
   version: "1.0.0"
 };
 \`\`\`
@@ -854,9 +854,9 @@ fn main() {
 ### 7.4 Inline Code
 
 ```markdown
-Use `manager init` to create a new project.
+Use `clingy init` to create a new project.
 The `config.py` file contains `PROJECT_NAME` and `ITEMS`.
-Install with `pip install manager-core`.
+Install with `pip install clingy`.
 ```
 
 ### 7.5 Código con Highlighting de Líneas Específicas
@@ -1528,4 +1528,4 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 **Last Updated:** 2026-01-27  
 **Author:** Nahuel Casatti  
-**Repository:** [manager-core](https://github.com/ncasatti/manager-core)
+**Repository:** [clingy](https://github.com/ncasatti/clingy)

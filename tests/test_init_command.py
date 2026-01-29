@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from manager_core.commands.init import InitCommand
+from clingy.commands.init import InitCommand
 
 
 class TestInitCommand:

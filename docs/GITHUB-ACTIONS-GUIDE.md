@@ -1,6 +1,6 @@
 # 🚀 GitHub Actions CI/CD Guide
 
-> Guía completa de GitHub Actions workflows implementados en manager-core
+> Guía completa de GitHub Actions workflows implementados en clingy
 
 ---
 
@@ -157,7 +157,7 @@ Esto crea **15 jobs** (5 Python versions × 3 OS).
 
 ## Workflows Implementados
 
-Tenemos **3 workflows** en manager-core:
+Tenemos **3 workflows** en clingy:
 
 ### 1. Tests (`tests.yml`)
 
@@ -222,7 +222,7 @@ jobs:
     - name: Run tests with pytest
       run: |
         pytest tests/ -v \
-          --cov=manager_core \
+          --cov=clingy \
           --cov-report=xml \       # XML para Codecov
           --cov-report=term-missing
     
@@ -239,7 +239,7 @@ jobs:
     - name: Test installation
       run: |
         pip install -e .
-        manager --help || echo "CLI help test passed"
+        clingy --help || echo "CLI help test passed"
 ```
 
 **Resultado:** 5 jobs en paralelo (uno por versión de Python), cada uno toma ~2 minutos.
@@ -299,22 +299,22 @@ jobs:
     
     - name: Check code formatting with Black
       run: |
-        black --check --diff manager_core/ tests/
+        black --check --diff clingy/ tests/
     
     - name: Check import sorting with isort
       run: |
-        isort --check-only --diff manager_core/ tests/
+        isort --check-only --diff clingy/ tests/
     
     - name: Lint with flake8
       run: |
-        flake8 manager_core/ tests/ \
+        flake8 clingy/ tests/ \
           --max-line-length=100 \
           --extend-ignore=E203,W503  # Compatibilidad con Black
       continue-on-error: true        # No fallar (solo advertir)
     
     - name: Type check with mypy
       run: |
-        mypy manager_core/ --ignore-missing-imports
+        mypy clingy/ --ignore-missing-imports
       continue-on-error: true        # No fallar (solo advertir)
 ```
 
@@ -468,9 +468,9 @@ En lugar de usar API tokens, PyPI soporta "trusted publishing" desde GitHub Acti
 1. Ir a [https://pypi.org/manage/account/publishing/](https://pypi.org/manage/account/publishing/)
 2. Click **Add a new pending publisher**
 3. Completar:
-   - **PyPI Project Name:** `manager-core`
+   - **PyPI Project Name:** `clingy`
    - **Owner:** `ncasatti` (tu username)
-   - **Repository name:** `manager-core`
+   - **Repository name:** `clingy`
    - **Workflow name:** `release.yml`
    - **Environment name:** `release`
 4. **Add**
@@ -481,7 +481,7 @@ Ahora el workflow puede publicar sin tokens.
 
 1. Ir a [https://codecov.io/](https://codecov.io/)
 2. Login con GitHub
-3. Agregar repo `manager-core`
+3. Agregar repo `clingy`
 4. Copiar **CODECOV_TOKEN**
 5. En GitHub: **Settings** → **Secrets and variables** → **Actions**
 6. **New repository secret**
@@ -510,16 +510,16 @@ Una vez que los workflows corran, agregar badges al README:
 
 ```markdown
 <!-- Tests -->
-[![Tests](https://github.com/ncasatti/manager-core/workflows/Tests/badge.svg)](https://github.com/ncasatti/manager-core/actions)
+[![Tests](https://github.com/ncasatti/clingy/workflows/Tests/badge.svg)](https://github.com/ncasatti/clingy/actions)
 
 <!-- Lint -->
-[![Lint](https://github.com/ncasatti/manager-core/workflows/Lint/badge.svg)](https://github.com/ncasatti/manager-core/actions)
+[![Lint](https://github.com/ncasatti/clingy/workflows/Lint/badge.svg)](https://github.com/ncasatti/clingy/actions)
 
 <!-- Coverage -->
-[![codecov](https://codecov.io/gh/ncasatti/manager-core/branch/main/graph/badge.svg)](https://codecov.io/gh/ncasatti/manager-core)
+[![codecov](https://codecov.io/gh/ncasatti/clingy/branch/main/graph/badge.svg)](https://codecov.io/gh/ncasatti/clingy)
 
 <!-- PyPI version (después de publicar) -->
-[![PyPI version](https://badge.fury.io/py/manager-core.svg)](https://badge.fury.io/py/manager-core)
+[![PyPI version](https://badge.fury.io/py/clingy.svg)](https://badge.fury.io/py/clingy)
 ```
 
 ---
@@ -781,4 +781,4 @@ act --secret-file .secrets
 
 **Last Updated:** 2026-01-27  
 **Author:** Nahuel Casatti  
-**Repository:** [manager-core](https://github.com/ncasatti/manager-core)
+**Repository:** [clingy](https://github.com/ncasatti/clingy)

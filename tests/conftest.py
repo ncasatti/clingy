@@ -2,6 +2,7 @@
 Pytest configuration and shared fixtures
 """
 
+import json
 from pathlib import Path
 
 import pytest
@@ -30,7 +31,7 @@ PROJECT_NAME = "Test Project"
 PROJECT_VERSION = "1.0.0"
 ITEMS = ["item-1", "item-2", "item-3"]
 
-from manager_core.core.dependency import Dependency
+from clingy.core.dependency import Dependency
 
 DEPENDENCIES = [
     Dependency(
@@ -42,6 +43,10 @@ DEPENDENCIES = [
 ]
 '''
     (project / "config.py").write_text(config_content)
+
+    # Create .clingy marker file
+    marker_content = {"version": "1.0", "type": "clingy-project", "template": "test"}
+    (project / ".clingy").write_text(json.dumps(marker_content, indent=2) + "\n")
 
     return project
 
@@ -56,9 +61,9 @@ def temp_project_with_command(temp_project):
     """
     command_content = '''"""Sample test command"""
 from argparse import ArgumentParser, Namespace
-from manager_core.commands.base import BaseCommand
-from manager_core.core.menu import MenuNode
-from manager_core.core.emojis import Emoji
+from clingy.commands.base import BaseCommand
+from clingy.core.menu import MenuNode
+from clingy.core.emojis import Emoji
 
 
 class TestCommand(BaseCommand):

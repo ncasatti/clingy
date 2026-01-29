@@ -3,16 +3,16 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "manager-core"
+name = "clingy"
 version = "1.0.0"
-description = "Context-aware CLI framework with fuzzy search menus and auto-discovery"
+description = "Context-aware CLI framework with fuzzy search menus and auto-discovery - Build interactive command-line tools that cling to your workflow"
 readme = "README.md"
 requires-python = ">=3.8"
 license = {text = "MIT"}
 authors = [
     {name = "Nicolás Casatti", email = "ncasatti@gmail.com"}
 ]
-keywords = ["cli", "manager", "interactive", "fzf", "template"]
+keywords = ["cli", "clingy", "interactive", "fzf", "template", "framework", "command-line"]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
@@ -41,12 +41,12 @@ dev = [
 ]
 
 [project.scripts]
-manager = "manager_core.cli:main"
+clingy = "clingy.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/ncasatti/manager"
-Repository = "https://github.com/ncasatti/manager"
-Issues = "https://github.com/ncasatti/manager/issues"
+Homepage = "https://github.com/ncasatti/clingy"
+Repository = "https://github.com/ncasatti/clingy"
+Issues = "https://github.com/ncasatti/clingy/issues"
 
 [tool.black]
 line-length = 100
@@ -65,5 +65,5 @@ extend-exclude = '''
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["manager_core*"]
+include = ["clingy*"]
 exclude = ["tests*", "docs*"]

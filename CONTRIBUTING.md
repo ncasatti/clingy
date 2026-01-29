@@ -1,14 +1,14 @@
-# Contributing to manager-core
+# Contributing to clingy
 
-Thank you for your interest in contributing to manager-core! This document will guide you through the development process.
+Thank you for your interest in contributing to clingy! This document will guide you through the development process.
 
 ## Development Setup
 
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/ncasatti/manager-core.git
-cd manager-core
+git clone https://github.com/ncasatti/clingy.git
+cd clingy
 ```
 
 ### 2. Install Dependencies
@@ -29,10 +29,10 @@ pre-commit install
 
 ```bash
 # Test the CLI
-manager --help
+clingy --help
 
 # Run a test command
-manager init --help
+clingy init --help
 ```
 
 ## Code Style
@@ -45,12 +45,12 @@ This project enforces strict code formatting using **Black** (line-length: 100) 
 
 ```bash
 # Format your code
-black manager_core/ tests/ --line-length 100
-isort manager_core/ tests/ --profile black
+black clingy/ tests/ --line-length 100
+isort clingy/ tests/ --profile black
 
 # Verify formatting (same checks as CI)
-black manager_core/ tests/ --check --line-length 100
-isort manager_core/ tests/ --check-only --profile black
+black clingy/ tests/ --check --line-length 100
+isort clingy/ tests/ --check-only --profile black
 
 # Run tests
 pytest tests/ -v
@@ -110,7 +110,7 @@ pytest tests/test_commands.py -v
 pytest tests/test_commands.py::test_init -v
 
 # Run with coverage report
-pytest tests/ -v --cov=manager_core --cov-report=term-missing
+pytest tests/ -v --cov=clingy --cov-report=term-missing
 
 # Stop on first failure
 pytest tests/ -x
@@ -125,7 +125,7 @@ Tests should be placed in the `tests/` directory with the naming convention `tes
 
 ```python
 import pytest
-from manager_core.commands.mycommand import MyCommand
+from clingy.commands.mycommand import MyCommand
 from argparse import Namespace
 
 class TestMyCommand:
@@ -170,12 +170,12 @@ Branch naming convention:
 
 ```bash
 # Format code
-black manager_core/ tests/ --line-length 100
-isort manager_core/ tests/ --profile black
+black clingy/ tests/ --line-length 100
+isort clingy/ tests/ --profile black
 
 # Verify formatting
-black manager_core/ tests/ --check --line-length 100
-isort manager_core/ tests/ --check-only --profile black
+black clingy/ tests/ --check --line-length 100
+isort clingy/ tests/ --check-only --profile black
 
 # Run tests
 pytest tests/ -v
@@ -290,8 +290,8 @@ BREAKING CHANGE: Commands now require get_menu_tree() method"
 ## Project Structure
 
 ```
-manager-core/
-├── manager_core/           # Main package
+clingy/
+├── clingy/           # Main package
 │   ├── commands/           # Framework commands
 │   │   ├── base.py        # Abstract base class
 │   │   ├── init.py        # Project initialization
@@ -318,12 +318,12 @@ manager-core/
 
 ### Adding a New Command
 
-1. Create a new file in `manager_core/commands/`:
+1. Create a new file in `clingy/commands/`:
    ```python
-   # manager_core/commands/mycommand.py
-   from manager_core.commands.base import BaseCommand
+   # clingy/commands/mycommand.py
+   from clingy.commands.base import BaseCommand
    from argparse import ArgumentParser, Namespace
-   from manager_core.core.menu import MenuNode
+   from clingy.core.menu import MenuNode
    from typing import Optional
    
    class MyCommand(BaseCommand):

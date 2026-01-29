@@ -6,8 +6,8 @@ from pathlib import Path
 
 import pytest
 
-from manager_core.commands import discover_commands
-from manager_core.commands.base import BaseCommand
+from clingy.commands import discover_commands
+from clingy.commands.base import BaseCommand
 
 
 class TestDiscoverCommands:

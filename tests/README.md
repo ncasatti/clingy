@@ -1,6 +1,6 @@
 # Manager-Core Test Suite
 
-Test suite básico para el framework manager-core usando pytest.
+Test suite básico para el framework clingy usando pytest.
 
 ## Estructura
 
@@ -41,10 +41,10 @@ pytest tests/test_discovery.py::TestFindManagerRoot::test_finds_project_in_curre
 
 ```bash
 # Reporte en terminal
-pytest tests/ --cov=manager_core --cov-report=term-missing
+pytest tests/ --cov=clingy --cov-report=term-missing
 
 # Reporte HTML
-pytest tests/ --cov=manager_core --cov-report=html
+pytest tests/ --cov=clingy --cov-report=html
 # Abre: htmlcov/index.html
 ```
 
@@ -58,7 +58,7 @@ ptw tests/
 ## Fixtures Disponibles
 
 ### `temp_project`
-Crea una estructura temporal de proyecto manager-core con:
+Crea una estructura temporal de proyecto clingy con:
 - Directorio `commands/`
 - Archivo `config.py` con configuración básica
 

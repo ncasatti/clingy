@@ -29,18 +29,18 @@ jobs:
 
       - name: Check code formatting with Black
         run: |
-          black --check --line-length 100 manager_core/ tests/
+          black --check --line-length 100 clingy/ tests/
 
       - name: Check import sorting with isort
         run: |
-          isort --check-only manager_core/ tests/ --profile black
+          isort --check-only clingy/ tests/ --profile black
 
       - name: Lint with flake8
         run: |
-          flake8 manager_core/ tests/ --max-line-length=100 --extend-ignore=E203,W503
+          flake8 clingy/ tests/ --max-line-length=100 --extend-ignore=E203,W503
         continue-on-error: true
 
       - name: Type check with mypy
         run: |
-          mypy manager_core/ --ignore-missing-imports
+          mypy clingy/ --ignore-missing-imports
         continue-on-error: true
