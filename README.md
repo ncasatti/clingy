@@ -14,12 +14,10 @@
 - [Features](#features)
 - [Installation](#installation)
 - [Quick Start](#quick-start)
+- [Documentation](#documentation)
 - [Templates](#templates)
-- [Creating Commands](#creating-commands)
 - [Logging & Output](#logging--output)
 - [Configuration](#configuration)
-- [Architecture](#architecture)
-- [Advanced Usage](#advanced-usage)
 - [Development](#development)
 - [Examples & Use Cases](#examples--use-cases)
 - [Troubleshooting](#troubleshooting)
@@ -116,14 +114,14 @@ my-cli-tool/
 │   ├── __init__.py
 │   └── greet.py          # Example command
 ├── config.py             # Project configuration
-├── .manager              # Project marker (for context detection)
+├── .clingy               # Project marker (for context detection)
 └── README.md
 ```
 
 ### 2. Run Interactive Mode
 
 ```bash
-manager
+clingy
 ```
 
 This launches an interactive menu where you can:
@@ -140,333 +138,105 @@ clingy greet --language es
 
 ### 4. Create Your First Command
 
-See [Creating Commands](#creating-commands) section below.
+See [Creating Commands](docs/commands.md) for detailed guide.
+
+---
+
+## Documentation
+
+**Guides:**
+- [Creating Commands](docs/commands.md) - Build custom commands
+- [Architecture](docs/architecture.md) - How clingy works
+
+**Templates:**
+- [Basic Template](clingy/templates/basic/README.md) - Simple CLI
+- [Konfig Template](clingy/templates/konfig/README.md) - Dotfiles manager
+- [Serverless Template](clingy/templates/serverless/README.md) - AWS Lambda manager
+
+**Contributing:**
+- [CONTRIBUTING.md](CONTRIBUTING.md) - Contribution guidelines
+- [AGENTS.md](AGENTS.md) - AI agent guidelines
 
 ---
 
 ## Templates
 
-### Basic Template
+clingy comes with three production-ready templates. Each includes complete documentation, example commands, and best practices.
 
-The default template for learning and simple projects.
+### 🎓 [Basic Template](clingy/templates/basic/README.md)
+
+Simple CLI for learning and prototyping.
 
 **Includes:**
-- `greet` — Multilingual greeting command
-- `info` — System information display
-- `calculator` — Interactive calculator
+- Multilingual greeting command
+- System information display
+- Interactive calculator
+- File operations menu
 
-**When to use:**
+**Best for:**
 - Learning the framework
-- Simple utility scripts
-- Prototyping ideas
+- Quick utility scripts
+- Proof of concepts
 
 **Initialize:**
-
 ```bash
 clingy init --template basic
 ```
 
-**Example:**
-
-```bash
-clingy greet --language es
-# Output: ¡Hola! 👋
-
-clingy info
-# Output: System information...
-
-clingy calculator
-# Output: Interactive calculator menu
-```
-
 ---
 
-### Konfig Template
+### 🔗 [Konfig Template](clingy/templates/konfig/README.md)
 
-A dotfiles and symlink clingy for Linux configuration files.
+Dotfiles and symlink manager for Linux configurations.
 
 **Features:**
-- 🔗 Manage symlinks for dotfiles (`.bashrc`, `.vimrc`, `.config/`, etc.)
-- 📊 Status tracking (linked, unlinked, broken)
-- 🔄 Sync configurations across machines
-- 🚀 Quick actions for common tasks
-- 📁 Browse and manage your dotfiles interactively
+- Manage symlinks for dotfiles (`.bashrc`, `.vimrc`, `.config/`, etc.)
+- Status tracking (linked, unlinked, broken)
+- Sync configurations across machines
+- Interactive browsing with quick actions
 
-**When to use:**
+**Best for:**
 - Managing dotfiles across machines
 - Synchronizing Linux configurations
-- Maintaining system config backups
+- System config backups
 
 **Initialize:**
-
 ```bash
 clingy init --template konfig
 ```
 
-**Example:**
-
-```bash
-clingy status
-# Output: Linked: 12 | Unlinked: 3 | Broken: 0
-
-clingy link --file ~/.bashrc
-# Output: ✓ ~/.bashrc → /path/to/repo/bashrc
-
-clingy browse
-# Output: Interactive file browser with quick actions
-```
-
 ---
 
-### Serverless Template
+### ☁️ [Serverless Template](clingy/templates/serverless/README.md)
 
-An AWS Lambda + Go function clingy for serverless deployments.
+AWS Lambda + Go manager with full serverless workflow.
 
 **Features:**
-- 🚀 Build, deploy, and invoke Lambda functions
-- 📊 CloudWatch Logs integration
-- 🔍 CloudWatch Insights queries
-- 📦 Dependency management
-- 🧪 Local testing and debugging
-- 💾 Function versioning and cleanup
+- Build, deploy, invoke Lambda functions (local & remote)
+- CloudWatch Logs (view, tail, filter) & Insights queries
+- **Interactive Payload Builder** - Compose payloads from reusable snippets
+- Full pipeline (Build → Zip → Deploy)
+- Status & monitoring dashboard
 
-**When to use:**
-- Managing AWS Lambda functions
-- Serverless application development
+**Best for:**
+- AWS Lambda development
+- Serverless applications
 - Multi-function deployments
 
 **Initialize:**
-
 ```bash
 clingy init --template serverless
 ```
 
-**Example:**
-
-```bash
-clingy build
-# Output: Building Lambda functions...
-
-clingy deploy --function my-function
-# Output: ✓ Deployed my-function (v1.2.3)
-
-clingy invoke --function my-function --payload '{"key": "value"}'
-# Output: Invocation result...
-
-clingy logs --function my-function --tail
-# Output: Real-time CloudWatch logs
-```
-
 ---
 
-## Creating Commands
+📖 **Each template includes:**
+- Complete README with setup instructions
+- Example commands demonstrating best practices
+- Configuration guide
+- Troubleshooting section
 
-All commands inherit from `BaseCommand` and are automatically discovered.
-
-### Basic Command Structure
-
-```python
-from clingy.commands.base import BaseCommand
-from argparse import ArgumentParser, Namespace
-from clingy.core.menu import MenuNode
-from clingy.core.logger import log_success, log_error
-
-class GreetCommand(BaseCommand):
-    """Greet users in different languages"""
-    
-    name = "greet"                    # CLI command name
-    help = "Greet in different languages"
-    description = "Greet users with multilingual support"
-    
-    def add_arguments(self, parser: ArgumentParser):
-        """Add command-specific arguments"""
-        parser.add_argument(
-            '--language',
-            choices=['en', 'es', 'fr'],
-            default='en',
-            help='Language for greeting'
-        )
-    
-    def execute(self, args: Namespace) -> bool:
-        """
-        Execute the command.
-        
-        Args:
-            args: Parsed command-line arguments
-            
-        Returns:
-            True on success, False on failure
-        """
-        greetings = {
-            'en': 'Hello! 👋',
-            'es': '¡Hola! 👋',
-            'fr': 'Bonjour! 👋',
-        }
-        
-        message = greetings.get(args.language, greetings['en'])
-        log_success(message)
-        return True
-    
-    def get_menu_tree(self) -> MenuNode:
-        """
-        Define interactive menu structure.
-        
-        REQUIRED: All commands must implement this method.
-        """
-        return MenuNode(
-            label="Greet",
-            emoji="👋",
-            children=[
-                MenuNode(
-                    label="English",
-                    action=lambda: self._greet('en')
-                ),
-                MenuNode(
-                    label="Spanish",
-                    action=lambda: self._greet('es')
-                ),
-                MenuNode(
-                    label="French",
-                    action=lambda: self._greet('fr')
-                ),
-            ]
-        )
-    
-    def _greet(self, language: str) -> bool:
-        """Greet in specified language"""
-        args = Namespace(language=language)
-        return self.execute(args)
-```
-
-### Command with Submenus
-
-```python
-from clingy.core.menu import MenuNode, fzf_select_items
-from clingy.config import ITEMS
-
-class ProcessCommand(BaseCommand):
-    """Process items with hierarchical menu"""
-    
-    name = "process"
-    help = "Process items"
-    
-    def execute(self, args: Namespace) -> bool:
-        items = self._resolve_item_list(args)
-        if not items:
-            return False
-        
-        for item in items:
-            log_success(f"Processed {item}")
-        return True
-    
-    def get_menu_tree(self) -> MenuNode:
-        """Create hierarchical menu with item selection"""
-        return MenuNode(
-            label="Process",
-            emoji="🔄",
-            children=[
-                MenuNode(
-                    label="Process All Items",
-                    action=lambda: self.execute(Namespace(item_list=ITEMS))
-                ),
-                MenuNode(
-                    label="Select Items",
-                    action=lambda: self._process_selected()
-                ),
-                MenuNode(
-                    label="Process by Category",
-                    emoji="📂",
-                    children=[
-                        MenuNode(
-                            label="Category A",
-                            action=lambda: self._process_category('a')
-                        ),
-                        MenuNode(
-                            label="Category B",
-                            action=lambda: self._process_category('b')
-                        ),
-                    ]
-                ),
-            ]
-        )
-    
-    def _process_selected(self) -> bool:
-        """Let user select items interactively"""
-        items = fzf_select_items(
-            prompt="Select items to process: ",
-            include_all=True
-        )
-        if not items:
-            return False
-        return self.execute(Namespace(item_list=items))
-    
-    def _process_category(self, category: str) -> bool:
-        """Process items in a category"""
-        filtered = [item for item in ITEMS if item.startswith(category)]
-        return self.execute(Namespace(item_list=filtered))
-```
-
-### Command with Multi-Select
-
-```python
-from clingy.core.menu import fzf_select_items
-
-class DeployCommand(BaseCommand):
-    """Deploy with multi-select support"""
-    
-    name = "deploy"
-    help = "Deploy services"
-    
-    def execute(self, args: Namespace) -> bool:
-        services = self._resolve_item_list(args)
-        if not services:
-            return False
-        
-        for service in services:
-            log_info(f"Deploying {service}...")
-            # Deployment logic
-            log_success(f"Deployed {service}")
-        
-        return True
-    
-    def get_menu_tree(self) -> MenuNode:
-        return MenuNode(
-            label="Deploy",
-            emoji="🚀",
-            children=[
-                MenuNode(
-                    label="Deploy All",
-                    action=lambda: self.execute(Namespace(item_list=ITEMS))
-                ),
-                MenuNode(
-                    label="Deploy Selected",
-                    action=lambda: self._deploy_selected()
-                ),
-            ]
-        )
-    
-    def _deploy_selected(self) -> bool:
-        """Multi-select deployment"""
-        services = fzf_select_items(
-            prompt="Select services to deploy: ",
-            include_all=False,
-            multi_select=True
-        )
-        if not services:
-            return False
-        return self.execute(Namespace(item_list=services))
-```
-
-### Command Anatomy
-
-| Component | Required | Purpose |
-|-----------|----------|---------|
-| `name` | ✅ | CLI command name (e.g., `clingy greet`) |
-| `help` | ✅ | Short help text for `--help` |
-| `description` | ❌ | Detailed description (defaults to `help`) |
-| `execute()` | ✅ | Main command logic, returns `bool` |
-| `get_menu_tree()` | ✅ | Interactive menu structure (required) |
-| `add_arguments()` | ❌ | CLI argument definitions |
+👉 **Get started:** `clingy init --template <name>`
 
 ---
 
@@ -642,183 +412,6 @@ output_file = os.path.join(OUTPUT_DIR, f"{item}.json")
 
 ---
 
-## Architecture
-
-### System Overview
-
-```mermaid
-graph TD
-    A["User runs: manager"] --> B["CLI Entry Point<br/>cli.py"]
-    B --> C["Dependency Check<br/>check_required_dependencies"]
-    C -->|Missing deps| D["Show error &<br/>installation guide"]
-    C -->|All OK| E["Context Detection<br/>discovery.py"]
-    E -->|No project found| F["Show error:<br/>No clingy project"]
-    E -->|Project found| G["Command Discovery<br/>Auto-load commands/"]
-    G --> H["Build Menu Tree<br/>from all commands"]
-    H --> I{User Input}
-    I -->|Interactive mode| J["Show fzf Menu<br/>MenuRenderer"]
-    I -->|CLI mode| K["Parse arguments<br/>argparse"]
-    J --> L["User selects action"]
-    K --> M["Execute command"]
-    L --> M
-    M --> N["Return bool<br/>success/failure"]
-    N --> O["Exit with code<br/>0 or 1"]
-```
-
-### Directory Structure
-
-```
-clingy/                    # Framework package
-├── commands/
-│   ├── base.py                 # BaseCommand abstract class
-│   ├── init.py                 # Project initialization command
-│   └── __init__.py             # Command discovery
-│
-├── core/
-│   ├── discovery.py            # Context detection (find project root)
-│   ├── logger.py               # Logging utilities
-│   ├── colors.py               # Terminal colors & emojis
-│   ├── menu.py                 # Interactive menu system (fzf)
-│   ├── stats.py                # Success/failure tracking
-│   ├── dependency.py           # Dependency checking
-│   └── emojis.py               # Emoji definitions
-│
-├── templates/
-│   ├── basic/                  # Simple template (greet, info, calculator)
-│   │   ├── commands/
-│   │   ├── config.py
-│   │   └── README.md
-│   ├── konfig/                 # Dotfiles clingy template
-│   │   ├── commands/
-│   │   ├── config.py
-│   │   └── README.md
-│   └── serverless/             # AWS Lambda clingy template
-│       ├── commands/
-│       ├── config.py
-│       └── README.md
-│
-├── cli.py                      # CLI entry point (orchestrator)
-├── cli_builder.py              # Context builder
-├── config.py                   # Framework configuration
-└── __init__.py
-```
-
-### How Auto-Discovery Works
-
-1. **Context Detection** (`discovery.py`):
-   - Searches up the directory tree for `.manager` marker file
-   - Finds `commands/` directory and `config.py`
-   - Returns project root path
-
-2. **Command Discovery** (`commands/__init__.py`):
-   - Scans `commands/` directory for Python files
-   - Imports all modules dynamically
-   - Collects all `BaseCommand` subclasses
-   - No manual registration needed
-
-3. **Menu Building** (`cli.py`):
-   - Calls `get_menu_tree()` on each command
-   - Builds hierarchical menu structure
-   - Passes to `MenuRenderer` for fzf display
-
-4. **Execution**:
-   - User selects action in fzf
-   - Framework calls `execute()` with parsed arguments
-   - Command returns `bool` (success/failure)
-   - Exit code set accordingly
-
----
-
-## Advanced Usage
-
-### Context Detection
-
-The framework automatically finds your project by searching up the directory tree:
-
-```bash
-# Works from any subdirectory
-cd my-project/src/utils
-clingy  # Still finds project root!
-```
-
-**How it works:**
-1. Starts in current directory
-2. Looks for `.manager` marker file
-3. Looks for `commands/` directory
-4. Looks for `config.py`
-5. Moves up one level, repeats
-6. Fails if reaches filesystem root
-
-### MenuNode API
-
-```python
-from clingy.core.menu import MenuNode
-from typing import List, Dict, Any, Optional, Callable
-
-@dataclass
-class MenuNode:
-    label: str                              # Display text
-    emoji: str = ""                         # Optional emoji prefix
-    children: List[MenuNode] = []           # Submenu items
-    action: Optional[Callable[[], bool]] = None  # Function to execute
-    data: Dict[str, Any] = {}               # Extra context data
-    
-    def is_leaf(self) -> bool:              # True if executable
-    def is_submenu(self) -> bool:           # True if has children
-    def display_label(self) -> str:         # Formatted label for fzf
-```
-
-**Key Points:**
-- **Leaf nodes**: Have `action`, no `children` (executable)
-- **Submenu nodes**: Have `children`, no `action` (navigable)
-- **Emojis**: Automatically prefixed to labels
-- **Navigation**: fzf handles breadcrumbs and "← Back"
-
-### fzf Selection Helpers
-
-```python
-from clingy.core.menu import fzf_select_items
-
-# Single selection
-item = fzf_select_items(
-    prompt="Select an item: ",
-    include_all=False
-)[0]
-
-# Multi-select
-items = fzf_select_items(
-    prompt="Select items: ",
-    include_all=True,      # Show "All" option
-    multi_select=True      # Allow multiple selections
-)
-
-# With filtering
-items = fzf_select_items(
-    prompt="Select services: ",
-    items=["service-1", "service-2", "service-3"],
-    include_all=True
-)
-```
-
-### BaseCommand Helpers
-
-```python
-from clingy.commands.base import BaseCommand
-
-class MyCommand(BaseCommand):
-    def execute(self, args: Namespace) -> bool:
-        # Resolve items from CLI (-i flag) or interactive menu
-        items = self._resolve_item_list(args)
-        
-        # Get filtered items
-        filtered = self._get_filtered_items(filter_name)
-        
-        # Both return List[str] or empty list on error
-        return True
-```
-
----
-
 ## Development
 
 ### Clone and Setup
@@ -959,7 +552,7 @@ clingy init
 
 # Or navigate to an existing project
 cd /path/to/my-project
-manager
+clingy
 ```
 
 ### "fzf not found"
@@ -1027,12 +620,12 @@ from commands.utils import helper_function
 
 ### "Context detection not working"
 
-**Problem:** Manager can't find your project from subdirectories.
+**Problem:** clingy can't find your project from subdirectories.
 
 **Solution:**
-1. Ensure `.manager` marker file exists in project root:
+1. Ensure `.clingy` marker file exists in project root:
    ```bash
-   touch .manager
+   touch .clingy
    ```
 
 2. Or ensure `commands/` directory exists:

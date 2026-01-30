@@ -1,6 +1,6 @@
 # Konfig Manager Template
 
-Interactive symlink clingy for Linux dotfiles and system configurations.
+Interactive symlink manager for Linux dotfiles and system configurations.
 
 ## Overview
 
@@ -38,7 +38,7 @@ CONFIGS = [
 ### 4. Run Interactive Menu
 
 ```bash
-manager
+clingy
 ```
 
 ## Configuration Format
@@ -93,21 +93,21 @@ Organize configs into logical groups:
 ## Workflows
 
 ### Link Specific Group
-1. `manager` → Browse → By Group
+1. `clingy` → Browse → By Group
 2. Select group (e.g., "Hyprland")
 3. Choose "Link All in Group"
 
 ### Link Individual Config
-1. `manager` → Browse → By Group → Hyprland
+1. `clingy` → Browse → By Group → Hyprland
 2. Select config (e.g., "hyprland")
 3. Automatically links if not already linked
 
 ### Check Status
-1. `manager` → Quick Actions → Show Status Summary
+1. `clingy` → Quick Actions → Show Status Summary
 2. View table with counts per status type
 
 ### Verify Integrity
-1. `manager` → Quick Actions → Verify Integrity
+1. `clingy` → Quick Actions → Verify Integrity
 2. Detects broken symlinks and issues
 
 ## Conflict Resolution
@@ -153,3 +153,11 @@ Password will be prompted when linking/unlinking.
 ## Example mappings.py
 
 See the included `mappings.py` for a complete example with 50+ configurations covering Hyprland, themes, shell tools, and development environments.
+
+---
+
+## See Also
+
+- [Creating Commands](../../docs/commands.md) - Build custom commands
+- [Architecture](../../docs/architecture.md) - Framework internals
+- [Main README](../../README.md) - Framework overview

@@ -42,7 +42,7 @@ GO_FUNCTIONS = [
 ### 3. Run Interactive Menu
 
 ```bash
-manager
+clingy
 ```
 
 ## Menu Structure
@@ -168,7 +168,7 @@ my-serverless-project/
 
 ```bash
 # Interactive menu
-manager
+clingy
 # → Functions → Full Pipeline → All Functions
 
 # CLI mode (if needed)
@@ -181,7 +181,7 @@ python -m commands.core_commands.deploy
 
 ```bash
 # Interactive menu
-manager
+clingy
 # → Logs & Monitoring → View Recent Logs → Select Function
 
 # Tail live logs
@@ -192,7 +192,7 @@ manager
 
 ```bash
 # Interactive menu
-manager
+clingy
 # → Invoke Functions → Local Invocation → Select Function
 
 # Remote invocation
@@ -203,59 +203,183 @@ manager
 
 ```bash
 # Interactive menu
-manager
+clingy
 # → Logs & Monitoring → CloudWatch Insights → Run Query
+```
+
+### Build Payloads Interactively
+
+The serverless template includes a powerful **multi-snippet payload builder** that lets you compose Lambda payloads by selecting and combining reusable YAML snippets.
+
+```bash
+# Interactive menu
+clingy
+# → Invoke Functions → Local/Remote Invocation → Select Function
+# → Build payload from snippets
+```
+
+**Payload Builder Features:**
+- 📦 **Add Snippets** - Select from organized folders (auth, parameters, bodies)
+- 👁️ **Preview** - See composed payload with merge sources
+- 🗑️ **Remove** - Remove individual snippets
+- 🧹 **Clear** - Clear all selections
+- ✅ **Done** - Compose, validate, and invoke
+
+**Workflow:**
+1. Select function to invoke
+2. Choose "Build payload from snippets"
+3. Add snippet → Navigate `auth/` → Select `cognito-testing.yaml`
+4. Add snippet → Navigate `parameters/` → Select `vendedor-207.yaml`
+5. Add snippet → Navigate `bodies/` → Select `vendedor-single.yaml`
+6. Preview → See final composed payload
+7. Done → Validate and invoke
+
+**Payload Navigator:**
+You can also preview payloads without invoking:
+```bash
+clingy
+# → Payload Navigator
+# → Add snippets → Preview → Exit (no invocation)
 ```
 
 ## Composable Payloads
 
-The template includes a powerful payload composition system:
+The template uses a **snippet-based payload system** where you build payloads by combining reusable pieces.
 
 ### Directory Structure
 
 ```
 payloads/
-├── base/              # Base payloads (shared)
-│   └── common.json
-├── dev/               # Dev environment overrides
-│   └── override.json
-└── prod/              # Prod environment overrides
-    └── override.json
+├── _base/              # Auto-merged base files (invisible to user)
+│   ├── general.yaml    # Common Lambda structure
+│   ├── context-dev.yaml    # Dev environment settings
+│   └── context-prod.yaml   # Prod environment settings
+│
+├── auth/               # Authentication snippets
+│   ├── no-auth.yaml
+│   ├── cognito-latam.yaml
+│   ├── cognito-xionico.yaml
+│   └── cognito-testing.yaml
+│
+├── parameters/         # Query string parameters
+│   ├── vendedor-207.yaml
+│   ├── vendedor-1.yaml
+│   └── vendedor-cuenta.yaml
+│
+├── bodies/             # Request bodies
+│   ├── empty.yaml
+│   ├── vendedor-single.yaml
+│   └── vendedor-array.yaml
+│
+└── examples/           # Complete payload examples (reference)
+    ├── simple-no-auth.yaml
+    ├── test-with-cognito.yaml
+    └── query-vendedor-207.yaml
 ```
 
-### Payload Composition
+### Merge Order
 
-Payloads are merged in order:
-1. `base/` (common values)
-2. `{stage}/` (environment-specific overrides)
-3. Function-specific payloads (if any)
+Payloads are merged in priority order (last wins on conflicts):
 
-### Example
+1. `_base/general.yaml` (always merged, lowest priority)
+2. `_base/context-{stage}.yaml` (dev/prod)
+3. **Selected snippets in order** (highest priority)
 
-**base/common.json:**
+**Example:**
+
+If you select:
+1. `auth/cognito-testing.yaml` (adds requestContext.authorizer)
+2. `parameters/vendedor-207.yaml` (adds queryStringParameters)
+3. `bodies/vendedor-single.yaml` (adds body)
+
+**Result:**
 ```json
 {
-  "userId": "test-user",
-  "limit": 10
+  "version": "2.0",
+  "routeKey": "GET /test",
+  "requestContext": {
+    "authorizer": {
+      "lambda": {
+        "xsi_client": "testing"
+      }
+    }
+  },
+  "queryStringParameters": {
+    "id_vendedor": "207"
+  },
+  "body": {
+    "id_vendedor": "V001",
+    "month": 2,
+    "year": 2026
+  }
 }
 ```
 
-**dev/override.json:**
-```json
-{
-  "limit": 100,
-  "debug": true
-}
+### Creating Custom Snippets
+
+Create new YAML files in any folder:
+
+**auth/my-custom-auth.yaml:**
+```yaml
+# Custom authentication snippet
+requestContext:
+  authorizer:
+    lambda:
+      xsi_client: "my-client"
+      xsi_role: "admin"
 ```
 
-**Result (dev):**
-```json
-{
-  "userId": "test-user",
-  "limit": 100,
-  "debug": true
-}
+**parameters/my-params.yaml:**
+```yaml
+# Custom query parameters
+queryStringParameters:
+  id: "123"
+  filter: "active"
 ```
+
+**bodies/my-body.yaml:**
+```yaml
+# Custom request body
+body:
+  action: "create"
+  data:
+    name: "Example"
+```
+
+**No registration needed** - snippets are auto-discovered!
+
+### Advanced: Merge Rules
+
+- **Dictionaries**: Deep merge (keys combine)
+- **Lists**: Replace (not concatenate)
+- **Null values**: Remove the key
+- **Conflicts**: Last snippet wins
+
+**Example:**
+
+**Snippet 1:**
+```yaml
+queryStringParameters:
+  id: "1"
+  name: "Alice"
+```
+
+**Snippet 2:**
+```yaml
+queryStringParameters:
+  id: "999"
+  age: 30
+```
+
+**Result:**
+```yaml
+queryStringParameters:
+  id: "999"      # Overridden by Snippet 2
+  name: "Alice"  # Kept from Snippet 1
+  age: 30        # Added by Snippet 2
+```
+
+For complete payload documentation, see [`payloads/README.md`](payloads/README.md).
 
 ## Configuration
 
@@ -360,7 +484,7 @@ go version
 ls functions/myFunction/main.go
 
 # Check build settings
-manager
+clingy
 # → Status & Info → Show Configuration
 ```
 
@@ -386,8 +510,8 @@ ls .bin/myFunction/bootstrap
 # Remote: Check function is deployed
 aws lambda get-function --function-name myFunction --profile my-profile
 
-# Check payload is valid JSON
-cat payloads/base/common.json | jq .
+# Check payload is valid YAML
+cat payloads/auth/cognito-testing.yaml
 ```
 
 ## Advanced
@@ -438,6 +562,9 @@ class MyCommand(BaseCommand):
 
 MIT
 
-## Support
+## See Also
 
-For issues or questions, see the main clingy documentation.
+- [Payload System Documentation](payloads/README.md) - Complete guide to composable payloads
+- [Creating Commands](../../docs/commands.md) - Build custom commands
+- [Architecture](../../docs/architecture.md) - Framework internals
+- [Main README](../../README.md) - Framework overview
