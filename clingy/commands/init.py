@@ -127,6 +127,16 @@ class InitCommand(BaseCommand):
                     shutil.copytree(template_core, core_dir)
                     log_success(f"Created {core_dir.relative_to(current_dir)}/")
 
+            # Copy payloads directory if exists (for serverless template)
+            template_payloads = template_dir / "payloads"
+            if template_payloads.exists():
+                payloads_dir = current_dir / "payloads"
+                if payloads_dir.exists() and args.force:
+                    shutil.rmtree(payloads_dir)
+                if not payloads_dir.exists():
+                    shutil.copytree(template_payloads, payloads_dir)
+                    log_success(f"Created {payloads_dir.relative_to(current_dir)}/")
+
             # Create .clingy marker file
             marker_file = current_dir / ".clingy"
             marker_content = {

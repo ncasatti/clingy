@@ -1,0 +1,20 @@
+# Query with vendedor ID 207 and Cognito auth
+
+routeKey: "GET /vendedores"
+rawPath: "/dev/vendedores"
+
+queryStringParameters:
+  id_vendedor: "207"
+
+requestContext:
+  authorizer:
+    lambda:
+      db_schema: "latam_test"
+      db_secret_arn: "arn:aws:secretsmanager:us-west-2:499799893363:secret:prod/xsi/db-uf1tPP"
+      email: "ncasatti@xionico.com"
+      family_name: "dev"
+      name: "testing"
+      xsi_client: "testing"
+      xsi_role: "testing"
+  http:
+    path: "/dev/vendedores"

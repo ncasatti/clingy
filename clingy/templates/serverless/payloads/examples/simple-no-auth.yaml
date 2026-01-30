@@ -1,0 +1,13 @@
+# Simple payload without authentication
+# Merged with: _base/general.yaml + _base/context-dev.yaml + this file
+
+routeKey: "GET /public"
+rawPath: "/dev/public"
+
+# Remove auth (inherited from general.yaml)
+requestContext:
+  authorizer: null
+  http:
+    path: "/dev/public"
+
+body: ""

@@ -327,6 +327,73 @@ class PayloadComposer:
 
         return ComposedPayload(data=result, sources=sources, warnings=warnings)
 
+    def compose_from_snippets(self, snippet_paths: List[Path], stage: str) -> ComposedPayload:
+        """
+        Compose payload from multiple snippet files.
+
+        Merge order:
+        1. _base/general.yaml (always)
+        2. _base/context-{stage}.yaml (stage-specific)
+        3. Each snippet in order (last wins on conflicts)
+
+        Args:
+            snippet_paths: List of snippet file paths in merge order
+            stage: Current stage (dev/prod)
+
+        Returns:
+            ComposedPayload with merged data, sources, and warnings
+        """
+        result = {}
+        sources = []
+        warnings = []
+
+        # 1. Load base general (if exists)
+        general_path = self.base_dir / "general.yaml"
+        if general_path.exists():
+            try:
+                general_data = self.load_file_safe(general_path)
+                result = self.deep_merge(result, general_data)
+                sources.append(general_path)
+            except PayloadError as e:
+                warnings.append(f"Failed to load {general_path.name}: {e}")
+        else:
+            warnings.append(f"Optional base file not found: {general_path.name}")
+
+        # 2. Load context for stage (if exists)
+        context_path = self.base_dir / f"context-{stage}.yaml"
+        if context_path.exists():
+            try:
+                context_data = self.load_file_safe(context_path)
+                result = self.deep_merge(result, context_data)
+                sources.append(context_path)
+            except PayloadError as e:
+                warnings.append(f"Failed to load {context_path.name}: {e}")
+        else:
+            # Try fallback
+            context_files = list(self.base_dir.glob("context-*.yaml"))
+            if context_files:
+                fallback = context_files[0]
+                warnings.append(
+                    f"Context for stage '{stage}' not found. Using fallback: {fallback.name}"
+                )
+                try:
+                    fallback_data = self.load_file_safe(fallback)
+                    result = self.deep_merge(result, fallback_data)
+                    sources.append(fallback)
+                except PayloadError as e:
+                    warnings.append(f"Failed to load {fallback.name}: {e}")
+
+        # 3. Merge each snippet in order
+        for snippet_path in snippet_paths:
+            try:
+                snippet_data = self.load_file_safe(Path(snippet_path))
+                result = self.deep_merge(result, snippet_data)
+                sources.append(Path(snippet_path))
+            except PayloadError as e:
+                raise PayloadError(f"Failed to load snippet {snippet_path}: {e}")
+
+        return ComposedPayload(data=result, sources=sources, warnings=warnings)
+
     def validate(self, payload: dict) -> ValidationResult:
         """
         Valida que el payload tenga estructura correcta para Lambda.

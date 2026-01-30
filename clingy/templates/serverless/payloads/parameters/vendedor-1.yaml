@@ -1,0 +1,4 @@
+# Query string parameters for vendedor ID 1
+
+queryStringParameters:
+  id_vendedor: "1"

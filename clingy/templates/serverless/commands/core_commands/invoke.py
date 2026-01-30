@@ -193,11 +193,13 @@ class InvokeCommand(BaseCommand):
                 # Direct invocation with payload
                 return self._invoke_function(args.function, payload_path, is_local)
             else:
-                # Show submenu for function
-                return self._show_invoke_submenu(args.function) or True
+                # Show payload options menu
+                is_local = getattr(args, "local", False)
+                return self.invoke_with_payload_options(args.function, is_local)
 
-        # Otherwise, show interactive menu
-        return self._invoke_menu()
+        # If no function specified, show info message
+        log_info("Use interactive menu to invoke functions")
+        return True
 
     def get_menu_tree(self) -> MenuNode:
         return super().get_menu_tree()
@@ -554,11 +556,6 @@ class InvokeCommand(BaseCommand):
             # Process payload (convert body if needed, compose if composable)
             processed_payload_path, composed = self._process_payload(payload_path)
 
-            # Preview payload
-            with open(processed_payload_path, "r") as f:
-                payload_data = json.load(f)
-            self._preview_payload(payload_data, composed)
-
             command.extend(["--path", processed_payload_path])
             log_info(f"Invoking {func_name} locally with payload: {payload_path}")
         else:
@@ -651,11 +648,6 @@ class InvokeCommand(BaseCommand):
             # Process payload (convert body if needed, compose if composable)
             processed_payload_path, composed = self._process_payload(payload_path)
 
-            # Preview payload
-            with open(processed_payload_path, "r") as f:
-                payload_data = json.load(f)
-            self._preview_payload(payload_data, composed)
-
             command.extend(["--path", processed_payload_path])
             log_info(f"Invoking {func_name} remotely (serverless) with payload: {payload_path}")
         else:
@@ -734,11 +726,6 @@ class InvokeCommand(BaseCommand):
             # Process payload (convert body if needed, compose if composable)
             processed_payload_path, composed = self._process_payload(payload_path)
 
-            # Preview payload
-            with open(processed_payload_path, "r") as f:
-                payload_data = json.load(f)
-            self._preview_payload(payload_data, composed)
-
             command.extend(["--payload", f"file://{processed_payload_path}"])
             log_info(f"Invoking {lambda_name} remotely (aws-cli) with payload: {payload_path}")
         else:
@@ -784,38 +771,147 @@ class InvokeCommand(BaseCommand):
             log_error(f"Error executing command: {e}")
             return False
 
-    def _select_invoke_option_with_fzf(self, func_name: str) -> Optional[str]:
+    def invoke_with_payload_options(self, func_name: str, is_local: bool) -> bool:
         """
-        Use fzf to select an invoke option
+        Show payload options menu and invoke function.
+        
+        Args:
+            func_name: Lambda function name
+            is_local: True for local, False for remote
+            
+        Returns:
+            True if completed successfully
+        """
+        from pathlib import Path
+        
+        log_header(f"{'LOCAL' if is_local else 'REMOTE'} INVOKE - {func_name}")
+        
+        # Build menu options
+        options = [
+            "🚀 Invoke without payload",
+            "📦 Compose payload and invoke",
+            f"{Emoji.EXIT} Back",
+        ]
+        
+        # Show fzf menu
+        try:
+            result = subprocess.run(
+                [
+                    "fzf",
+                    "--height", "40%",
+                    "--reverse",
+                    "--border",
+                    "--prompt", "Select option: ",
+                    "--header", f"Invoke {func_name} ({'local' if is_local else 'remote'})",
+                ],
+                input="\n".join(options),
+                text=True,
+                capture_output=True,
+            )
+            
+            if result.returncode != 0:
+                log_info("Cancelled")
+                return False
+            
+            selected = result.stdout.strip()
+            
+            # Option 1: Without payload
+            if "without payload" in selected:
+                return self._invoke_function(func_name, None, is_local)
+            
+            # Option 2: With payload
+            elif "Compose payload" in selected:
+                # Navigate and select payload
+                payload_path = self._select_payload_with_fzf(func_name)
+                if not payload_path:
+                    log_info("No payload selected")
+                    return False
+                
+                # Invoke with confirmation
+                return self._invoke_with_confirmation(func_name, payload_path, is_local)
+            
+            # Option 3: Back
+            else:
+                return False
+                
+        except FileNotFoundError:
+            log_error("fzf is not installed")
+            return False
+        except Exception as e:
+            log_error(f"Error: {e}")
+            return False
+
+    def _invoke_with_confirmation(self, func_name: str, payload_path: str, is_local: bool) -> bool:
+        """
+        Invoke function with payload after showing preview and asking for confirmation.
+        
+        Args:
+            func_name: Lambda function name
+            payload_path: Path to payload file
+            is_local: True for local, False for remote
+            
+        Returns:
+            True if invoked successfully
+        """
+        from pathlib import Path
+        from config import PAYLOAD_DEFAULT_STAGE
+        from core.payload_composer import PayloadComposer, PayloadError
+        
+        try:
+            # Process payload (compose if needed)
+            processed_path, composed = self._process_payload(payload_path)
+            
+            # Load and preview
+            with open(processed_path, "r") as f:
+                payload_data = json.load(f)
+            
+            self._preview_payload(payload_data, composed)
+            
+            # Ask for confirmation
+            print(f"\n{Colors.BOLD}{Colors.CYAN}Ready to invoke {func_name} ({'local' if is_local else 'remote'}){Colors.RESET}")
+            response = input(f"{Colors.CYAN}Proceed with invocation? [Y/n]: {Colors.RESET}").strip().lower()
+            
+            if response in ["", "y", "yes"]:
+                # Invoke
+                if is_local:
+                    return self._invoke_local(func_name, payload_path)
+                else:
+                    return self._invoke_remote(func_name, payload_path)
+            else:
+                log_info("Invocation cancelled")
+                return False
+                
+        except PayloadError as e:
+            log_error(f"Payload error: {e}")
+            return False
+        except Exception as e:
+            log_error(f"Error: {e}")
+            return False
+
+    def invoke_with_builder(self, func_name: str, is_local: bool) -> bool:
+        """
+        Show payload builder menu and invoke function.
 
         Args:
             func_name: Lambda function name
+            is_local: True for local, False for remote
 
         Returns:
-            Option number (1-4) or None if cancelled/back
+            True if completed successfully
         """
+        from pathlib import Path
+        from core.payload_builder import PayloadBuilder
+
+        log_header(f"{'LOCAL' if is_local else 'REMOTE'} INVOKE - {func_name}")
+
         # Build menu options
-        options = []
-        option_map = {}  # Map display text to option number
+        options = [
+            "🚀 Invoke without payload",
+            "🧩 Build payload from snippets",
+            f"{Emoji.EXIT} Back",
+        ]
 
-        options.append(f"{Emoji.SERVER_MINUS}  Remote")
-        option_map[options[-1]] = "1"
-
-        options.append(f"{Emoji.SERVER_PLUS}  Remote with payload")
-        option_map[options[-1]] = "2"
-
-        options.append(f"{Emoji.MONITOR}  Local")
-        option_map[options[-1]] = "3"
-
-        options.append(f"{Emoji.MONITOR_IN}  Local with payload")
-        option_map[options[-1]] = "4"
-
-        options.append(f"{Emoji.EXIT} Back to function selection")
-        option_map[options[-1]] = "0"
-
-        # Create fzf input
-        options_text = "\n".join(options)
-
+        # Show fzf menu
         try:
             result = subprocess.run(
                 [
@@ -825,92 +921,47 @@ class InvokeCommand(BaseCommand):
                     "--reverse",
                     "--border",
                     "--prompt",
-                    "Select invoke option: ",
+                    "Select option: ",
                     "--header",
-                    f"Invoke options for: {func_name}",
+                    f"Invoke {func_name} ({'local' if is_local else 'remote'})",
                 ],
-                input=options_text,
+                input="\n".join(options),
                 text=True,
                 capture_output=True,
             )
 
-            if result.returncode == 0:
-                selected = result.stdout.strip()
-                return option_map.get(selected)
+            if result.returncode != 0:
+                log_info("Cancelled")
+                return False
 
-            return None
+            selected = result.stdout.strip()
+
+            # Option 1: Without payload
+            if "without payload" in selected:
+                return self._invoke_function(func_name, None, is_local)
+
+            # Option 2: Build payload
+            elif "Build payload" in selected:
+                # Launch payload builder
+                builder = PayloadBuilder(Path(PAYLOADS_DIR), PAYLOAD_DEFAULT_STAGE)
+                payload_path = builder.build_interactive()
+
+                if not payload_path:
+                    log_info("Payload building cancelled")
+                    return False
+
+                # Invoke with built payload (with confirmation)
+                return self._invoke_with_confirmation(func_name, str(payload_path), is_local)
+
+            # Option 3: Back
+            else:
+                return False
 
         except FileNotFoundError:
             log_error("fzf is not installed")
-            return None
-        except KeyboardInterrupt:
-            return None
+            return False
         except Exception as e:
-            log_error(f"Error using fzf: {e}")
-            return None
+            log_error(f"Error: {e}")
+            return False
 
-    def _show_invoke_submenu(self, func_name: str) -> bool:
-        """
-        Show invoke options submenu for a specific function using fzf
 
-        Args:
-            func_name: Selected Lambda function name
-
-        Returns:
-            True when exiting the submenu
-        """
-        while True:
-            option = self._select_invoke_option_with_fzf(func_name)
-
-            if option is None or option == "0":
-                # User cancelled or selected back
-                break
-
-            # Handle the selected option
-            if option == "1":
-                # Invoke remote without payload
-                self._invoke_function(func_name, None, local=False)
-                input(f"\n{Colors.CYAN}Press Enter to continue...{Colors.RESET}")
-            elif option == "2":
-                # Invoke remote with payload - select payload first
-                payload_path = self._select_payload_with_fzf(func_name)
-                if payload_path:
-                    self._invoke_function(func_name, payload_path, local=False)
-                    input(f"\n{Colors.CYAN}Press Enter to continue...{Colors.RESET}")
-            elif option == "3":
-                # Invoke local without payload
-                self._invoke_function(func_name, None, local=True)
-                input(f"\n{Colors.CYAN}Press Enter to continue...{Colors.RESET}")
-            elif option == "4":
-                # Invoke local with payload - select payload first
-                payload_path = self._select_payload_with_fzf(func_name)
-                if payload_path:
-                    self._invoke_function(func_name, payload_path, local=True)
-                    input(f"\n{Colors.CYAN}Press Enter to continue...{Colors.RESET}")
-
-        return True
-
-    def _invoke_menu(self) -> bool:
-        """
-        Show main invoke menu with fzf function selection
-
-        Returns:
-            True if executed correctly
-        """
-        log_header("INVOKE MENU - LAMBDA FUNCTIONS")
-
-        while True:
-            print(
-                f"\n{Colors.BOLD}{Colors.CYAN}🔍 Use fzf to search and select a function to invoke{Colors.RESET}"
-            )
-            print(f"{Colors.CYAN}Press ESC or Ctrl+C to exit{Colors.RESET}\n")
-
-            selected_func = self._select_function_with_fzf()
-
-            if selected_func:
-                self._show_invoke_submenu(selected_func)
-            else:
-                log_info("Exiting invoke menu")
-                break
-
-        return True

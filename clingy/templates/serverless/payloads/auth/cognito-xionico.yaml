@@ -1,0 +1,12 @@
+# Authentication for Xionico client
+
+requestContext:
+  authorizer:
+    lambda:
+      db_schema: "xionico_tokinplus"
+      db_secret_arn: "arn:aws:secretsmanager:us-west-2:580395407526:secret:xsi/db/xionico_tokinplus-AbCdEf"
+      email: "test.user@xionico.com"
+      family_name: "dev"
+      name: "Test User Dev"
+      xsi_client: "xionico"
+      xsi_role: "admin"

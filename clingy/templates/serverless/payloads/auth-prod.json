@@ -1,0 +1,39 @@
+{
+  "version": "2.0",
+  "routeKey": "GET /test",
+  "rawPath": "/prod/test",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "queryStringParameters": {},
+  "requestContext": {
+    "accountId": "580395407526",
+    "apiId": "test-api-local",
+    "authorizer": {
+      "lambda": {
+        "db_schema": "xionico_tokinplus",
+        "db_secret_arn": "arn:aws:secretsmanager:us-west-2:580395407526:secret:xsi/db/xionico_tokinplus-AbCdEf",
+        "email": "prod.user@xionico.com",
+        "family_name": "prod",
+        "name": "Production User",
+        "xsi_client": "xionico",
+        "xsi_role": "user"
+      }
+    },
+    "http": {
+      "method": "GET",
+      "path": "/prod/test",
+      "protocol": "HTTP/1.1",
+      "sourceIp": "127.0.0.1",
+      "userAgent": "serverless-invoke-local"
+    },
+    "requestId": "local-test-request-id",
+    "routeKey": "GET /test",
+    "stage": "prod",
+    "time": "01/Jan/2025:00:00:00 +0000",
+    "timeEpoch": 1704067200000
+  },
+  "body": "",
+  "isBase64Encoded": false
+}

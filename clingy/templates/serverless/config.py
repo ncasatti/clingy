@@ -42,10 +42,10 @@ BUILD_FLAGS = ["-ldflags", "-s -w"]
 # Project Root Detection
 # ============================================================================
 # Root del proyecto serverless (donde están functions/, .bin/, serverless.yaml)
-# Default: Parent directory de manager/ (estructura estándar XSI)
-# Override: Setear variable de entorno PROJECT_ROOT=/custom/path
-_manager_dir = Path(__file__).parent
-PROJECT_ROOT = os.getenv("PROJECT_ROOT", str(_manager_dir.parent))
+# Default: Parent directory of config.py location (standard structure)
+# Override: Set environment variable PROJECT_ROOT=/custom/path
+_config_dir = Path(__file__).parent
+PROJECT_ROOT = os.getenv("PROJECT_ROOT", str(_config_dir.parent))
 
 
 # ============================================================================
@@ -78,8 +78,8 @@ INVOKE_AWS_REGION = "us-west-2"
 # ============================================================================
 # Payload Settings
 # ============================================================================
-# Directory for composable payloads
-PAYLOADS_DIR = os.path.join(PROJECT_ROOT, "payloads")
+# Payloads directory (same folder as config.py, not project root)
+PAYLOADS_DIR = os.path.join(_config_dir, "payloads")
 
 # Default stage for payload composition (uses current environment)
 PAYLOAD_DEFAULT_STAGE = SERVERLESS_STAGE

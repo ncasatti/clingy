@@ -1,0 +1,41 @@
+{
+  "version": "2.0",
+  "routeKey": "GET /test",
+  "rawPath": "/dev/test",
+  "headers": {
+    "Content-Type": "application/json",
+    "Accept": "application/json"
+  },
+  "queryStringParameters": {
+    "id_vendedor": "207"
+  },
+  "requestContext": {
+    "accountId": "580395407526",
+    "apiId": "test-api-local",
+    "authorizer": {
+      "lambda": {
+        "db_schema": "latam",
+        "db_secret_arn": "arn:aws:secretsmanager:us-west-2:499799893363:secret:prod/xsi/db-uf1tPP",
+        "email": "auth@latam.com",
+        "family_name": "dev",
+        "name": "latam",
+        "xsi_client": "latam",
+        "xsi_role": "netsuite"
+      }
+    },
+    "http": {
+      "method": "GET",
+      "path": "/dev/test",
+      "protocol": "HTTP/1.1",
+      "sourceIp": "127.0.0.1",
+      "userAgent": "serverless-invoke-local"
+    },
+    "requestId": "local-test-request-id",
+    "routeKey": "GET /test",
+    "stage": "dev",
+    "time": "01/Jan/2025:00:00:00 +0000",
+    "timeEpoch": 1704067200000
+  },
+  "body": null,
+  "isBase64Encoded": false
+}

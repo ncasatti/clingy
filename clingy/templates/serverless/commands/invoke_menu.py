@@ -1,14 +1,14 @@
 """Invoke menu - Local and Remote Lambda invocation with payload composer"""
 
 from argparse import ArgumentParser, Namespace
-from typing import Optional
 
 from commands.core_commands.invoke import InvokeCommand
 from config import GO_FUNCTIONS
 
 from clingy.commands.base import BaseCommand
+from clingy.core.colors import Colors
 from clingy.core.emojis import Emoji
-from clingy.core.logger import log_info, log_section
+from clingy.core.logger import log_error, log_info, log_section, log_success
 from clingy.core.menu import MenuNode, fzf_select_items
 
 
@@ -27,7 +27,7 @@ class InvokeMenuCommand(BaseCommand):
     def add_arguments(self, parser: ArgumentParser):
         return super().add_arguments(parser)
 
-    def get_menu_tree(self) -> Optional[MenuNode]:
+    def get_menu_tree(self) -> MenuNode:
         """Interactive menu for function invocation"""
         return MenuNode(
             label="Invoke Functions",
@@ -36,32 +36,17 @@ class InvokeMenuCommand(BaseCommand):
                 MenuNode(
                     label="Local Invocation",
                     emoji=Emoji.COMPUTER,
-                    children=[
-                        MenuNode(
-                            label="Select Function (Local)",
-                            action=lambda: self._invoke_local_selected(),
-                        ),
-                    ],
+                    action=lambda: self._invoke_local_flow(),
                 ),
                 MenuNode(
                     label="Remote Invocation (AWS)",
                     emoji=Emoji.CLOUD,
-                    children=[
-                        MenuNode(
-                            label="Select Function (Remote)",
-                            action=lambda: self._invoke_remote_selected(),
-                        ),
-                    ],
+                    action=lambda: self._invoke_remote_flow(),
                 ),
                 MenuNode(
                     label="Payload Navigator",
                     emoji=Emoji.DOCUMENT,
-                    children=[
-                        MenuNode(
-                            label="Browse Payloads",
-                            action=lambda: self._browse_payloads(),
-                        ),
-                    ],
+                    action=lambda: self._browse_payloads(),
                 ),
             ],
         )
@@ -70,8 +55,8 @@ class InvokeMenuCommand(BaseCommand):
     # Local Invocation Actions
     # ========================================================================
 
-    def _invoke_local_selected(self) -> bool:
-        """Invoke function locally"""
+    def _invoke_local_flow(self) -> bool:
+        """Local invocation flow: select function → build payload → invoke"""
         functions = fzf_select_items(
             items=GO_FUNCTIONS,
             prompt="Select function to invoke locally: ",
@@ -81,25 +66,16 @@ class InvokeMenuCommand(BaseCommand):
             log_info("No function selected")
             return False
 
-        func = functions[0]  # Single selection
-        log_section(f"LOCAL INVOKE - {func}")
+        func = functions[0]
         invoke_cmd = InvokeCommand()
-        return invoke_cmd.execute(
-            Namespace(
-                function=func,
-                local=True,
-                remote=False,
-                payload=None,
-                payload_file=None,
-            )
-        )
+        return invoke_cmd.invoke_with_builder(func, is_local=True)
 
     # ========================================================================
     # Remote Invocation Actions
     # ========================================================================
 
-    def _invoke_remote_selected(self) -> bool:
-        """Invoke function remotely on AWS"""
+    def _invoke_remote_flow(self) -> bool:
+        """Remote invocation flow: select function → build payload → invoke"""
         functions = fzf_select_items(
             items=GO_FUNCTIONS,
             prompt="Select function to invoke remotely: ",
@@ -109,37 +85,25 @@ class InvokeMenuCommand(BaseCommand):
             log_info("No function selected")
             return False
 
-        func = functions[0]  # Single selection
-        log_section(f"REMOTE INVOKE - {func}")
+        func = functions[0]
         invoke_cmd = InvokeCommand()
-        return invoke_cmd.execute(
-            Namespace(
-                function=func,
-                local=False,
-                remote=True,
-                payload=None,
-                payload_file=None,
-            )
-        )
+        return invoke_cmd.invoke_with_builder(func, is_local=False)
 
     # ========================================================================
     # Payload Navigator Actions
     # ========================================================================
 
     def _browse_payloads(self) -> bool:
-        """Browse and compose payloads"""
-        log_section("PAYLOAD NAVIGATOR")
-        log_info("Payload navigator will be launched in interactive mode")
+        """Browse and preview composed payloads without invoking"""
+        from pathlib import Path
+        from config import PAYLOADS_DIR, PAYLOAD_DEFAULT_STAGE
+        from core.payload_builder import PayloadBuilder
 
-        # The InvokeCommand has built-in payload navigation
-        # When no payload is specified, it will show the PayloadNavigator
-        invoke_cmd = InvokeCommand()
-        return invoke_cmd.execute(
-            Namespace(
-                function=None,  # Will prompt for function
-                local=False,
-                remote=False,
-                payload=None,
-                payload_file=None,
-            )
-        )
+        log_section("PAYLOAD NAVIGATOR")
+        log_info("Quick payload visualization (no invocation)")
+
+        # Create builder in navigator mode
+        builder = PayloadBuilder(Path(PAYLOADS_DIR), PAYLOAD_DEFAULT_STAGE)
+
+        # Run navigator loop (Add/Preview/Remove/Clear/Exit)
+        return builder.navigate_interactive()
