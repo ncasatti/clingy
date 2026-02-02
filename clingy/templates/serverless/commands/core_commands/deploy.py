@@ -17,6 +17,7 @@ from config import (
     SERVERLESS_STAGE,
 )
 from core.function_utils import resolve_function_list
+from core.subprocess_helper import run_in_project_root
 
 from clingy.commands.base import BaseCommand
 from clingy.core.logger import (
@@ -211,8 +212,8 @@ class DeployCommand(BaseCommand):
         start_time = time.time()
 
         try:
-            result = subprocess.run(
-                command, check=True, capture_output=False, text=True, cwd=PROJECT_ROOT
+            result = run_in_project_root(
+                command, check=True, capture_output=False, text=True
             )
 
             duration = time.time() - start_time
@@ -267,8 +268,8 @@ class DeployCommand(BaseCommand):
         start_time = time.time()
 
         try:
-            result = subprocess.run(
-                command, check=True, capture_output=False, text=True, cwd=PROJECT_ROOT
+            result = run_in_project_root(
+                command, check=True, capture_output=False, text=True
             )
 
             duration = time.time() - start_time

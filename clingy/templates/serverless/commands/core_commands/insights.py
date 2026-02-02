@@ -23,6 +23,7 @@ from core.insights_queries import (
     parse_time_range,
     save_query,
 )
+from core.subprocess_helper import run_in_project_root
 
 from clingy.commands.base import BaseCommand
 from clingy.core.colors import Colors
@@ -554,7 +555,7 @@ class InsightsCommand(BaseCommand):
                 ]
             )
 
-            result = subprocess.run(command, capture_output=True, text=True, check=False)
+            result = run_in_project_root(command, capture_output=True, text=True, check=False)
 
             if result.returncode == 0 and result.stdout.strip():
                 return result.stdout.strip()
@@ -594,7 +595,7 @@ class InsightsCommand(BaseCommand):
                     "json",
                 ]
 
-                result = subprocess.run(command, capture_output=True, text=True, check=False)
+                result = run_in_project_root(command, capture_output=True, text=True, check=False)
 
                 if result.returncode == 0:
                     data = json.loads(result.stdout)

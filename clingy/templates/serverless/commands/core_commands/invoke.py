@@ -31,6 +31,7 @@ from config import (
 )
 from core.payload_composer import ComposedPayload, PayloadComposer, PayloadError
 from core.payload_navigator import PayloadNavigator
+from core.subprocess_helper import run_in_project_root
 
 from clingy.commands.base import BaseCommand
 from clingy.core.colors import Colors
@@ -566,7 +567,7 @@ class InvokeCommand(BaseCommand):
 
         try:
             # Execute command and capture output
-            result = subprocess.run(command, check=False, capture_output=True, text=True)
+            result = run_in_project_root(command, check=False, capture_output=True, text=True)
 
             # Show stderr (logs, debug info) if present
             if result.stderr:
@@ -658,7 +659,7 @@ class InvokeCommand(BaseCommand):
 
         try:
             # Execute command and capture output
-            result = subprocess.run(command, check=False, capture_output=True, text=True)
+            result = run_in_project_root(command, check=False, capture_output=True, text=True)
 
             # Show stderr (logs, debug info) if present
             if result.stderr:
@@ -735,7 +736,7 @@ class InvokeCommand(BaseCommand):
         print(f"{Colors.YELLOW}{'─' * 80}{Colors.RESET}\n")
 
         try:
-            result = subprocess.run(command, check=False, capture_output=True, text=True)
+            result = run_in_project_root(command, check=False, capture_output=True, text=True)
 
             # Show response metadata
             if result.stdout:
@@ -951,8 +952,8 @@ class InvokeCommand(BaseCommand):
             if "without payload" in selected:
                 return self._invoke_function(func_name, None, is_local)
 
-            # Option 2: Build payload
-            elif "Build payload" in selected:
+            # Option 2: Compose payload
+            elif "Compose payload" in selected:
                 # Launch payload builder
                 builder = PayloadBuilder(Path(PAYLOADS_DIR), PAYLOAD_DEFAULT_STAGE)
                 payload_path = builder.build_interactive()

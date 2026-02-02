@@ -8,6 +8,7 @@ from typing import List, Optional
 
 from config import BIN_DIR, BUILD_FLAGS, BUILD_SETTINGS, FUNCTIONS_DIR, GO_FUNCTIONS
 from core.function_utils import resolve_function_list
+from core.subprocess_helper import run_in_project_root
 
 from clingy.commands.base import BaseCommand
 from clingy.core.colors import Colors
@@ -127,7 +128,7 @@ class BuildCommand(BaseCommand):
             command = ["go", "build"] + BUILD_FLAGS + ["-o", bootstrap_file, go_file]
 
             try:
-                result = subprocess.run(
+                result = run_in_project_root(
                     command,
                     check=True,
                     capture_output=True,

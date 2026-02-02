@@ -5,6 +5,7 @@ from argparse import ArgumentParser, Namespace
 from typing import Optional
 
 from config import AWS_PROFILE, GO_FUNCTIONS, SERVERLESS_STAGE, SERVICE_NAME
+from core.subprocess_helper import run_in_project_root
 
 from clingy.commands.base import BaseCommand
 from clingy.core.colors import Colors
@@ -137,7 +138,7 @@ class LogsCommand(BaseCommand):
         try:
             if capture_output:
                 # Capture output for saving to file
-                result = subprocess.run(command, check=False, capture_output=True, text=True)
+                result = run_in_project_root(command, check=False, capture_output=True, text=True)
 
                 # Display output
                 if result.stdout:
@@ -163,7 +164,7 @@ class LogsCommand(BaseCommand):
                     return True  # Return True anyway to continue menu
             else:
                 # Stream output in real-time for --follow mode
-                result = subprocess.run(command, check=False)
+                result = run_in_project_root(command, check=False)
 
                 print(f"\n{Colors.YELLOW}{'─' * 80}{Colors.RESET}")
                 print(f"{Colors.YELLOW}Note: --follow mode output not saved to file{Colors.RESET}")
