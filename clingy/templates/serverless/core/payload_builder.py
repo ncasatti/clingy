@@ -13,6 +13,7 @@ from typing import List, Optional
 
 from core.payload_composer import PayloadComposer, PayloadError
 
+from clingy.core.emojis import Emoji
 
 # ============================================================================
 # Simple logging functions (no external dependencies)
@@ -172,15 +173,15 @@ class PayloadBuilder:
 
         # Actions (selectable)
         actions = []
-        actions.append("📦 Add snippet")
+        actions.append(f"{Emoji.PLUS} Add snippet")
 
         if self.selections:
-            actions.append("👁️  Preview payload")
-            actions.append("🗑️  Remove snippet")
-            actions.append("🧹 Clear all")
-            actions.append("✅ Done (compose and use)")
+            actions.append(f"{Emoji.PREVIEW} Preview payload")
+            actions.append(f"{Emoji.SUBTRACT} Remove snippet")
+            actions.append(f"{Emoji.TRASH} Clear all")
+            actions.append(f"{Emoji.SUCCESS} Done (compose and use)")
 
-        actions.append("❌ Cancel")
+        actions.append(f"{Emoji.CANCEL} Cancel")
 
         lines.extend(actions)
 
@@ -259,14 +260,14 @@ class PayloadBuilder:
 
         # Actions (selectable) - No "Done", add "Exit" instead
         actions = []
-        actions.append("📦 Add snippet")
+        actions.append(f"{Emoji.PLUS} Add snippet")
 
         if self.selections:
-            actions.append("👁️  Preview payload")
-            actions.append("🗑️  Remove snippet")
-            actions.append("🧹 Clear all")
+            actions.append(f"{Emoji.PREVIEW} Preview payload")
+            actions.append(f"{Emoji.SUBTRACT} Remove snippet")
+            actions.append(f"{Emoji.TRASH} Clear all")
 
-        actions.append("🚪 Exit")
+        actions.append(f"{Emoji.EXIT} Exit")
 
         lines.extend(actions)
 

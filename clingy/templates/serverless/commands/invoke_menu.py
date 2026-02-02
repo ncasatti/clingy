@@ -96,7 +96,8 @@ class InvokeMenuCommand(BaseCommand):
     def _browse_payloads(self) -> bool:
         """Browse and preview composed payloads without invoking"""
         from pathlib import Path
-        from config import PAYLOADS_DIR, PAYLOAD_DEFAULT_STAGE
+
+        from config import PAYLOAD_DEFAULT_STAGE, PAYLOADS_DIR
         from core.payload_builder import PayloadBuilder
 
         log_section("PAYLOAD NAVIGATOR")
