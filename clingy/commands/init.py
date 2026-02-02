@@ -29,6 +29,8 @@ class InitCommand(BaseCommand):
     epilog = """Examples:
   clingy init                    # Initialize in current directory
   clingy init --force            # Overwrite existing project
+  clingy init --update           # Update framework files (preserves config)
+  clingy init --template serverless --update  # Update serverless template
 """
 
     def add_arguments(self, parser: ArgumentParser):
@@ -43,6 +45,11 @@ class InitCommand(BaseCommand):
             default="basic",
             help="Template to use (default: basic)",
         )
+        parser.add_argument(
+            "--update",
+            action="store_true",
+            help="Update framework files only (preserves config.py, payloads/, etc.)",
+        )
 
     def execute(self, args: Namespace) -> bool:
         """
@@ -51,6 +58,10 @@ class InitCommand(BaseCommand):
         Returns:
             True on success, False on failure
         """
+        # Framework files that are updated with --update flag
+        # Everything else (config.py, payloads/, mappings.py, results/) is preserved
+        FRAMEWORK_FILES = {"commands", "core", "README.md"}
+
         log_section("INITIALIZING CLINGY PROJECT")
 
         current_dir = Path.cwd()
@@ -99,17 +110,22 @@ class InitCommand(BaseCommand):
                             shutil.copytree(subdir, dest_subdir)
                             log_success(f"Created {dest_subdir.relative_to(current_dir)}/")
 
-            # Copy config.py
-            template_config = template_dir / "config.py"
-            if template_config.exists():
-                if config_file.exists() and args.force:
-                    config_file.unlink()
-                shutil.copy2(template_config, config_file)
-                log_success(f"Created {config_file.relative_to(current_dir)}")
+            # Copy config.py (skip if --update)
+            if not args.update:
+                template_config = template_dir / "config.py"
+                if template_config.exists():
+                    if config_file.exists() and args.force:
+                        config_file.unlink()
+                    shutil.copy2(template_config, config_file)
+                    log_success(f"Created {config_file.relative_to(current_dir)}")
 
             # Copy additional template files (*.md, mappings.py, etc.)
+            # With --update, only copy files in FRAMEWORK_FILES whitelist
             for pattern in ["*.md", "mappings.py"]:
                 for file in template_dir.glob(pattern):
+                    # Skip if --update and file not in framework whitelist
+                    if args.update and file.name not in FRAMEWORK_FILES:
+                        continue
                     dest = current_dir / file.name
                     if dest.exists() and args.force:
                         dest.unlink()
@@ -117,25 +133,28 @@ class InitCommand(BaseCommand):
                         shutil.copy2(file, dest)
                         log_success(f"Created {dest.relative_to(current_dir)}")
 
-            # Copy core directory if exists (for konfig template)
+            # Copy core directory if exists (for konfig/serverless templates)
+            # Always updated (part of framework)
             template_core = template_dir / "core"
             if template_core.exists():
                 core_dir = current_dir / "core"
-                if core_dir.exists() and args.force:
+                if core_dir.exists() and (args.force or args.update):
                     shutil.rmtree(core_dir)
                 if not core_dir.exists():
                     shutil.copytree(template_core, core_dir)
                     log_success(f"Created {core_dir.relative_to(current_dir)}/")
 
             # Copy payloads directory if exists (for serverless template)
-            template_payloads = template_dir / "payloads"
-            if template_payloads.exists():
-                payloads_dir = current_dir / "payloads"
-                if payloads_dir.exists() and args.force:
-                    shutil.rmtree(payloads_dir)
-                if not payloads_dir.exists():
-                    shutil.copytree(template_payloads, payloads_dir)
-                    log_success(f"Created {payloads_dir.relative_to(current_dir)}/")
+            # Skip if --update (user configuration)
+            if not args.update:
+                template_payloads = template_dir / "payloads"
+                if template_payloads.exists():
+                    payloads_dir = current_dir / "payloads"
+                    if payloads_dir.exists() and args.force:
+                        shutil.rmtree(payloads_dir)
+                    if not payloads_dir.exists():
+                        shutil.copytree(template_payloads, payloads_dir)
+                        log_success(f"Created {payloads_dir.relative_to(current_dir)}/")
 
             # Create .clingy marker file
             marker_file = current_dir / ".clingy"
@@ -151,12 +170,18 @@ class InitCommand(BaseCommand):
             except Exception as e:
                 log_warning(f"Failed to create .clingy marker: {e}")
 
-            log_success("Project initialized successfully!")
-            log_info("")
-            log_info("Next steps:")
-            log_info("  1. Edit config.py to customize your project")
-            log_info("  2. Add custom commands in commands/")
-            log_info("  3. Run 'clingy' to start the interactive menu")
+            if args.update:
+                log_success("Framework updated successfully!")
+                log_info("")
+                log_info("Updated: commands/, core/, README.md")
+                log_info("Preserved: config.py, payloads/, mappings.py")
+            else:
+                log_success("Project initialized successfully!")
+                log_info("")
+                log_info("Next steps:")
+                log_info("  1. Edit config.py to customize your project")
+                log_info("  2. Add custom commands in commands/")
+                log_info("  3. Run 'clingy' to start the interactive menu")
 
             return True
 

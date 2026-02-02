@@ -63,11 +63,11 @@ class InvokeCommand(BaseCommand):
     def _format_lambda_response(self, response_text: str, func_name: str) -> None:
         """
         Parse and pretty-print Lambda response with color formatting
-        Also saves the formatted response to output.yaml in function folder
+        Also saves the formatted response to results/outputs/{func_name}.yaml
 
         Args:
             response_text: Raw response text from Lambda
-            func_name: Lambda function name (for saving to function-specific folder)
+            func_name: Lambda function name (for saving to centralized outputs directory)
         """
         try:
             # Parse the Lambda response
@@ -130,7 +130,7 @@ class InvokeCommand(BaseCommand):
 
     def _save_response_to_yaml(self, data: dict, func_name: str) -> None:
         """
-        Save Lambda response to output.yaml file in function folder
+        Save Lambda response to results/outputs/{func_name}.yaml
 
         Args:
             data: Parsed Lambda response data
@@ -141,12 +141,13 @@ class InvokeCommand(BaseCommand):
             return
 
         try:
-            # Create function folder if it doesn't exist
-            func_folder = os.path.join("functions", func_name)
-            os.makedirs(func_folder, exist_ok=True)
+            from config import OUTPUTS_DIR
 
-            # Save to function-specific output.yaml
-            output_file = os.path.join(func_folder, "output.yaml")
+            # Create outputs folder if it doesn't exist
+            os.makedirs(OUTPUTS_DIR, exist_ok=True)
+
+            # Save to centralized outputs directory
+            output_file = os.path.join(OUTPUTS_DIR, f"{func_name}.yaml")
 
             with open(output_file, "w") as f:
                 yaml.dump(

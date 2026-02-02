@@ -212,9 +212,7 @@ class DeployCommand(BaseCommand):
         start_time = time.time()
 
         try:
-            result = run_in_project_root(
-                command, check=True, capture_output=False, text=True
-            )
+            result = run_in_project_root(command, check=True, capture_output=False, text=True)
 
             duration = time.time() - start_time
 
@@ -268,9 +266,7 @@ class DeployCommand(BaseCommand):
         start_time = time.time()
 
         try:
-            result = run_in_project_root(
-                command, check=True, capture_output=False, text=True
-            )
+            result = run_in_project_root(command, check=True, capture_output=False, text=True)
 
             duration = time.time() - start_time
 

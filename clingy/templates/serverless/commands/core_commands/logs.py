@@ -69,7 +69,7 @@ class LogsCommand(BaseCommand):
 
     def _save_logs_to_file(self, func_name: str, logs_output: str) -> None:
         """
-        Save logs output to a file in the function's folder
+        Save logs output to results/logs/{func_name}.log
 
         Args:
             func_name: Lambda function name
@@ -77,12 +77,13 @@ class LogsCommand(BaseCommand):
         """
         import os
 
-        # Create function folder if it doesn't exist
-        func_folder = os.path.join("functions", func_name)
-        os.makedirs(func_folder, exist_ok=True)
+        from config import LOGS_DIR
 
-        # Write logs to file
-        log_file_path = os.path.join(func_folder, "function.log")
+        # Create logs folder if it doesn't exist
+        os.makedirs(LOGS_DIR, exist_ok=True)
+
+        # Write logs to centralized logs directory
+        log_file_path = os.path.join(LOGS_DIR, f"{func_name}.log")
         with open(log_file_path, "w", encoding="utf-8") as f:
             f.write(logs_output)
 

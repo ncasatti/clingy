@@ -92,6 +92,15 @@ PAYLOAD_SHOW_MERGE_SOURCES = True
 
 
 # ============================================================================
+# Results Settings
+# ============================================================================
+# Results directory for logs and outputs (centralized, not in functions/)
+RESULTS_DIR = os.path.join(_config_dir, "results")
+LOGS_DIR = os.path.join(RESULTS_DIR, "logs")
+OUTPUTS_DIR = os.path.join(RESULTS_DIR, "outputs")
+
+
+# ============================================================================
 # Function List
 # ============================================================================
 # List of Go functions to build/deploy
