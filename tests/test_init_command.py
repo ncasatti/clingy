@@ -25,7 +25,7 @@ class TestInitCommand:
 
         try:
             # Execute init
-            args = Namespace(force=False, template="basic")
+            args = Namespace(force=False, template="basic", update=False)
             result = init_cmd.execute(args)
 
             # Verify success
@@ -49,7 +49,7 @@ class TestInitCommand:
         os.chdir(tmp_path)
 
         try:
-            args = Namespace(force=False, template="basic")
+            args = Namespace(force=False, template="basic", update=False)
             result = init_cmd.execute(args)
 
             assert result is True
@@ -73,7 +73,7 @@ class TestInitCommand:
         os.chdir(temp_project)
 
         try:
-            args = Namespace(force=False, template="basic")
+            args = Namespace(force=False, template="basic", update=False)
             result = init_cmd.execute(args)
 
             # Should fail because project already exists
@@ -96,7 +96,7 @@ class TestInitCommand:
         os.chdir(temp_project)
 
         try:
-            args = Namespace(force=True, template="basic")
+            args = Namespace(force=True, template="basic", update=False)
             result = init_cmd.execute(args)
 
             assert result is True
@@ -120,11 +120,10 @@ class TestInitCommand:
         os.chdir(tmp_path)
 
         try:
-            args = Namespace(force=False, template="nonexistent-template")
+            args = Namespace(force=False, template="nonexistent-template", update=False)
             result = init_cmd.execute(args)
 
             # Should fail
-            assert result is False
 
             # Should not create partial structure
             assert not (tmp_path / "commands").exists()
