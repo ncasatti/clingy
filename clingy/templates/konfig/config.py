@@ -26,6 +26,7 @@ SUDO_PATHS = ["/etc/", "/usr/", "/opt/", "/var/", "/sys/", "/boot/"]
 # Rclone sync settings
 RCLONE_REMOTE = "gd"  # Your rclone remote name (run 'rclone listremotes' to see)
 RCLONE_OBSIDIAN_PATH = "Docs/Zettelkasten/"  # Path in remote (relative to remote root)
+RCLONE_KONFIG_PATH = "Docs/Development/Linux/konfig"  # Path in remote (Konfig dotfiles)
 
 # Obsidian vault settings
 OBSIDIAN_VAULT_PATH = "~/Documents/Zettelkasten/"  # Local Obsidian vault path
