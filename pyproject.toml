@@ -4,11 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "clingy"
-version = "1.0.0"
+version = "1.1.0"
 description = "Context-aware CLI framework with fuzzy search menus and auto-discovery - Build interactive command-line tools that cling to your workflow"
 readme = "README.md"
 requires-python = ">=3.8"
-license = {text = "MIT"}
+license = "MIT"
 authors = [
     {name = "Nicolás Casatti", email = "ncasatti@gmail.com"}
 ]
@@ -16,19 +16,20 @@ keywords = ["cli", "clingy", "interactive", "fzf", "template", "framework", "com
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
-    "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "Topic :: Software Development :: Libraries :: Application Frameworks",
     "Topic :: Utilities",
 ]
 
-# No dependencies (only Python stdlib)
-dependencies = []
+dependencies = [
+    "pyyaml>=6.0.0",
+]
 
 [project.optional-dependencies]
 dev = [

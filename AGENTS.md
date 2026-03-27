@@ -22,7 +22,10 @@
 
 ```bash
 # Install framework (development mode)
-pip install -e .
+uv pip install -e .
+
+# Or with pip:
+# pip install -e .
 
 # Initialize a test project
 cd /tmp && mkdir test-project && cd test-project
@@ -97,6 +100,7 @@ isort . --check-only --profile black
 flake8 . --max-line-length=100
 
 # MyPy (type checking)
+# Install: uv pip install mypy  (or: pip install mypy)
 mypy . --strict
 ```
 

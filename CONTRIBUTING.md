@@ -15,13 +15,19 @@ cd clingy
 
 ```bash
 # Install project in development mode
-pip install -e ".[dev]"
+uv pip install -e ".[dev]"
+
+# Or with pip:
+# pip install -e ".[dev]"
 
 # Install formatters
-pip install black isort
+uv pip install black isort
+
+# Or with pip:
+# pip install black isort
 
 # (Optional) Install pre-commit hooks
-pip install pre-commit
+uv pip install pre-commit
 pre-commit install
 ```
 

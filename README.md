@@ -55,6 +55,12 @@
 ### From PyPI (Recommended)
 
 ```bash
+uv pip install clingy
+```
+
+Or with pip:
+
+```bash
 pip install clingy
 ```
 
@@ -63,6 +69,12 @@ pip install clingy
 ```bash
 git clone https://github.com/ncasatti/clingy.git
 cd clingy
+uv pip install -e .
+```
+
+Or with pip:
+
+```bash
 pip install -e .
 ```
 
@@ -421,7 +433,10 @@ git clone https://github.com/ncasatti/clingy.git
 cd clingy
 
 # Install in editable mode
-pip install -e .
+uv pip install -e .
+
+# Or with pip:
+# pip install -e .
 
 # Verify installation
 clingy --version
@@ -467,7 +482,10 @@ black clingy/ --line-length 100
 
 ```bash
 # Install mypy
-pip install mypy
+uv pip install mypy
+
+# Or with pip:
+# pip install mypy
 
 # Run type checker
 mypy . --strict
@@ -477,7 +495,10 @@ mypy . --strict
 
 ```bash
 # Install isort
-pip install isort
+uv pip install isort
+
+# Or with pip:
+# pip install isort
 
 # Sort imports
 isort . --profile black
@@ -581,12 +602,18 @@ sudo pacman -S fzf
 **Solution:**
 ```bash
 # Install from PyPI
-pip install clingy
+uv pip install clingy
+
+# Or with pip:
+# pip install clingy
 
 # Or install from source in editable mode
 git clone https://github.com/ncasatti/clingy.git
 cd clingy
-pip install -e .
+uv pip install -e .
+
+# Or with pip:
+# pip install -e .
 ```
 
 ### "Command not found in interactive menu"
