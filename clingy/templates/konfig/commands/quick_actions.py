@@ -18,6 +18,7 @@ from core.link_core import (
     remove_link,
     requires_sudo,
 )
+from core.models import load_mappings
 from core.status import (
     expand_path,
     get_all_statuses,
@@ -25,8 +26,10 @@ from core.status import (
     get_problems,
     get_status_icon,
     get_status_summary,
+    resolve_konfig_path,
 )
-from mappings import CONFIGS
+
+CONFIGS, _ = load_mappings()
 
 from clingy.commands.base import BaseCommand
 from clingy.core.emojis import Emoji
@@ -61,7 +64,7 @@ class QuickActionsCommand(BaseCommand):
             log_error("No action specified. Use --action")
             return False
 
-        konfig_root = expand_path(KONFIG_PATH)
+        konfig_root = resolve_konfig_path(KONFIG_PATH)
 
         if args.action == "link-all":
             return self._link_all(konfig_root)
@@ -74,14 +77,14 @@ class QuickActionsCommand(BaseCommand):
 
         return False
 
-    def get_menu_tree(self) -> Optional[MenuNode]:
+    def get_menu_tree(self) -> MenuNode:
         """Build interactive menu tree"""
-        konfig_root = expand_path(KONFIG_PATH)
+        konfig_root = resolve_konfig_path(KONFIG_PATH)
 
         if not konfig_root.exists():
             log_error(f"Konfig path not found: {konfig_root}")
             log_info("Edit config.py and set KONFIG_PATH to your dotfiles repository")
-            return None
+            return MenuNode(label="Error: Konfig path not found")
 
         return MenuNode(
             label="Quick Actions",
@@ -90,22 +93,26 @@ class QuickActionsCommand(BaseCommand):
                 MenuNode(
                     label="Link All Configurations",
                     emoji=Emoji.LINK,
-                    action=lambda: self._link_all(konfig_root),
+                    action=self._link_all,
+                    action_args=(konfig_root,),
                 ),
                 MenuNode(
                     label="Unlink All Configurations",
                     emoji=Emoji.UNLINK,
-                    action=lambda: self._unlink_all(konfig_root),
+                    action=self._unlink_all,
+                    action_args=(konfig_root,),
                 ),
                 MenuNode(
                     label="Show Status Summary",
                     emoji=Emoji.STATS,
-                    action=lambda: self._show_status_summary(konfig_root),
+                    action=self._show_status_summary,
+                    action_args=(konfig_root,),
                 ),
                 MenuNode(
                     label="Verify Integrity",
                     emoji=Emoji.SEARCH,
-                    action=lambda: self._verify_integrity(konfig_root),
+                    action=self._verify_integrity,
+                    action_args=(konfig_root,),
                 ),
             ],
         )

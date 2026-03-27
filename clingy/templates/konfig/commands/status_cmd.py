@@ -18,8 +18,8 @@ from core.status import (
     get_configs_by_group,
     get_group_summary,
     get_status_icon,
+    resolve_konfig_path,
 )
-from mappings import CONFIGS
 
 from clingy.commands.base import BaseCommand
 from clingy.core.logger import log_error, log_info, log_section
@@ -36,15 +36,19 @@ class StatusCommand(BaseCommand):
     def add_arguments(self, parser: ArgumentParser):
         """Add command-specific arguments"""
         parser.add_argument(
-            "--group", help="Show status for specific group only", choices=get_all_groups()
+            "--group",
+            help="Show status for specific group only",
+            choices=get_all_groups(),
         )
         parser.add_argument(
-            "--detailed", action="store_true", help="Show detailed information (paths, etc.)"
+            "--detailed",
+            action="store_true",
+            help="Show detailed information (paths, etc.)",
         )
 
     def execute(self, args: Namespace) -> bool:
         """Execute status command"""
-        konfig_root = expand_path(KONFIG_PATH)
+        konfig_root = resolve_konfig_path(KONFIG_PATH)
 
         if not konfig_root.exists():
             log_error(f"Konfig path not found: {konfig_root}")
@@ -56,13 +60,13 @@ class StatusCommand(BaseCommand):
         else:
             return self._show_all_status(konfig_root, args.detailed)
 
-    def get_menu_tree(self) -> Optional[MenuNode]:
+    def get_menu_tree(self) -> MenuNode:
         """Build interactive menu tree"""
-        konfig_root = expand_path(KONFIG_PATH)
+        konfig_root = resolve_konfig_path(KONFIG_PATH)
 
         if not konfig_root.exists():
             log_error(f"Konfig path not found: {konfig_root}")
-            return None
+            return MenuNode(label="Error: Konfig path not found")
 
         # Build group status menus
         group_nodes = []
@@ -70,7 +74,9 @@ class StatusCommand(BaseCommand):
             group_nodes.append(
                 MenuNode(
                     label=f"Status: {group.title()}",
-                    action=lambda g=group: self._show_group_status(g, konfig_root, detailed=True),
+                    action=self._show_group_status,
+                    action_args=(group, konfig_root),
+                    action_kwargs={"detailed": True},
                 )
             )
 
@@ -80,11 +86,15 @@ class StatusCommand(BaseCommand):
             children=[
                 MenuNode(
                     label="Show All Status",
-                    action=lambda: self._show_all_status(konfig_root, detailed=False),
+                    action=self._show_all_status,
+                    action_args=(konfig_root,),
+                    action_kwargs={"detailed": False},
                 ),
                 MenuNode(
                     label="Show All Status (Detailed)",
-                    action=lambda: self._show_all_status(konfig_root, detailed=True),
+                    action=self._show_all_status,
+                    action_args=(konfig_root,),
+                    action_kwargs={"detailed": True},
                 ),
                 MenuNode(label="───────────────"),  # Separator
                 *group_nodes,
@@ -113,7 +123,11 @@ class StatusCommand(BaseCommand):
         return True
 
     def _show_group_status(
-        self, group: str, konfig_root: Path, detailed: bool = False, show_header: bool = True
+        self,
+        group: str,
+        konfig_root: Path,
+        detailed: bool = False,
+        show_header: bool = True,
     ) -> bool:
         """Show status for a specific group"""
         if show_header:

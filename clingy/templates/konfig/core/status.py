@@ -10,7 +10,32 @@ from pathlib import Path
 from typing import Dict, List, Tuple
 
 from core.link_core import LinkStatus, get_link_status, requires_sudo
-from mappings import CONFIGS, GROUP_DESCRIPTIONS, Config
+from core.models import Config, load_mappings
+
+from clingy.core.discovery import find_clingy_root
+
+CONFIGS, GROUP_DESCRIPTIONS = load_mappings()
+
+
+def resolve_konfig_path(path_str: str) -> Path:
+    """
+    Resolve KONFIG_PATH to an absolute Path.
+    If it's relative, resolve it relative to the project root.
+
+    Args:
+        path_str: Path string from config
+
+    Returns:
+        Resolved absolute Path object
+    """
+    path = Path(os.path.expanduser(os.path.expandvars(path_str)))
+    if not path.is_absolute():
+        project_root = find_clingy_root()
+        if project_root:
+            path = (project_root / path).resolve()
+        else:
+            path = path.resolve()
+    return path
 
 
 def expand_path(path: str) -> Path:

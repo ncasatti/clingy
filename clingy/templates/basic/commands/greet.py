@@ -42,7 +42,7 @@ class GreetCommand(BaseCommand):
         log_success(greeting)
         return True
 
-    def get_menu_tree(self) -> Optional[MenuNode]:
+    def get_menu_tree(self) -> MenuNode:
         """Interactive menu for greet command"""
         return MenuNode(
             label="Greet",
@@ -51,22 +51,26 @@ class GreetCommand(BaseCommand):
                 MenuNode(
                     label="English",
                     emoji=Emoji.FLAG_GB,
-                    action=lambda: self._greet("en"),
+                    action=self._greet,
+                    action_args=("en",),
                 ),
                 MenuNode(
                     label="Spanish",
                     emoji=Emoji.FLAG_ES,
-                    action=lambda: self._greet("es"),
+                    action=self._greet,
+                    action_args=("es",),
                 ),
                 MenuNode(
                     label="French",
                     emoji=Emoji.FLAG_FR,
-                    action=lambda: self._greet("fr"),
+                    action=self._greet,
+                    action_args=("fr",),
                 ),
                 MenuNode(
                     label="German",
                     emoji=Emoji.FLAG_DE,
-                    action=lambda: self._greet("de"),
+                    action=self._greet,
+                    action_args=("de",),
                 ),
             ],
         )

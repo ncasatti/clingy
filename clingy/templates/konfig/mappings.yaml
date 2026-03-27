@@ -1,0 +1,227 @@
+group_descriptions:
+  hyprland: "Hyprland window manager and related components"
+  sudo: "Configurations requiring sudo privileges"
+  main: "Core system configurations"
+  themes: "System theming configurations"
+  shell: "Shell and terminal configurations"
+  code: "VSCode based editors configurations"
+  tmux: "Tmux terminal multiplexer"
+  others: "Other development tools"
+
+configs:
+  - name: hyprland
+    source: hypr
+    target: ~/.config/hypr
+    group: hyprland
+    display_name: Hyprland
+  - name: hyprshade
+    source: hyprshade
+    target: /usr/share/hyprshade
+    group: hyprland
+    display_name: Hyprshade
+    requires_sudo: true
+  - name: swaync
+    source: swaync
+    target: ~/.config/swaync
+    group: hyprland
+    display_name: Swaync
+  - name: waybar
+    source: waybar
+    target: ~/.config/waybar
+    group: hyprland
+    display_name: Waybar
+  - name: rofi
+    source: rofi
+    target: ~/.config/rofi
+    group: hyprland
+    display_name: Rofi
+  - name: wallust
+    source: wallust
+    target: ~/.config/wallust
+    group: hyprland
+    display_name: Wallust
+  - name: kitty
+    source: kitty
+    target: ~/.config/kitty
+    group: hyprland
+    display_name: Kitty
+  - name: icons
+    source: themes/icons
+    target: ~/.icons
+    group: themes
+    display_name: Icons
+  - name: fonts
+    source: themes/fonts
+    target: ~/.local/share/fonts
+    group: themes
+    display_name: Fonts
+  - name: gtk-2.0
+    source: themes/gtk-2.0
+    target: ~/.config/gtk-2.0
+    group: themes
+    display_name: GTK 2.0
+  - name: gtk-3.0
+    source: themes/gtk-3.0
+    target: ~/.config/gtk-3.0
+    group: themes
+    display_name: GTK 3.0
+  - name: gtk-4.0
+    source: themes/gtk-4.0
+    target: ~/.config/gtk-4.0
+    group: themes
+    display_name: GTK 4.0
+  - name: kvantum
+    source: themes/kvantum
+    target: ~/.config/Kvantum
+    group: themes
+    display_name: Kvantum
+  - name: themes
+    source: themes/themes
+    target: ~/.themes
+    group: themes
+    display_name: Themes
+  - name: keyd
+    source: keyd
+    target: /etc/keyd
+    group: sudo
+    display_name: Keyd
+    requires_sudo: true
+  - name: rclone
+    source: rclone
+    target: ~/.config/rclone
+    group: main
+    display_name: Rclone
+  - name: gitconfig
+    source: .gitconfig
+    target: ~/.gitconfig
+    group: main
+    display_name: Git Config
+  - name: git-credentials
+    source: .git-credentials
+    target: ~/.git-credentials
+    group: main
+    display_name: Git Credentials
+  - name: aws
+    source: aws
+    target: ~/.aws
+    group: main
+    display_name: AWS
+  - name: zsh
+    source: .zshrc
+    target: ~/.zshrc
+    group: shell
+    display_name: Zsh
+  - name: zsh-custom
+    source: zsh/custom
+    target: ~/.oh-my-zsh/custom
+    group: shell
+    display_name: Zsh Custom Folder
+  - name: p10k
+    source: .p10k.zsh
+    target: ~/.p10k.zsh
+    group: shell
+    display_name: P10K
+  - name: nvim
+    source: nvim
+    target: ~/.config/nvim
+    group: shell
+    display_name: Nvim
+  - name: fish-shell
+    source: fish
+    target: ~/.config/fish
+    group: shell
+  - name: starship
+    source: starship/starship.toml
+    target: ~/.config/starship.toml
+    group: shell
+    display_name: Starship
+  - name: lazygit
+    source: lazygit
+    target: ~/.config/lazygit
+    group: shell
+    display_name: Lazygit
+  - name: opencode
+    source: opencode/opencode.json
+    target: ~/.config/opencode/opencode.json
+    group: agents
+    display_name: OpenCode
+  - name: opencode agents
+    source: opencode/agent
+    target: ~/.config/opencode/agent
+    group: agents
+    display_name: OpenCode Agents
+  - name: opencode skill
+    source: opencode/skill
+    target: ~/.config/opencode/skill
+    group: agents
+    display_name: OpenCode Skills
+  - name: opencode themes
+    source: opencode/themes
+    target: ~/.config/opencode/themes
+    group: agents
+    display_name: OpenCode Themes
+  - name: claude
+    source: opencode/agent/architect.md
+    target: ~/.claude/CLAUDE.md
+    group: agents
+    display_name: Claude Main Agent (opencode arch)
+  - name: claude agents
+    source: opencode/agent
+    target: ~/.claude/agents
+    group: agents
+    display_name: Claude Agents
+  - name: claude skill
+    source: opencode/skill
+    target: ~/.claude/skills
+    group: agents
+    display_name: Claude Skills
+  - name: tmux-config
+    source: tmux/tmux.conf
+    target: ~/.tmux.conf
+    group: tmux
+    display_name: Tmux
+  - name: tmux-plugins
+    source: tmux/tmux
+    target: ~/.tmux
+    group: tmux
+    display_name: Tmux Plugins
+  - name: windsurf-keybindings
+    source: code/keybindings.json
+    target: ~/.config/Windsurf/User/keybindings.json
+    group: code
+    display_name: Windsurf Keybindings
+  - name: windsurf-settings
+    source: code/settings.json
+    target: ~/.config/Windsurf/User/settings.json
+    group: code
+    display_name: Windsurf Settings
+  - name: vscode-keybindings
+    source: code/keybindings.json
+    target: ~/.config/Code/User/keybindings.json
+    group: code
+    display_name: VSCode Keybindings
+  - name: vscode-settings
+    source: code/settings.json
+    target: ~/.config/Code/User/settings.json
+    group: code
+    display_name: VSCode Settings
+  - name: antigravity-keybindings
+    source: code/keybindings.json
+    target: ~/.config/Antigravity/User/keybindings.json
+    group: code
+    display_name: Google Antigravity Keybindings
+  - name: antigravity-settings
+    source: code/settings.json
+    target: ~/.config/Antigravity/User/settings.json
+    group: code
+    display_name: Google Antigravity Settings
+  - name: idea-vim
+    source: .ideavimrc
+    target: ~/.ideavimrc
+    group: others
+    display_name: IDEA Vim
+  - name: obsidian-vim
+    source: .obsidian.vimrc
+    target: ~/Documents/Zettelkasten/.obsidian.vimrc
+    group: others
+    display_name: Obsidian Vim

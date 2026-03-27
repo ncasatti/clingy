@@ -86,7 +86,8 @@ class TestCommand(BaseCommand):
         return MenuNode(
             label="Test Command",
             emoji=Emoji.INFO,
-            action=lambda: self.execute(Namespace(value="menu"))
+            action=self.execute,
+            action_args=(Namespace(value="menu"),)
         )
 '''
 

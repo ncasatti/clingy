@@ -17,6 +17,7 @@ from config import (
     RCLONE_OBSIDIAN_PATH,
     RCLONE_REMOTE,
 )
+from core.status import resolve_konfig_path
 
 from clingy.commands.base import BaseCommand
 from clingy.core.emojis import Emoji
@@ -96,12 +97,14 @@ class SyncCommand(BaseCommand):
                         MenuNode(
                             label="Upload (Local → Cloud)",
                             emoji=Emoji.UPLOAD,
-                            action=lambda: self._sync_obsidian(upload=True),
+                            action=self._sync_obsidian,
+                            action_kwargs={"upload": True},
                         ),
                         MenuNode(
                             label="Download (Cloud → Local)",
                             emoji=Emoji.DOWNLOAD,
-                            action=lambda: self._sync_obsidian(upload=False),
+                            action=self._sync_obsidian,
+                            action_kwargs={"upload": False},
                         ),
                     ],
                 ),
@@ -112,12 +115,14 @@ class SyncCommand(BaseCommand):
                         MenuNode(
                             label="Upload (Local → Cloud)",
                             emoji=Emoji.UPLOAD,
-                            action=lambda: self._sync_konfig(upload=True),
+                            action=self._sync_konfig,
+                            action_kwargs={"upload": True},
                         ),
                         MenuNode(
                             label="Download (Cloud → Local)",
                             emoji=Emoji.DOWNLOAD,
-                            action=lambda: self._sync_konfig(upload=False),
+                            action=self._sync_konfig,
+                            action_kwargs={"upload": False},
                         ),
                     ],
                 ),
@@ -213,7 +218,7 @@ class SyncCommand(BaseCommand):
             True if sync succeeded, False otherwise
         """
         # Expand paths
-        local_path = Path(KONFIG_PATH).expanduser()
+        local_path = resolve_konfig_path(KONFIG_PATH)
         remote_path = f"{RCLONE_REMOTE}:{RCLONE_KONFIG_PATH}"
 
         # Validate local path exists

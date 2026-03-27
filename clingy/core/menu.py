@@ -25,9 +25,15 @@ class MenuNode:
     label: str = ""  # Menu text (static)
     emoji: str = ""  # Optional emoji
     children: List["MenuNode"] = field(default_factory=list)  # Submenus
-    action: Optional[Callable[[], bool]] = None  # Function to execute
+    action: Optional[Callable[..., bool]] = None  # Function to execute
+    action_args: tuple = field(default_factory=tuple)  # Positional arguments for action
+    action_kwargs: Dict[str, Any] = field(default_factory=dict)  # Keyword arguments for action
     data: Dict[str, Any] = field(default_factory=dict)  # Extra context
-    label_generator: Optional[Callable[[], str]] = None  # Dynamic label generator
+    label_generator: Optional[Callable[..., str]] = None  # Dynamic label generator
+    label_args: tuple = field(default_factory=tuple)  # Positional arguments for label_generator
+    label_kwargs: Dict[str, Any] = field(
+        default_factory=dict
+    )  # Keyword arguments for label_generator
 
     def is_leaf(self) -> bool:
         """True if it's an executable action (no children)"""
@@ -46,7 +52,7 @@ class MenuNode:
         """
         # Use dynamic label if generator exists
         if self.label_generator is not None:
-            text = self.label_generator()
+            text = self.label_generator(*self.label_args, **self.label_kwargs)
         else:
             text = self.label
 
@@ -85,7 +91,9 @@ class MenuRenderer:
             if current_node.is_leaf():
                 if current_node.action:
                     try:
-                        result = current_node.action()
+                        result = current_node.action(
+                            *current_node.action_args, **current_node.action_kwargs
+                        )
 
                         # If action returns False at root level, exit menu (e.g., Exit button)
                         # If at deeper levels, just go back (e.g., failed action in submenu)

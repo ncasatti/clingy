@@ -30,7 +30,7 @@ class CalculatorCommand(BaseCommand):
 
         return self._calculate(args.num1, args.operation, args.num2)
 
-    def get_menu_tree(self) -> Optional[MenuNode]:
+    def get_menu_tree(self) -> MenuNode:
         """Interactive menu for calculator"""
         return MenuNode(
             label="Calculator",
@@ -39,22 +39,26 @@ class CalculatorCommand(BaseCommand):
                 MenuNode(
                     label="Add",
                     emoji=Emoji.ADD,
-                    action=lambda: self._calculate_interactive("+"),
+                    action=self._calculate_interactive,
+                    action_args=("+",),
                 ),
                 MenuNode(
                     label="Subtract",
                     emoji=Emoji.SUBTRACT,
-                    action=lambda: self._calculate_interactive("-"),
+                    action=self._calculate_interactive,
+                    action_args=("-",),
                 ),
                 MenuNode(
                     label="Multiply",
                     emoji=Emoji.MULTIPLY,
-                    action=lambda: self._calculate_interactive("*"),
+                    action=self._calculate_interactive,
+                    action_args=("*",),
                 ),
                 MenuNode(
                     label="Divide",
                     emoji=Emoji.DIVIDE,
-                    action=lambda: self._calculate_interactive("/"),
+                    action=self._calculate_interactive,
+                    action_args=("/",),
                 ),
             ],
         )

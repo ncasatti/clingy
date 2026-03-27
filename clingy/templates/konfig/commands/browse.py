@@ -26,8 +26,8 @@ from core.status import (
     get_configs_by_group,
     get_group_description,
     get_status_icon,
+    resolve_konfig_path,
 )
-from mappings import CONFIGS
 
 from clingy.commands.base import BaseCommand
 from clingy.core.logger import log_error, log_info, log_success, log_warning
@@ -50,14 +50,14 @@ class BrowseCommand(BaseCommand):
         # In CLI mode, just show the menu
         return True
 
-    def get_menu_tree(self) -> Optional[MenuNode]:
+    def get_menu_tree(self) -> MenuNode:
         """Build interactive menu tree"""
-        konfig_root = expand_path(KONFIG_PATH)
+        konfig_root = resolve_konfig_path(KONFIG_PATH)
 
         if not konfig_root.exists():
             log_error(f"Konfig path not found: {konfig_root}")
             log_info("Edit config.py and set KONFIG_PATH to your dotfiles repository")
-            return None
+            return MenuNode(label="Error: Konfig path not found")
 
         # Build group menus
         group_nodes = []
@@ -71,23 +71,24 @@ class BrowseCommand(BaseCommand):
                 # Create submenu for each config with dynamic labels
                 config_nodes.append(
                     MenuNode(
-                        label_generator=lambda c=config, kr=konfig_root: self._get_config_label(
-                            c, kr
-                        ),
+                        label_generator=self._get_config_label,
+                        label_args=(config, konfig_root),
                         children=[
                             MenuNode(
-                                label_generator=lambda c=config, kr=konfig_root: self._get_status_label(
-                                    c, kr
-                                ),
-                                action=lambda c=config: self._show_config_info(c, konfig_root),
+                                label_generator=self._get_status_label,
+                                label_args=(config, konfig_root),
+                                action=self._show_config_info,
+                                action_args=(config, konfig_root),
                             ),
                             MenuNode(
                                 label="Link",
-                                action=lambda c=config: self._link_config(c, konfig_root),
+                                action=self._link_config,
+                                action_args=(config, konfig_root),
                             ),
                             MenuNode(
                                 label="Unlink",
-                                action=lambda c=config: self._unlink_config(c, konfig_root),
+                                action=self._unlink_config,
+                                action_args=(config, konfig_root),
                             ),
                         ],
                     )
@@ -99,11 +100,13 @@ class BrowseCommand(BaseCommand):
                     MenuNode(label="───────────────"),  # Separator
                     MenuNode(
                         label="Link All in Group",
-                        action=lambda g=group: self._link_group(g, konfig_root),
+                        action=self._link_group,
+                        action_args=(group, konfig_root),
                     ),
                     MenuNode(
                         label="Unlink All in Group",
-                        action=lambda g=group: self._unlink_group(g, konfig_root),
+                        action=self._unlink_group,
+                        action_args=(group, konfig_root),
                     ),
                 ]
             )

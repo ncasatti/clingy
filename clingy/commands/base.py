@@ -69,7 +69,8 @@ class BaseCommand(ABC):
             MenuNode(
                 label="Command Name",
                 emoji=Emojis.ICON,
-                action=lambda: self.execute(Namespace())
+                action=self.execute,
+                action_args=(Namespace(),)
             )
 
         Returns:

@@ -46,5 +46,6 @@ class InfoCommand(BaseCommand):
         return MenuNode(
             label="System Information",
             emoji=Emoji.CMD_INFO,
-            action=lambda: self.execute(Namespace()),
+            action=self.execute,
+            action_args=(Namespace(),),
         )
