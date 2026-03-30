@@ -45,6 +45,10 @@ functions/**/bootstrap
 .DS_Store
 Thumbs.db
 
+# Nixos
+.envrc
+.direnv/
+
 # Testing
 .coverage
 .pytest_cache/
