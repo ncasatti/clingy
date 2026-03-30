@@ -46,7 +46,7 @@ class StatusCommand(BaseCommand):
     def add_arguments(self, parser: ArgumentParser):
         return super().add_arguments(parser)
 
-    def get_menu_tree(self) -> Optional[MenuNode]:
+    def get_menu_tree(self) -> MenuNode:
         """Interactive menu for status information"""
         return MenuNode(
             label="Status & Info",
@@ -55,27 +55,27 @@ class StatusCommand(BaseCommand):
                 MenuNode(
                     label="List All Functions",
                     emoji=Emoji.LIST,
-                    action=lambda: self._list_functions(),
+                    action=self._list_functions,
                 ),
                 MenuNode(
                     label="Build Status",
                     emoji=Emoji.BUILD,
-                    action=lambda: self._show_build_status(),
+                    action=self._show_build_status,
                 ),
                 MenuNode(
                     label="Check Dependencies",
                     emoji=Emoji.PACKAGE,
-                    action=lambda: self._check_dependencies(),
+                    action=self._check_dependencies,
                 ),
                 MenuNode(
                     label="Show Configuration",
                     emoji=Emoji.GEAR,
-                    action=lambda: self._show_config(),
+                    action=self._show_config,
                 ),
                 MenuNode(
                     label="Show All Status",
                     emoji=Emoji.INFO,
-                    action=lambda: self._show_all_status(),
+                    action=self._show_all_status,
                 ),
             ],
         )

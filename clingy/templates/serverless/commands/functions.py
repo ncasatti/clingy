@@ -30,7 +30,7 @@ class FunctionsCommand(BaseCommand):
     def add_arguments(self, parser: ArgumentParser):
         return super().add_arguments(parser)
 
-    def get_menu_tree(self) -> Optional[MenuNode]:
+    def get_menu_tree(self) -> MenuNode:
         """Interactive menu for functions management"""
         return MenuNode(
             label="Functions",
@@ -42,11 +42,11 @@ class FunctionsCommand(BaseCommand):
                     children=[
                         MenuNode(
                             label="Build All",
-                            action=lambda: self._build_all(),
+                            action=self._build_all,
                         ),
                         MenuNode(
                             label="Select Functions to Build",
-                            action=lambda: self._build_selected(),
+                            action=self._build_selected,
                         ),
                     ],
                 ),
@@ -56,11 +56,11 @@ class FunctionsCommand(BaseCommand):
                     children=[
                         MenuNode(
                             label="Zip All",
-                            action=lambda: self._zip_all(),
+                            action=self._zip_all,
                         ),
                         MenuNode(
                             label="Select Functions to Zip",
-                            action=lambda: self._zip_selected(),
+                            action=self._zip_selected,
                         ),
                     ],
                 ),
@@ -70,11 +70,11 @@ class FunctionsCommand(BaseCommand):
                     children=[
                         MenuNode(
                             label="Deploy All",
-                            action=lambda: self._deploy_all(),
+                            action=self._deploy_all,
                         ),
                         MenuNode(
                             label="Select Functions to Deploy",
-                            action=lambda: self._deploy_selected(),
+                            action=self._deploy_selected,
                         ),
                     ],
                 ),
@@ -84,11 +84,11 @@ class FunctionsCommand(BaseCommand):
                     children=[
                         MenuNode(
                             label="Full Pipeline - All Functions",
-                            action=lambda: self._full_pipeline_all(),
+                            action=self._full_pipeline_all,
                         ),
                         MenuNode(
                             label="Full Pipeline - Select Functions",
-                            action=lambda: self._full_pipeline_selected(),
+                            action=self._full_pipeline_selected,
                         ),
                     ],
                 ),
@@ -98,11 +98,11 @@ class FunctionsCommand(BaseCommand):
                     children=[
                         MenuNode(
                             label="Clean All",
-                            action=lambda: self._clean_all(),
+                            action=self._clean_all,
                         ),
                         MenuNode(
                             label="Select Functions to Clean",
-                            action=lambda: self._clean_selected(),
+                            action=self._clean_selected,
                         ),
                     ],
                 ),

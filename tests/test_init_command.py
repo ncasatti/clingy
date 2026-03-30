@@ -141,3 +141,103 @@ class TestInitCommand:
         init_cmd = InitCommand()
         assert init_cmd.help is not None
         assert len(init_cmd.help) > 0
+
+    def test_update_flag_preserves_config(self, temp_project):
+        """Should preserve config.py when using --update flag"""
+        init_cmd = InitCommand()
+
+        import json
+        import os
+
+        original_cwd = os.getcwd()
+        os.chdir(temp_project)
+
+        try:
+            # Update .clingy marker to use "basic" template
+            marker_content = {
+                "version": "1.0",
+                "type": "clingy-project",
+                "template": "basic",
+            }
+            (temp_project / ".clingy").write_text(json.dumps(marker_content, indent=2) + "\n")
+
+            # Add custom content to config.py
+            config_file = temp_project / "config.py"
+            original_content = config_file.read_text()
+            custom_content = original_content + "\n# Custom configuration\nCUSTOM_VAR = 'test'\n"
+            config_file.write_text(custom_content)
+
+            # Execute with --update flag
+            args = Namespace(force=False, template=None, update=True)
+            result = init_cmd.execute(args)
+
+            assert result is True
+
+            # Verify config.py still has custom content
+            updated_content = config_file.read_text()
+            assert "CUSTOM_VAR = 'test'" in updated_content
+
+        finally:
+            os.chdir(original_cwd)
+
+    def test_update_flag_auto_detects_template(self, temp_project):
+        """Should auto-detect template from .clingy marker when using --update"""
+        init_cmd = InitCommand()
+
+        import os
+
+        original_cwd = os.getcwd()
+        os.chdir(temp_project)
+
+        try:
+            # The temp_project fixture creates a .clingy with template="test"
+            # Since "test" template doesn't exist, this should fail gracefully
+            args = Namespace(force=False, template=None, update=True)
+            result = init_cmd.execute(args)
+
+            # Should fail because "test" template doesn't exist
+            assert result is False
+
+        finally:
+            os.chdir(original_cwd)
+
+    def test_update_flag_with_basic_template(self, temp_project):
+        """Should update framework files with --update flag using basic template"""
+        init_cmd = InitCommand()
+
+        import json
+        import os
+
+        original_cwd = os.getcwd()
+        os.chdir(temp_project)
+
+        try:
+            # Update .clingy marker to use "basic" template
+            marker_content = {
+                "version": "1.0",
+                "type": "clingy-project",
+                "template": "basic",
+            }
+            (temp_project / ".clingy").write_text(json.dumps(marker_content, indent=2) + "\n")
+
+            # Add custom content to config.py
+            config_file = temp_project / "config.py"
+            original_content = config_file.read_text()
+            custom_content = original_content + "\n# Custom configuration\n"
+            config_file.write_text(custom_content)
+
+            # Execute with --update flag
+            args = Namespace(force=False, template=None, update=True)
+            result = init_cmd.execute(args)
+
+            assert result is True
+
+            # Verify config.py still has custom content
+            updated_content = config_file.read_text()
+            assert "# Custom configuration" in updated_content
+
+            # Verify framework files were updated
+            assert (temp_project / "commands" / "greet.py").exists()
+
+        finally:
+            os.chdir(original_cwd)

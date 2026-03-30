@@ -9,6 +9,7 @@ from pathlib import Path
 from typing import Optional
 
 from clingy.commands.base import BaseCommand
+from clingy.core.discovery import read_clingy_marker
 from clingy.core.emojis import Emoji
 from clingy.core.logger import (
     log_error,
@@ -65,26 +66,33 @@ class InitCommand(BaseCommand):
         log_section("INITIALIZING CLINGY PROJECT")
 
         current_dir = Path.cwd()
-        template_name = args.template
+        template_name = args.template if args.template else "basic"
+
+        # Auto-detect template from local .clingy if --update is used or template is None
+        if args.update or args.template is None:
+            marker_data = read_clingy_marker(current_dir)
+            if marker_data and "template" in marker_data:
+                template_name = marker_data["template"]
+                log_info(f"Detected template: {template_name}")
 
         # Check if project already exists
         commands_dir = current_dir / "commands"
         config_file = current_dir / "config.py"
 
-        if (commands_dir.exists() or config_file.exists()) and not args.force:
+        if (commands_dir.exists() or config_file.exists()) and not args.force and not args.update:
             log_error("Project already exists in this directory")
             log_info("Use --force to overwrite existing files")
             return False
 
         # Get template directory
-        template_dir = self._get_template_dir(args.template)
+        template_dir = self._get_template_dir(template_name)
         if template_dir is None:
-            log_error(f"Template '{args.template}' not found")
+            log_error(f"Template '{template_name}' not found")
             return False
 
         # Copy template files
         try:
-            log_info(f"Using template: {args.template}")
+            log_info(f"Using template: {template_name}")
 
             # Create commands directory
             if commands_dir.exists() and args.force:
@@ -156,17 +164,23 @@ class InitCommand(BaseCommand):
                         shutil.copytree(template_payloads, payloads_dir)
                         log_success(f"Created {payloads_dir.relative_to(current_dir)}/")
 
-            # Create .clingy marker file
+            # Copy .clingy marker file from template
             marker_file = current_dir / ".clingy"
-            marker_content = {
-                "version": "1.0",
-                "type": "clingy-project",
-                "template": template_name,
-            }
+            template_marker = template_dir / ".clingy"
 
             try:
-                marker_file.write_text(json.dumps(marker_content, indent=2) + "\n")
-                log_success("Created .clingy marker")
+                if template_marker.exists():
+                    shutil.copy2(template_marker, marker_file)
+                    log_success("Created .clingy marker")
+                else:
+                    # Fallback: generate inline if template .clingy doesn't exist
+                    marker_content = {
+                        "version": "1.0",
+                        "type": "clingy-project",
+                        "template": template_name,
+                    }
+                    marker_file.write_text(json.dumps(marker_content, indent=2) + "\n")
+                    log_success("Created .clingy marker")
             except Exception as e:
                 log_warning(f"Failed to create .clingy marker: {e}")
 

@@ -28,7 +28,7 @@ class LogsMenuCommand(BaseCommand):
     def add_arguments(self, parser: ArgumentParser):
         return super().add_arguments(parser)
 
-    def get_menu_tree(self) -> Optional[MenuNode]:
+    def get_menu_tree(self) -> MenuNode:
         """Interactive menu for logs management"""
         return MenuNode(
             label="Logs & Monitoring",
@@ -40,7 +40,7 @@ class LogsMenuCommand(BaseCommand):
                     children=[
                         MenuNode(
                             label="Select Function",
-                            action=lambda: self._view_logs_selected(),
+                            action=self._view_logs_selected,
                         ),
                     ],
                 ),
@@ -50,7 +50,7 @@ class LogsMenuCommand(BaseCommand):
                     children=[
                         MenuNode(
                             label="Select Function",
-                            action=lambda: self._tail_logs_selected(),
+                            action=self._tail_logs_selected,
                         ),
                     ],
                 ),
@@ -60,7 +60,7 @@ class LogsMenuCommand(BaseCommand):
                     children=[
                         MenuNode(
                             label="Run Insights Query",
-                            action=lambda: self._run_insights(),
+                            action=self._run_insights,
                         ),
                     ],
                 ),

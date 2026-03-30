@@ -13,16 +13,35 @@ import sys
 from clingy.cli_builder import create_cli_context
 from clingy.config import DEPENDENCIES
 from clingy.core.colors import Colors
-from clingy.core.logger import log_error, log_header, log_info
+from clingy.core.logger import log_error, log_header, log_info, log_warning
+from clingy.core.version import check_template_version
 
 
 def main():
     """Main CLI entry point"""
+    # Check for --update-template flag early (before creating CLI context)
+    if "--update-template" in sys.argv:
+        from clingy.commands.init import InitCommand
+
+        init_cmd = InitCommand()
+        success = init_cmd.execute(argparse.Namespace(update=True, force=False, template=None))
+        sys.exit(0 if success else 1)
+
     # Create CLI context (detects project and discovers commands)
     ctx = create_cli_context()
 
-    # Allow 'init' command to run even without a project
+    # Check template version if project exists and not running init
     is_init_command = len(sys.argv) > 1 and sys.argv[1] == "init"
+    if ctx.has_project and not is_init_command:
+        update_info = check_template_version(ctx.project_root)
+        if update_info is not None:
+            log_warning(
+                f"Template update available: {update_info.template_name} "
+                f"{update_info.local_version} → {update_info.framework_version}"
+            )
+            log_info("Run 'clingy --update-template' to update framework files.")
+
+    # Allow 'init' command to run even without a project
 
     # If no project found and not running 'init', show error
     if not ctx.has_project and not is_init_command:

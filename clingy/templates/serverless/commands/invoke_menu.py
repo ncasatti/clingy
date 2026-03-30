@@ -36,17 +36,17 @@ class InvokeMenuCommand(BaseCommand):
                 MenuNode(
                     label="Local Invocation",
                     emoji=Emoji.COMPUTER,
-                    action=lambda: self._invoke_local_flow(),
+                    action=self._invoke_local_flow,
                 ),
                 MenuNode(
                     label="Remote Invocation (AWS)",
                     emoji=Emoji.CLOUD,
-                    action=lambda: self._invoke_remote_flow(),
+                    action=self._invoke_remote_flow,
                 ),
                 MenuNode(
                     label="Payload Navigator",
                     emoji=Emoji.DOCUMENT,
-                    action=lambda: self._browse_payloads(),
+                    action=self._browse_payloads,
                 ),
             ],
         )

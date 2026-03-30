@@ -13,7 +13,11 @@ from pathlib import Path
 from typing import Dict, Optional, Type
 
 from clingy.commands.base import BaseCommand
-from clingy.core.discovery import find_clingy_root, load_project_config
+from clingy.core.discovery import (
+    find_clingy_root,
+    load_project_config,
+    read_clingy_marker,
+)
 
 
 @dataclass
@@ -25,12 +29,14 @@ class CLIContext:
         has_project: Whether a manager project was detected
         project_root: Path to project root (None if no project)
         project_config: Project configuration dict (None if no project)
+        marker_data: Parsed .clingy marker file (None if no project or file missing)
         commands: Dictionary of available commands
     """
 
     has_project: bool
     project_root: Optional[Path]
     project_config: Optional[Dict]
+    marker_data: Optional[Dict]
     commands: Dict[str, Type[BaseCommand]]
 
 
@@ -115,12 +121,14 @@ def create_cli_context() -> CLIContext:
             has_project=False,
             project_root=None,
             project_config=None,
+            marker_data=None,
             commands=_discover_framework_commands(),
         )
 
     # Project found - load config and discover project commands
     try:
         project_config = load_project_config(project_root)
+        marker_data = read_clingy_marker(project_root)
         project_commands = _discover_project_commands(project_root)
 
         # Merge framework and project commands (project commands take precedence)
@@ -131,6 +139,7 @@ def create_cli_context() -> CLIContext:
             has_project=True,
             project_root=project_root,
             project_config=project_config,
+            marker_data=marker_data,
             commands=all_commands,
         )
 
@@ -141,5 +150,6 @@ def create_cli_context() -> CLIContext:
             has_project=False,
             project_root=None,
             project_config=None,
+            marker_data=None,
             commands=_discover_framework_commands(),
         )

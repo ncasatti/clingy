@@ -142,3 +142,25 @@ def get_project_context() -> Optional[Dict[str, Any]]:
         return {"root": project_root, "config": config}
     except Exception:
         return None
+
+
+def read_clingy_marker(project_root: Path) -> Optional[Dict[str, Any]]:
+    """
+    Read and parse the .clingy marker file.
+
+    Args:
+        project_root: Path to project root directory
+
+    Returns:
+        Parsed .clingy JSON as dict, or None if file doesn't exist or is malformed
+    """
+    marker_path = project_root / ".clingy"
+
+    if not marker_path.is_file():
+        return None
+
+    try:
+        with open(marker_path, "r") as f:
+            return json.load(f)
+    except (json.JSONDecodeError, IOError):
+        return None
