@@ -29,7 +29,7 @@ class Emoji:
     BUILD = "󱌣 "
     CLEAN = ""
     RUN = " "
-    SEARCH = ""
+    SEARCH = " "
     BACK = "󰈆"
     EXIT = "󰈆"
     ZIP = " "
@@ -41,11 +41,11 @@ class Emoji:
     # ============================================================================
     PACKAGE = " "
     DOCUMENT = "󱔗 "
-    LIST = ""
+    LIST = " "
     FLOPPY = ""
     COMPUTER = " "
     CLOUD = " "
-    GEAR = ""
+    GEAR = " "
     LAMBDA = "󰘧 "
     ALL = "󰁌 "
     BOX = " "
@@ -55,7 +55,7 @@ class Emoji:
     # Time & Stats
     # ============================================================================
     TIME = ""
-    STATS = ""
+    STATS = " "
     CIRCULAR = ""
     BOLT = " "
 

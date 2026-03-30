@@ -125,5 +125,18 @@ isort . --profile black
 
 ---
 
-**License:** MIT
+## Acknowledgments
+
+**Inspired by:**
+- [Git](https://git-scm.com/) — Context detection and command discovery
+- [Poetry](https://python-poetry.org/) — Elegant CLI design
+- [Terraform](https://www.terraform.io/) — Modular architecture
+- [fzf](https://github.com/junegunn/fzf) — Fuzzy finder magic
+
+**Built with:**
+- Python 3.8+
+- [argparse](https://docs.python.org/3/library/argparse.html) — CLI argument parsing
+- [fzf](https://github.com/junegunn/fzf) — Interactive menu system
+
+**License:** [MIT](LICENSE)
 **Maintainer:** [@ncasatti](https://github.com/ncasatti)
