@@ -30,6 +30,7 @@ from core.status import (
 )
 
 from clingy.commands.base import BaseCommand
+from clingy.core.emojis import Emoji
 from clingy.core.logger import log_error, log_info, log_success, log_warning
 from clingy.core.menu import MenuNode
 
@@ -39,11 +40,15 @@ class BrowseCommand(BaseCommand):
 
     name = "browse"
     help = "Browse configurations by group"
-    description = "Interactive navigation through configuration groups with status display"
+    description = (
+        "Interactive navigation through configuration groups with status display"
+    )
 
     def add_arguments(self, parser: ArgumentParser):
         """Add command-specific arguments"""
-        parser.add_argument("--group", help="Specific group to browse", choices=get_all_groups())
+        parser.add_argument(
+            "--group", help="Specific group to browse", choices=get_all_groups()
+        )
 
     def execute(self, args: Namespace) -> bool:
         """Execute browse command (CLI mode)"""
@@ -112,13 +117,15 @@ class BrowseCommand(BaseCommand):
             )
 
             # Create group node
-            group_label = f"📁 {group.title()}"
+            group_label = f"{Emoji.FOLDER} {group.title()}"
             if group_desc:
                 group_label += f" - {group_desc}"
 
             group_nodes.append(MenuNode(label=group_label, children=config_nodes))
 
-        return MenuNode(label="Browse Configurations", emoji="🔍", children=group_nodes)
+        return MenuNode(
+            label="Browse Configurations", emoji=Emoji.SEARCH, children=group_nodes
+        )
 
     def _show_config_info(self, config, konfig_root: Path) -> bool:
         """Show detailed info about a configuration"""
@@ -168,7 +175,9 @@ class BrowseCommand(BaseCommand):
         if status == LinkStatus.WRONG_TARGET:
             log_info(f"{config.get_display_name()}: Removing wrong symlink...")
             if not remove_link(target, needs_sudo):
-                log_error(f"{config.get_display_name()}: Failed to remove wrong symlink")
+                log_error(
+                    f"{config.get_display_name()}: Failed to remove wrong symlink"
+                )
                 return False
 
         # Create link

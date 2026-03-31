@@ -22,6 +22,7 @@ from core.status import (
 )
 
 from clingy.commands.base import BaseCommand
+from clingy.core.emojis import Emoji
 from clingy.core.logger import log_error, log_info, log_section
 from clingy.core.menu import MenuNode
 
@@ -82,7 +83,7 @@ class StatusCommand(BaseCommand):
 
         return MenuNode(
             label="Status & Info",
-            emoji="📊",
+            emoji=Emoji.STATS,
             children=[
                 MenuNode(
                     label="Show All Status",
