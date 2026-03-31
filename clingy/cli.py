@@ -19,16 +19,24 @@ from clingy.core.version import check_template_version
 
 def main():
     """Main CLI entry point"""
-    # Check for --update-template flag early (before creating CLI context)
+    # Create CLI context (detects project and discovers commands)
+    ctx = create_cli_context()
+
+    # Check for --update-template flag
     if "--update-template" in sys.argv:
+        if not ctx.has_project:
+            log_error("No clingy project found to update.")
+            sys.exit(1)
+
         from clingy.commands.init import InitCommand
 
         init_cmd = InitCommand()
-        success = init_cmd.execute(argparse.Namespace(update=True, force=False, template=None))
+        success = init_cmd.execute(
+            argparse.Namespace(
+                update=True, force=False, template=None, target_dir=ctx.project_root
+            )
+        )
         sys.exit(0 if success else 1)
-
-    # Create CLI context (detects project and discovers commands)
-    ctx = create_cli_context()
 
     # Check template version if project exists and not running init
     is_init_command = len(sys.argv) > 1 and sys.argv[1] == "init"
@@ -125,10 +133,14 @@ def cli_mode(ctx):
     )
 
     # Global options
-    parser.add_argument("--no-color", action="store_true", help="Disable colored output")
+    parser.add_argument(
+        "--no-color", action="store_true", help="Disable colored output"
+    )
 
     # Create subparsers for commands
-    subparsers = parser.add_subparsers(dest="command", help="Available commands", required=True)
+    subparsers = parser.add_subparsers(
+        dest="command", help="Available commands", required=True
+    )
 
     # Register all discovered commands
     command_instances = {}

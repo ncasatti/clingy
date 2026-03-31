@@ -65,7 +65,13 @@ class InitCommand(BaseCommand):
 
         log_section("INITIALIZING CLINGY PROJECT")
 
-        current_dir = Path.cwd()
+        # Use target_dir from args if provided (for --update-template from parent dirs)
+        current_dir = getattr(args, "target_dir", None)
+        if current_dir is None:
+            current_dir = Path.cwd()
+        else:
+            current_dir = Path(current_dir).resolve()
+
         template_name = args.template if args.template else "basic"
 
         # Auto-detect template from local .clingy if --update is used or template is None
@@ -79,7 +85,11 @@ class InitCommand(BaseCommand):
         commands_dir = current_dir / "commands"
         config_file = current_dir / "config.py"
 
-        if (commands_dir.exists() or config_file.exists()) and not args.force and not args.update:
+        if (
+            (commands_dir.exists() or config_file.exists())
+            and not args.force
+            and not args.update
+        ):
             log_error("Project already exists in this directory")
             log_info("Use --force to overwrite existing files")
             return False
@@ -116,7 +126,9 @@ class InitCommand(BaseCommand):
                             shutil.rmtree(dest_subdir)
                         if not dest_subdir.exists():
                             shutil.copytree(subdir, dest_subdir)
-                            log_success(f"Created {dest_subdir.relative_to(current_dir)}/")
+                            log_success(
+                                f"Created {dest_subdir.relative_to(current_dir)}/"
+                            )
 
             # Copy config.py (skip if --update)
             if not args.update:
