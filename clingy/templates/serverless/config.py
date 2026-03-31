@@ -90,7 +90,6 @@ PAYLOAD_LEGACY_SUPPORT = True
 # Show merge sources in payload preview (useful for debugging)
 PAYLOAD_SHOW_MERGE_SOURCES = True
 
-
 # ============================================================================
 # Results Settings
 # ============================================================================
@@ -98,7 +97,6 @@ PAYLOAD_SHOW_MERGE_SOURCES = True
 RESULTS_DIR = os.path.join(_config_dir, "results")
 LOGS_DIR = os.path.join(RESULTS_DIR, "logs")
 OUTPUTS_DIR = os.path.join(RESULTS_DIR, "outputs")
-
 
 # ============================================================================
 # Function List

@@ -1,6 +1,5 @@
 # Authentication for Latam client
 # Includes db_schema, email, and role for multi-tenant setup
-
 requestContext:
   authorizer:
     lambda:

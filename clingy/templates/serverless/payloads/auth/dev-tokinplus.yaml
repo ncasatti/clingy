@@ -1,11 +1,11 @@
-# Authentication for Testing/Generic client
-
+# Authentication for Latam client
+# Includes db_schema, email, and role for multi-tenant setup
 requestContext:
   authorizer:
     lambda:
       db_schema: "tokinplus"
       db_secret_arn: "arn:aws:secretsmanager:us-west-2:499799893363:secret:dev/xsi/db-8lhLP9"
-      email: "ncasatti@xionico.com"
+      email: "test@xionico.com"
       family_name: "dev"
       name: "testing"
       xsi_client: "testing"

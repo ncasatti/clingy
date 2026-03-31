@@ -1,7 +1,6 @@
-"""Logs menu - View, Tail, and Insights for Lambda logs"""
+"""Logs menu - View and Insights for Lambda logs"""
 
 from argparse import ArgumentParser, Namespace
-from typing import Optional
 
 from commands.core_commands.insights import InsightsCommand
 from commands.core_commands.logs import LogsCommand
@@ -18,7 +17,7 @@ class LogsMenuCommand(BaseCommand):
 
     name = "logs"
     help = "View Lambda logs"
-    description = "View CloudWatch logs, tail live logs, and run Insights queries"
+    description = "View CloudWatch logs and run Insights queries"
 
     def execute(self, args: Namespace) -> bool:
         """Execute logs command (not used in interactive mode)"""
@@ -35,24 +34,9 @@ class LogsMenuCommand(BaseCommand):
             emoji=Emoji.SEARCH,
             children=[
                 MenuNode(
-                    label="View Recent Logs",
+                    label="View Logs",
                     emoji=Emoji.LOG,
-                    children=[
-                        MenuNode(
-                            label="Select Function",
-                            action=self._view_logs_selected,
-                        ),
-                    ],
-                ),
-                MenuNode(
-                    label="Tail Live Logs",
-                    emoji=Emoji.LOG_REALTIME,
-                    children=[
-                        MenuNode(
-                            label="Select Function",
-                            action=self._tail_logs_selected,
-                        ),
-                    ],
+                    action=self._view_logs,
                 ),
                 MenuNode(
                     label="CloudWatch Insights",
@@ -71,8 +55,8 @@ class LogsMenuCommand(BaseCommand):
     # View Logs Actions
     # ========================================================================
 
-    def _view_logs_selected(self) -> bool:
-        """View recent logs for selected function"""
+    def _view_logs(self) -> bool:
+        """Select a function and open the logs submenu"""
         functions = fzf_select_items(
             items=GO_FUNCTIONS,
             prompt="Select function to view logs: ",
@@ -85,27 +69,7 @@ class LogsMenuCommand(BaseCommand):
         func = functions[0]  # Single selection
         log_section(f"VIEW LOGS - {func}")
         logs_cmd = LogsCommand()
-        return logs_cmd.execute(Namespace(function=func, tail=False, filter=None))
-
-    # ========================================================================
-    # Tail Logs Actions
-    # ========================================================================
-
-    def _tail_logs_selected(self) -> bool:
-        """Tail live logs for selected function"""
-        functions = fzf_select_items(
-            items=GO_FUNCTIONS,
-            prompt="Select function to tail logs: ",
-            include_all=False,
-        )
-        if not functions:
-            log_info("No function selected")
-            return False
-
-        func = functions[0]  # Single selection
-        log_section(f"TAIL LOGS - {func}")
-        logs_cmd = LogsCommand()
-        return logs_cmd.execute(Namespace(function=func, tail=True, filter=None))
+        return logs_cmd.execute(Namespace(function=func))
 
     # ========================================================================
     # Insights Actions

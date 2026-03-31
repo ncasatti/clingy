@@ -25,7 +25,9 @@ class LogsCommand(BaseCommand):
 
     name = "logs"
     help = "Interactive logs menu"
-    description = "View CloudWatch logs for Lambda functions with multiple viewing options"
+    description = (
+        "View CloudWatch logs for Lambda functions with multiple viewing options"
+    )
     epilog = """Examples:
   manager.py logs           # Open interactive logs menu
 """
@@ -41,12 +43,14 @@ class LogsCommand(BaseCommand):
 
     def execute(self, args: Namespace) -> bool:
         """Execute logs command"""
-        # If function is pre-selected (from dev menu), go directly to logs submenu
+        # If function is pre-selected (from logs menu), go directly to logs submenu
         if hasattr(args, "function") and args.function:
             if args.function in GO_FUNCTIONS:
-                return self._show_logs_submenu(args.function) or True
+                return self._show_logs_submenu(args.function)
             else:
-                log_error(f"Function '{args.function}' not found in available functions")
+                log_error(
+                    f"Function '{args.function}' not found in available functions"
+                )
                 return False
 
         # Otherwise, show interactive menu
@@ -91,7 +95,9 @@ class LogsCommand(BaseCommand):
         abs_path = os.path.abspath(log_file_path)
         print(f"\n{Colors.CYAN}💾 Logs saved to: {abs_path}{Colors.RESET}")
 
-    def _execute_logs_command(self, func_name: str, option: str, query: str = None) -> bool:
+    def _execute_logs_command(
+        self, func_name: str, option: str, query: str = None
+    ) -> bool:
         """
         Execute AWS CLI command to get logs based on selected option
 
@@ -139,7 +145,9 @@ class LogsCommand(BaseCommand):
         try:
             if capture_output:
                 # Capture output for saving to file
-                result = run_in_project_root(command, check=False, capture_output=True, text=True)
+                result = run_in_project_root(
+                    command, check=False, capture_output=True, text=True
+                )
 
                 # Display output
                 if result.stdout:
@@ -161,21 +169,31 @@ class LogsCommand(BaseCommand):
                     log_success("Command executed successfully")
                     return True
                 else:
-                    log_warning(f"Command finished with code {result.returncode}")
-                    return True  # Return True anyway to continue menu
+                    log_error(f"Command failed with exit code {result.returncode}")
+                    self._log_aws_error_hint(result.stderr)
+                    return False
             else:
                 # Stream output in real-time for --follow mode
+                # We DON'T capture output here to allow real-time streaming to the terminal
                 result = run_in_project_root(command, check=False)
 
                 print(f"\n{Colors.YELLOW}{'─' * 80}{Colors.RESET}")
-                print(f"{Colors.YELLOW}Note: --follow mode output not saved to file{Colors.RESET}")
 
                 if result.returncode == 0:
                     log_success("Command executed successfully")
+                    print(
+                        f"{Colors.YELLOW}Note: --follow mode output not saved to file{Colors.RESET}"
+                    )
                     return True
                 else:
-                    log_warning(f"Command finished with code {result.returncode}")
-                    return True  # Return True anyway to continue menu
+                    # Command failed (log group doesn't exist, access denied, etc.)
+                    log_error(
+                        f"Real-time logs failed with exit code {result.returncode}"
+                    )
+                    self._log_aws_error_hint(
+                        "ResourceNotFoundException"
+                    )  # Hint for common failure
+                    return False
 
         except subprocess.CalledProcessError as e:
             log_error(f"Error executing command: {e}")
@@ -187,6 +205,33 @@ class LogsCommand(BaseCommand):
         except KeyboardInterrupt:
             print(f"\n\n{Colors.YELLOW}Command interrupted by user{Colors.RESET}")
             return True
+
+    def _log_aws_error_hint(self, stderr: str) -> None:
+        """
+        Parse AWS error messages and provide helpful hints
+
+        Args:
+            stderr: Error output from AWS CLI
+        """
+        if not stderr:
+            return
+
+        stderr_lower = stderr.lower()
+
+        if "resourcenotfoundexception" in stderr_lower or "not found" in stderr_lower:
+            log_info(
+                f"Hint: Log group may not exist. Check that SERVICE_NAME='{SERVICE_NAME}' "
+                f"and SERVERLESS_STAGE='{SERVERLESS_STAGE}' are correct."
+            )
+        elif "accessdenied" in stderr_lower or "access denied" in stderr_lower:
+            log_info(
+                f"Hint: Access denied. Check AWS credentials and IAM permissions for "
+                f"logs:DescribeLogGroups and logs:FilterLogEvents"
+            )
+        elif "invalidparameter" in stderr_lower:
+            log_info(
+                "Hint: Invalid parameter. Check the log group name and filter pattern."
+            )
 
     def _select_log_option_with_fzf(self, func_name: str) -> Optional[str]:
         """
@@ -213,9 +258,6 @@ class LogsCommand(BaseCommand):
 
         options.append(f"{Emoji.SEARCH} Filter logs with custom query")
         option_map[options[-1]] = "4"
-
-        options.append(f"{Emoji.EXIT} Back to function selection")
-        option_map[options[-1]] = "0"
 
         # Create fzf input
         options_text = "\n".join(options)
@@ -255,35 +297,37 @@ class LogsCommand(BaseCommand):
 
     def _show_logs_submenu(self, func_name: str) -> bool:
         """
-        Show log options submenu for a specific function using fzf
+        Show log options submenu for a specific function using fzf.
+
+        Presents the time-range/mode selector once, executes the chosen option,
+        then returns control to the caller (MenuRenderer handles back-navigation).
 
         Args:
             func_name: Selected Lambda function name
 
         Returns:
-            True when exiting the submenu
+            True when the selected option completes (or user cancels)
         """
-        while True:
-            option = self._select_log_option_with_fzf(func_name)
+        option = self._select_log_option_with_fzf(func_name)
 
-            if option is None or option == "0":
-                # User cancelled or selected back
-                break
+        if option is None or option == "0":
+            # User cancelled or pressed ESC — return to parent menu
+            return True
 
-            # Handle the selected option
-            if option in ["1", "2", "3"]:
-                self._execute_logs_command(func_name, option)
+        # Execute the selected option
+        if option in ["1", "2", "3"]:
+            self._execute_logs_command(func_name, option)
+            input(f"\n{Colors.CYAN}Press Enter to continue...{Colors.RESET}")
+        elif option == "4":
+            # Custom query - prompt for input
+            query = input(
+                f"\n{Colors.BOLD}Enter filter/query (e.g., ERROR, WARN, etc.): {Colors.RESET}"
+            ).strip()
+            if query:
+                self._execute_logs_command(func_name, option, query)
                 input(f"\n{Colors.CYAN}Press Enter to continue...{Colors.RESET}")
-            elif option == "4":
-                # Custom query - prompt for input
-                query = input(
-                    f"\n{Colors.BOLD}Enter filter/query (e.g., ERROR, WARN, etc.): {Colors.RESET}"
-                ).strip()
-                if query:
-                    self._execute_logs_command(func_name, option, query)
-                    input(f"\n{Colors.CYAN}Press Enter to continue...{Colors.RESET}")
-                else:
-                    log_warning("Empty query, operation cancelled")
+            else:
+                log_warning("Empty query, operation cancelled")
 
         return True
 
