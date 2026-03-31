@@ -358,7 +358,7 @@ class PayloadBuilder:
 
             # Add back option if not at root
             if current_path != self.payloads_dir:
-                back_text = "⬅️  [BACK] ../"
+                back_text = f"{Emoji.BACK}  [BACK] ../"
                 items.append(back_text)
                 item_map[back_text] = ("back", current_path.parent)
 
@@ -372,12 +372,12 @@ class PayloadBuilder:
                         continue
 
                     if entry.is_dir():
-                        display = f"📁 {entry.name}/"
+                        display = f"{Emoji.FOLDER} {entry.name}/"
                         items.append(display)
                         item_map[display] = ("folder", entry)
 
                     elif entry.suffix in [".yaml", ".yml"]:
-                        display = f"📄 {entry.name}"
+                        display = f"{Emoji.DOCUMENT} {entry.name}"
                         items.append(display)
                         item_map[display] = ("file", entry)
 
@@ -396,7 +396,7 @@ class PayloadBuilder:
             # Show fzf
             try:
                 rel_path = current_path.relative_to(self.payloads_dir)
-                header = f"📂 {rel_path if str(rel_path) != '.' else 'payloads/'}"
+                header = f"{Emoji.FILE_LIST} {rel_path if str(rel_path) != '.' else 'payloads/'}"
 
                 result = subprocess.run(
                     [
@@ -581,7 +581,9 @@ class PayloadBuilder:
 
             # Convert body to JSON string if needed (Lambda requirement)
             payload_data = composed.data.copy()
-            if "body" in payload_data and isinstance(payload_data["body"], (dict, list)):
+            if "body" in payload_data and isinstance(
+                payload_data["body"], (dict, list)
+            ):
                 payload_data["body"] = json.dumps(
                     payload_data["body"], ensure_ascii=False, separators=(",", ":")
                 )
