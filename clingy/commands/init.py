@@ -3,7 +3,9 @@ Init command - Initialize a new clingy project
 """
 
 import json
+import os
 import shutil
+import stat
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
 from typing import Optional
@@ -19,6 +21,16 @@ from clingy.core.logger import (
     log_warning,
 )
 from clingy.core.menu import MenuNode
+
+
+def _copy_and_chmod(src, dst):
+    """Copy a file and ensure it is writable by the owner.
+
+    Nix Store source files are read-only (r--r--r--). This wrapper
+    applies 644 permissions after copying so the destination is editable.
+    """
+    shutil.copy2(src, dst)
+    os.chmod(dst, stat.S_IRUSR | stat.S_IWUSR | stat.S_IRGRP | stat.S_IROTH)
 
 
 class InitCommand(BaseCommand):
@@ -115,7 +127,7 @@ class InitCommand(BaseCommand):
                 # Copy Python files in root
                 for file in template_commands.glob("*.py"):
                     dest = commands_dir / file.name
-                    shutil.copy2(file, dest)
+                    _copy_and_chmod(file, dest)
                     log_success(f"Created {dest.relative_to(current_dir)}")
 
                 # Copy subdirectories (e.g., core_commands/)
@@ -125,7 +137,9 @@ class InitCommand(BaseCommand):
                         if dest_subdir.exists() and args.force:
                             shutil.rmtree(dest_subdir)
                         if not dest_subdir.exists():
-                            shutil.copytree(subdir, dest_subdir)
+                            shutil.copytree(
+                                subdir, dest_subdir, copy_function=_copy_and_chmod
+                            )
                             log_success(
                                 f"Created {dest_subdir.relative_to(current_dir)}/"
                             )
@@ -136,7 +150,7 @@ class InitCommand(BaseCommand):
                 if template_config.exists():
                     if config_file.exists() and args.force:
                         config_file.unlink()
-                    shutil.copy2(template_config, config_file)
+                    _copy_and_chmod(template_config, config_file)
                     log_success(f"Created {config_file.relative_to(current_dir)}")
 
             # Copy additional template files (*.md, mappings.py, etc.)
@@ -150,7 +164,7 @@ class InitCommand(BaseCommand):
                     if dest.exists() and args.force:
                         dest.unlink()
                     if not dest.exists():
-                        shutil.copy2(file, dest)
+                        _copy_and_chmod(file, dest)
                         log_success(f"Created {dest.relative_to(current_dir)}")
 
             # Copy core directory if exists (for konfig/serverless templates)
@@ -161,7 +175,9 @@ class InitCommand(BaseCommand):
                 if core_dir.exists() and (args.force or args.update):
                     shutil.rmtree(core_dir)
                 if not core_dir.exists():
-                    shutil.copytree(template_core, core_dir)
+                    shutil.copytree(
+                        template_core, core_dir, copy_function=_copy_and_chmod
+                    )
                     log_success(f"Created {core_dir.relative_to(current_dir)}/")
 
             # Copy payloads directory if exists (for serverless template)
@@ -173,7 +189,11 @@ class InitCommand(BaseCommand):
                     if payloads_dir.exists() and args.force:
                         shutil.rmtree(payloads_dir)
                     if not payloads_dir.exists():
-                        shutil.copytree(template_payloads, payloads_dir)
+                        shutil.copytree(
+                            template_payloads,
+                            payloads_dir,
+                            copy_function=_copy_and_chmod,
+                        )
                         log_success(f"Created {payloads_dir.relative_to(current_dir)}/")
 
             # Copy .clingy marker file from template
@@ -182,7 +202,7 @@ class InitCommand(BaseCommand):
 
             try:
                 if template_marker.exists():
-                    shutil.copy2(template_marker, marker_file)
+                    _copy_and_chmod(template_marker, marker_file)
                     log_success("Created .clingy marker")
                 else:
                     # Fallback: generate inline if template .clingy doesn't exist
