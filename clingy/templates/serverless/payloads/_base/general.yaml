@@ -2,8 +2,8 @@
 # This file is merged into ALL payloads automatically
 
 version: "2.0"
-routeKey: "GET /test"
-rawPath: "/dev/test"
+routeKey: "GET /status"
+rawPath: "/status"
 
 headers:
   Content-Type: "application/json"
@@ -16,12 +16,12 @@ requestContext:
   apiId: "test-api-local"
   http:
     method: "GET"
-    path: "/dev/test"
+    path: "/status"
     protocol: "HTTP/1.1"
     sourceIp: "127.0.0.1"
     userAgent: "serverless-invoke-local"
   requestId: "local-test-request-id"
-  routeKey: "GET /test"
+  routeKey: "GET /status"
   stage: "dev"
   time: "01/Jan/2025:00:00:00 +0000"
   timeEpoch: 1704067200000

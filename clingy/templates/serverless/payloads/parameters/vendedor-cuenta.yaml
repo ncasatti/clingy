@@ -1,5 +1,0 @@
-# Query string parameters for vendedor + cuenta
-
-queryStringParameters:
-  id_vendedor: "1"
-  id_cuenta: "100"

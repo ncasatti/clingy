@@ -8,6 +8,12 @@
 
 ---
 
+## Showcase
+
+
+
+---
+
 ## Features
 
 - ✅ **Context-Aware** — Automatically finds project root by searching for `.clingy` or `commands/`.

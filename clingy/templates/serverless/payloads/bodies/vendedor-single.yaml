@@ -1,6 +1,0 @@
-# Request body with single vendedor
-
-body:
-  id_vendedor: "V001"
-  month: 2
-  year: 2026

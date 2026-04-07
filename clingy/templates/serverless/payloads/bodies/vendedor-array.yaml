@@ -1,7 +1,0 @@
-# Request body with array of vendedores
-
-body:
-  ids_vendedor:
-    - "207"
-  month: 2
-  year: 2026
