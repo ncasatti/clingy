@@ -34,9 +34,7 @@ class SyncCommand(BaseCommand):
 
     name = "sync"
     help = "Sync folders with cloud storage"
-    description = (
-        "Sync local folders (Obsidian vault, etc.) with cloud storage using rclone"
-    )
+    description = "Sync local folders (Obsidian vault, etc.) with cloud storage using rclone"
 
     def add_arguments(self, parser: ArgumentParser):
         """Add command-specific arguments"""
@@ -133,9 +131,7 @@ class SyncCommand(BaseCommand):
 
         # Check if rclone is installed
         try:
-            result = subprocess.run(
-                ["rclone", "version"], capture_output=True, check=True
-            )
+            result = subprocess.run(["rclone", "version"], capture_output=True, check=True)
         except FileNotFoundError:
             log_error("rclone is not installed")
             log_info("Install with: curl https://rclone.org/install.sh | sudo bash")

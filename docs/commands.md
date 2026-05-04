@@ -2,6 +2,8 @@
 
 This guide shows you how to create custom commands for your clingy project.
 
+[← Back to Main README](../README.md)
+
 ## Table of Contents
 
 - [Command Structure](#command-structure)

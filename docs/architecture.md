@@ -2,6 +2,8 @@
 
 Deep dive into clingy's internal architecture and how it works.
 
+[← Back to Main README](../README.md)
+
 ## Table of Contents
 
 - [System Overview](#system-overview)
@@ -12,7 +14,7 @@ Deep dive into clingy's internal architecture and how it works.
 - [Menu Building](#menu-building)
 - [Execution Flow](#execution-flow)
 
----
+______________________________________________________________________
 
 ## System Overview
 
@@ -35,7 +37,7 @@ graph TD
     N --> O["Exit with code<br/>0 or 1"]
 ```
 
----
+______________________________________________________________________
 
 ## Directory Structure
 
@@ -75,7 +77,7 @@ clingy/                    # Framework package
 └── __init__.py
 ```
 
----
+______________________________________________________________________
 
 ## How Auto-Discovery Works
 
@@ -87,7 +89,7 @@ Searches up the directory tree for a clingy project:
 def find_clingy_root() -> Optional[Path]:
     """
     Search for .clingy marker file or commands/ + config.py.
-    
+
     Priority:
     1. CLINGY_ROOT environment variable (override)
     2. .clingy marker file (searches up and 1 level down)
@@ -96,15 +98,17 @@ def find_clingy_root() -> Optional[Path]:
 ```
 
 **Search algorithm:**
+
 1. Start in current directory
-2. Look for `.clingy` marker file
-3. If found, validate it has `commands/` and `config.py`
-4. If not found, move up one directory level
-5. Repeat until filesystem root
-6. Also checks 1 level down in subdirectories
-7. Fails if reaches root without finding marker
+1. Look for `.clingy` marker file
+1. If found, validate it has `commands/` and `config.py`
+1. If not found, move up one directory level
+1. Repeat until filesystem root
+1. Also checks 1 level down in subdirectories
+1. Fails if reaches root without finding marker
 
 **Example:**
+
 ```bash
 # Works from any subdirectory
 /home/user/project/src/utils/
@@ -113,7 +117,7 @@ def find_clingy_root() -> Optional[Path]:
 → Returns: /home/user/project/
 ```
 
----
+______________________________________________________________________
 
 ### 2. Command Discovery (`commands/__init__.py`)
 
@@ -130,12 +134,13 @@ def discover_commands(commands_dir: Path) -> List[BaseCommand]:
 ```
 
 **Auto-registration:**
+
 - No manual imports needed
 - Just create a new file in `commands/`
 - Must inherit from `BaseCommand`
 - Automatically appears in CLI and menu
 
----
+______________________________________________________________________
 
 ### 3. Menu Building (`cli.py`)
 
@@ -151,6 +156,7 @@ def build_menu_tree(commands: List[BaseCommand]) -> MenuNode:
 ```
 
 **Menu structure:**
+
 ```
 Root Menu
 ├── Command 1
@@ -163,7 +169,7 @@ Root Menu
 └── Command 3
 ```
 
----
+______________________________________________________________________
 
 ### 4. Execution
 
@@ -178,13 +184,14 @@ def execute_action(action: Callable) -> int:
     """
 ```
 
----
+______________________________________________________________________
 
 ## Context Detection
 
 The `.clingy` marker file enables context-aware behavior:
 
 **Format:**
+
 ```json
 {
   "version": "1.0",
@@ -194,11 +201,13 @@ The `.clingy` marker file enables context-aware behavior:
 ```
 
 **Benefits:**
+
 - Works from any subdirectory (like Git)
 - No need to specify project root manually
 - Override with `CLINGY_ROOT` environment variable
 
 **Example workflow:**
+
 ```bash
 # Initialize project
 $ cd ~/my-project
@@ -210,13 +219,14 @@ $ cd ~/my-project/functions/api/
 $ clingy  # Still finds project root!
 ```
 
----
+______________________________________________________________________
 
 ## Command Discovery
 
 ### Loading Process
 
 1. **Scan Directory:**
+
    ```python
    for file in commands_dir.glob("*.py"):
        if file.name.startswith("_"):
@@ -224,14 +234,16 @@ $ clingy  # Still finds project root!
        load_module(file)
    ```
 
-2. **Import Modules:**
+1. **Import Modules:**
+
    ```python
    spec = importlib.util.spec_from_file_location(name, file)
    module = importlib.util.module_from_spec(spec)
    spec.loader.exec_module(module)
    ```
 
-3. **Find Commands:**
+1. **Find Commands:**
+
    ```python
    for name, obj in inspect.getmembers(module):
        if inspect.isclass(obj) and issubclass(obj, BaseCommand):
@@ -242,6 +254,7 @@ $ clingy  # Still finds project root!
 ### Subdirectories
 
 Commands in subdirectories are also discovered:
+
 ```
 commands/
 ├── greet.py              # Discovered
@@ -251,7 +264,7 @@ commands/
     └── deploy.py         # Discovered
 ```
 
----
+______________________________________________________________________
 
 ## Menu Building
 
@@ -270,6 +283,7 @@ class MenuNode:
 ### Building Process
 
 1. **Collect command menus:**
+
    ```python
    root_children = []
    for command in commands:
@@ -277,7 +291,8 @@ class MenuNode:
        root_children.append(menu)
    ```
 
-2. **Create root node:**
+1. **Create root node:**
+
    ```python
    root = MenuNode(
        label=f"{PROJECT_NAME} Menu",
@@ -285,7 +300,8 @@ class MenuNode:
    )
    ```
 
-3. **Render with fzf:**
+1. **Render with fzf:**
+
    ```python
    renderer = MenuRenderer(root, header="My Project")
    renderer.show()
@@ -297,7 +313,7 @@ class MenuNode:
 - **Back option:** Automatically added to submenus
 - **Keyboard shortcuts:** ↑/↓ navigate, ENTER selects, ESC goes back
 
----
+______________________________________________________________________
 
 ## Execution Flow
 
@@ -351,13 +367,14 @@ Return bool
 Exit with code
 ```
 
----
+______________________________________________________________________
 
 ## Advanced Topics
 
 ### Custom Discovery Locations
 
 Override default search with environment variable:
+
 ```bash
 export CLINGY_ROOT=/custom/path/to/project
 clingy
@@ -366,6 +383,7 @@ clingy
 ### Dependency Injection
 
 Commands can access shared state via `config.py`:
+
 ```python
 from config import DATABASE_URL, API_KEY
 
@@ -399,7 +417,7 @@ def execute(self, args: Namespace) -> bool:
         return False  # Graceful degradation
 ```
 
----
+______________________________________________________________________
 
 ## Performance Considerations
 
@@ -421,7 +439,7 @@ def execute(self, args: Namespace) -> bool:
 - Cached after first detection (within same run)
 - Typical overhead: ~10ms
 
----
+______________________________________________________________________
 
 ## See Also
 

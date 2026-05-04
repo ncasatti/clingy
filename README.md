@@ -6,25 +6,55 @@
 
 > **Context-aware CLI framework** for building interactive command-line tools with fuzzy search menus and modular command architecture. Works like Git, Poetry, or Terraform—install once, use everywhere.
 
----
+______________________________________________________________________
+
+## The Problem & The Solution
+
+Building CLI tools often feels like choosing between two extremes: a rigid, complex framework that takes days to learn, or a messy collection of scripts that are impossible to maintain.
+
+**Clingy** was born to bridge that gap. It solves the "CLI fatigue" by providing a framework where **automation meets interaction**.
+
+### Why Clingy?
+
+- **Zero-Boilerplate Discovery:** Just drop a file in your `commands/` folder, and it's instantly available in your CLI. No manual registration, no complex routing.
+- **Interactive by Default:** Every command you write automatically gains a, fuzzy-searchable menu (powered by `fzf`). You build the logic once; the framework provides the interface.
+- **Submenu Architecture:** Use our intuitive node-based system to build complex, nested menus that feel like professional-grade software.
+- **Context-Aware:** Like Git, Clingy automatically detects your project root. Run it from any subdirectory, and it knows exactly where it is.
+
+______________________________________________________________________
+
+## Documentation Hub
+
+Navigate through the project documentation:
+
+### Framework Reference
+
+- [Architecture](docs/architecture.md) — Internal design and execution flow.
+- [Creating Commands](docs/commands.md) — Guide for building custom CLI commands.
+
+### Project Templates
+
+- [Basic Template](clingy/templates/basic/README.md) — Simple CLI for prototyping.
+- [Konfig Template](clingy/templates/konfig/README.md) — Dotfiles and symlink manager.
+- [Serverless Template](clingy/templates/serverless/README.md) — AWS Lambda + Go workflow manager.
+
+______________________________________________________________________
 
 ## Showcase
 
+> ![Deploy functions](docs/assets/deploy.gif)
+>
+> Shows the build, zip and deploy workflow with clingy.
 
+> ![Invoke function](docs/assets/invoke.gif)
+>
+> Shows the invoke workflow.
 
----
+> ![Post Orders](docs/assets/post-orders.gif)
+>
+> Shows the post orders workflow.
 
-## Features
-
-- ✅ **Context-Aware** — Automatically finds project root by searching for `.clingy` or `commands/`.
-- ✅ **Interactive Menus** — Powered by `fzf` for fast, fuzzy-searchable navigation.
-- ✅ **Auto-Discovery** — Commands are automatically registered—no manual imports needed.
-- ✅ **Modular** — Build complex CLIs by composing simple, reusable command classes.
-- ✅ **Rich Logging** — Built-in utilities for success/error/warning messages with stats.
-- ✅ **Template System** — Start with pre-built templates: `basic`, `konfig`, `serverless`.
-- ✅ **Dependency Management** — Automatic checking and installation guidance for required tools.
-
----
+______________________________________________________________________
 
 ## Installation
 
@@ -38,82 +68,33 @@ pip install clingy
 
 **Required Dependency:** `fzf` (fuzzy finder). Install via your package manager (`brew`, `apt`, `pacman`, etc.).
 
----
+______________________________________________________________________
 
 ## Quick Start
 
 ### 1. Initialize
+
 ```bash
 mkdir my-tool && cd my-tool
 clingy init
 ```
 
 ### 2. Run
+
 ```bash
 clingy                # Interactive mode (fzf menu)
 clingy greet --name User  # CLI mode
 ```
 
 ### 3. Update Framework
+
 If a template update is available, sync your project files while preserving your configuration:
+
 ```bash
 clingy --update-template
 ```
 
----
-
-## Templates
-
-| Template | Description | Initialize |
-|---|---|---|
-| **basic** | Simple CLI for prototyping and learning. | `clingy init --template basic` |
-| **konfig** | Dotfiles and symlink manager for Linux. | `clingy init --template konfig` |
-| **serverless** | AWS Lambda + Go manager with full workflow. | `clingy init --template serverless` |
-
----
-
-## Development
-
-### Creating a Command
-Inherit from `BaseCommand` and implement `execute` and `get_menu_tree`:
-
-```python
-from clingy.commands.base import BaseCommand
-from clingy.core.menu import MenuNode
-
-class MyCommand(BaseCommand):
-    name = "mycmd"
-    help = "Description"
-
-    def execute(self, args):
-        print("Executing...")
-        return True
-
-    def get_menu_tree(self):
-        return MenuNode(label="My Command", action=lambda: self.execute(None))
-```
-
-### Logging & Stats
-```python
-from clingy.core.logger import log_success, log_error, print_summary
-from clingy.core.stats import stats
-
-log_success("Operation complete", duration=1.5)
-stats.add_success()
-print_summary()
-```
-
----
-
-## Configuration (`config.py`)
-```python
-PROJECT_NAME = "My Tool"
-PROJECT_VERSION = "1.0.0"
-ITEMS = ["item1", "item2"]
-DEPENDENCIES = []
-```
-
----
+______________________________________________________________________
 
 ## Contributing & Testing
 
@@ -129,20 +110,9 @@ black . --line-length 100
 isort . --profile black
 ```
 
----
+______________________________________________________________________
 
-## Acknowledgments
+## License
 
-**Inspired by:**
-- [Git](https://git-scm.com/) — Context detection and command discovery
-- [Poetry](https://python-poetry.org/) — Elegant CLI design
-- [Terraform](https://www.terraform.io/) — Modular architecture
-- [fzf](https://github.com/junegunn/fzf) — Fuzzy finder magic
-
-**Built with:**
-- Python 3.8+
-- [argparse](https://docs.python.org/3/library/argparse.html) — CLI argument parsing
-- [fzf](https://github.com/junegunn/fzf) — Interactive menu system
-
-**License:** [MIT](LICENSE)
-**Maintainer:** [@ncasatti](https://github.com/ncasatti)
+[MIT](LICENSE)
+Maintainer: [@ncasatti](https://github.com/ncasatti)

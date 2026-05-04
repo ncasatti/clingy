@@ -32,9 +32,7 @@ def main():
 
         init_cmd = InitCommand()
         success = init_cmd.execute(
-            argparse.Namespace(
-                update=True, force=False, template=None, target_dir=ctx.project_root
-            )
+            argparse.Namespace(update=True, force=False, template=None, target_dir=ctx.project_root)
         )
         sys.exit(0 if success else 1)
 
@@ -133,14 +131,10 @@ def cli_mode(ctx):
     )
 
     # Global options
-    parser.add_argument(
-        "--no-color", action="store_true", help="Disable colored output"
-    )
+    parser.add_argument("--no-color", action="store_true", help="Disable colored output")
 
     # Create subparsers for commands
-    subparsers = parser.add_subparsers(
-        dest="command", help="Available commands", required=True
-    )
+    subparsers = parser.add_subparsers(dest="command", help="Available commands", required=True)
 
     # Register all discovered commands
     command_instances = {}

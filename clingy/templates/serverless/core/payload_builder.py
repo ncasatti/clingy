@@ -581,9 +581,7 @@ class PayloadBuilder:
 
             # Convert body to JSON string if needed (Lambda requirement)
             payload_data = composed.data.copy()
-            if "body" in payload_data and isinstance(
-                payload_data["body"], (dict, list)
-            ):
+            if "body" in payload_data and isinstance(payload_data["body"], (dict, list)):
                 payload_data["body"] = json.dumps(
                     payload_data["body"], ensure_ascii=False, separators=(",", ":")
                 )

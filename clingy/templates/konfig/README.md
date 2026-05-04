@@ -6,6 +6,8 @@
 
 Interactive symlink manager for Linux dotfiles and system configurations.
 
+[← Back to Main README](../../../README.md)
+
 ## Why Konfig?
 
 Managing dotfiles with manual symlinks or tools like GNU Stow can become cumbersome as your configuration grows. **Konfig** provides a superior experience by offering:

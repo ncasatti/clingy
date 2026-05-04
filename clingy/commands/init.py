@@ -97,11 +97,7 @@ class InitCommand(BaseCommand):
         commands_dir = current_dir / "commands"
         config_file = current_dir / "config.py"
 
-        if (
-            (commands_dir.exists() or config_file.exists())
-            and not args.force
-            and not args.update
-        ):
+        if (commands_dir.exists() or config_file.exists()) and not args.force and not args.update:
             log_error("Project already exists in this directory")
             log_info("Use --force to overwrite existing files")
             return False
@@ -137,12 +133,8 @@ class InitCommand(BaseCommand):
                         if dest_subdir.exists() and args.force:
                             shutil.rmtree(dest_subdir)
                         if not dest_subdir.exists():
-                            shutil.copytree(
-                                subdir, dest_subdir, copy_function=_copy_and_chmod
-                            )
-                            log_success(
-                                f"Created {dest_subdir.relative_to(current_dir)}/"
-                            )
+                            shutil.copytree(subdir, dest_subdir, copy_function=_copy_and_chmod)
+                            log_success(f"Created {dest_subdir.relative_to(current_dir)}/")
 
             # Copy config.py (skip if --update)
             if not args.update:
@@ -175,9 +167,7 @@ class InitCommand(BaseCommand):
                 if core_dir.exists() and (args.force or args.update):
                     shutil.rmtree(core_dir)
                 if not core_dir.exists():
-                    shutil.copytree(
-                        template_core, core_dir, copy_function=_copy_and_chmod
-                    )
+                    shutil.copytree(template_core, core_dir, copy_function=_copy_and_chmod)
                     log_success(f"Created {core_dir.relative_to(current_dir)}/")
 
             # Copy payloads directory if exists (for serverless template)

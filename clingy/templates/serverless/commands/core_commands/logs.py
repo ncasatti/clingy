@@ -25,9 +25,7 @@ class LogsCommand(BaseCommand):
 
     name = "logs"
     help = "Interactive logs menu"
-    description = (
-        "View CloudWatch logs for Lambda functions with multiple viewing options"
-    )
+    description = "View CloudWatch logs for Lambda functions with multiple viewing options"
     epilog = """Examples:
   manager.py logs           # Open interactive logs menu
 """
@@ -48,9 +46,7 @@ class LogsCommand(BaseCommand):
             if args.function in GO_FUNCTIONS:
                 return self._show_logs_submenu(args.function)
             else:
-                log_error(
-                    f"Function '{args.function}' not found in available functions"
-                )
+                log_error(f"Function '{args.function}' not found in available functions")
                 return False
 
         # Otherwise, show interactive menu
@@ -95,9 +91,7 @@ class LogsCommand(BaseCommand):
         abs_path = os.path.abspath(log_file_path)
         print(f"\n{Colors.CYAN}💾 Logs saved to: {abs_path}{Colors.RESET}")
 
-    def _execute_logs_command(
-        self, func_name: str, option: str, query: str = None
-    ) -> bool:
+    def _execute_logs_command(self, func_name: str, option: str, query: str = None) -> bool:
         """
         Execute AWS CLI command to get logs based on selected option
 
@@ -145,9 +139,7 @@ class LogsCommand(BaseCommand):
         try:
             if capture_output:
                 # Capture output for saving to file
-                result = run_in_project_root(
-                    command, check=False, capture_output=True, text=True
-                )
+                result = run_in_project_root(command, check=False, capture_output=True, text=True)
 
                 # Display output
                 if result.stdout:
@@ -187,12 +179,8 @@ class LogsCommand(BaseCommand):
                     return True
                 else:
                     # Command failed (log group doesn't exist, access denied, etc.)
-                    log_error(
-                        f"Real-time logs failed with exit code {result.returncode}"
-                    )
-                    self._log_aws_error_hint(
-                        "ResourceNotFoundException"
-                    )  # Hint for common failure
+                    log_error(f"Real-time logs failed with exit code {result.returncode}")
+                    self._log_aws_error_hint("ResourceNotFoundException")  # Hint for common failure
                     return False
 
         except subprocess.CalledProcessError as e:
@@ -229,9 +217,7 @@ class LogsCommand(BaseCommand):
                 f"logs:DescribeLogGroups and logs:FilterLogEvents"
             )
         elif "invalidparameter" in stderr_lower:
-            log_info(
-                "Hint: Invalid parameter. Check the log group name and filter pattern."
-            )
+            log_info("Hint: Invalid parameter. Check the log group name and filter pattern.")
 
     def _select_log_option_with_fzf(self, func_name: str) -> Optional[str]:
         """

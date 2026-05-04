@@ -2,6 +2,8 @@
 
 Simple CLI template for learning clingy and building quick utilities.
 
+[← Back to Main README](../../../README.md)
+
 ## Overview
 
 The basic template includes example commands to demonstrate core framework features:

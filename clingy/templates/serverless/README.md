@@ -2,7 +2,7 @@
 
 > **AWS Lambda + Go** management system for `clingy`. Optimized for high-velocity development, deployment, and interactive payload composition.
 
----
+[← Back to Main README](../../../README.md)
 
 ## Features
 
@@ -11,6 +11,22 @@
 - ✅ **Live Monitoring** — Tail CloudWatch logs and run Insights queries directly from the CLI.
 - ✅ **Payload Navigator** — Interactive browser to preview and validate composed payloads.
 - ✅ **Contextual Config** — Environment-aware settings (dev/prod) for AWS profiles and regions.
+
+---
+
+## Showcase
+
+> ![Deploy functions](docs/assets/deploy.gif)
+>
+> Shows the build, zip and deploy workflow with clingy.
+
+> ![Invoke function](docs/assets/invoke.gif)
+>
+> Shows the invoke workflow.
+
+> ![Post Orders](docs/assets/post-orders.gif)
+>
+> Shows the post orders workflow.
 
 ---
 
