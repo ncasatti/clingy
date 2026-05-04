@@ -58,10 +58,10 @@ ______________________________________________________________________
 
 ```bash
 # Using uv (recommended)
-uv pip install clingy
+uv pip install clingy-cli
 
 # Using pip
-pip install clingy
+pip install clingy-cli
 ```
 
 **Required Dependency:** `fzf` (fuzzy finder). Install via your package manager (`brew`, `apt`, `pacman`, etc.).
