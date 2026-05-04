@@ -3,8 +3,8 @@ requires = ["setuptools>=61.0", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "clingy"
-version = "1.1.0"
+name = "clingy-cli"
+version = "1.0.0"
 description = "Context-aware CLI framework with fuzzy search menus and auto-discovery - Build interactive command-line tools that cling to your workflow"
 readme = "README.md"
 requires-python = ">=3.8"
@@ -45,9 +45,9 @@ dev = [
 clingy = "clingy.cli:main"
 
 [project.urls]
-Homepage = "https://github.com/ncasatti/clingy"
-Repository = "https://github.com/ncasatti/clingy"
-Issues = "https://github.com/ncasatti/clingy/issues"
+Homepage = "https://github.com/ncasatti/clingy-cli"
+Repository = "https://github.com/ncasatti/clingy-cli"
+Issues = "https://github.com/ncasatti/clingy-cli/issues"
 
 [tool.black]
 line-length = 100
