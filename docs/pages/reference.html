@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-[#050505] text-gray-300">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reference | Clingy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Space Grotesk', sans-serif; }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="border-b border-[#4B5563]/15 p-6 flex justify-between items-center sticky top-0 bg-[#050505]/90 backdrop-blur z-50">
+        <div class="text-xl font-bold text-white tracking-widest"><a href="../index.html" class="hover:text-[#00FFFF] transition-none">CLINGY<span class="text-[#00FFFF]">.</span></a></div>
+        <div class="space-x-6 text-sm uppercase tracking-wider">
+            <a href="reference.html" class="text-[#00FFFF] transition-none">Reference</a>
+            <a href="architecture.html" class="hover:text-[#00FFFF] transition-none">Architecture</a>
+        </div>
+    </nav>
+
+    <div class="flex max-w-7xl mx-auto">
+        <!-- Side Navigation (Optional for reference, but good for structure) -->
+        <aside class="hidden md:block w-64 border-r border-[#4B5563]/15 p-8 h-[calc(100vh-81px)] sticky top-[81px] overflow-y-auto">
+            <div class="text-xs text-gray-500 uppercase tracking-wider mb-4">API Reference</div>
+            <ul class="space-y-3 text-sm">
+                <li><a href="#base-command" class="text-gray-400 hover:text-[#00FFFF] transition-none">BaseCommand</a></li>
+                <li><a href="#menu-node" class="text-gray-400 hover:text-[#00FFFF] transition-none">MenuNode</a></li>
+                <li><a href="#logger" class="text-gray-400 hover:text-[#00FFFF] transition-none">Logger Utilities</a></li>
+            </ul>
+        </aside>
+
+        <main class="flex-1 p-8 md:p-12">
+            <!-- Hero Section (Side-bordered) -->
+            <header class="border-l-4 border-[#00FFFF] pl-8 mb-16">
+                <div class="text-xs text-[#00FFFF] uppercase tracking-widest mb-2">API & CLI Specs</div>
+                <h1 class="text-4xl md:text-5xl font-bold text-white mb-4 uppercase tracking-tight">Command Reference</h1>
+                <p class="text-xl text-gray-400 max-w-2xl leading-relaxed">
+                    Detailed specifications for building custom CLI commands, interactive menus, and utilizing core framework utilities.
+                </p>
+            </header>
+
+            <!-- BaseCommand API -->
+            <section id="base-command" class="mb-16">
+                <h2 class="text-sm text-[#00FFFF] uppercase tracking-widest mb-6">01 // BaseCommand API</h2>
+                <div class="bg-[#0A0A0A] border border-[#4B5563]/15">
+                    <div class="p-6 border-b border-[#4B5563]/15">
+                        <h3 class="text-xl font-bold text-white">class BaseCommand</h3>
+                        <p class="text-sm text-gray-400 mt-2">The abstract base class for all Clingy commands.</p>
+                    </div>
+                    <div class="p-0">
+                        <table class="w-full text-left text-sm">
+                            <thead>
+                                <tr class="bg-[#050505] text-gray-500 uppercase tracking-wider text-xs">
+                                    <th class="p-4 font-normal border-b border-[#4B5563]/15">Attribute / Method</th>
+                                    <th class="p-4 font-normal border-b border-[#4B5563]/15">Type</th>
+                                    <th class="p-4 font-normal border-b border-[#4B5563]/15">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-300">
+                                <tr class="border-b border-[#4B5563]/15 hover:bg-[#050505] transition-none">
+                                    <td class="p-4 font-mono text-[#00FFFF]">name</td>
+                                    <td class="p-4 font-mono text-xs">str</td>
+                                    <td class="p-4">CLI command name (e.g., "greet")</td>
+                                </tr>
+                                <tr class="border-b border-[#4B5563]/15 hover:bg-[#050505] transition-none">
+                                    <td class="p-4 font-mono text-[#00FFFF]">help</td>
+                                    <td class="p-4 font-mono text-xs">str</td>
+                                    <td class="p-4">Short help text shown in <code class="bg-black px-1 text-gray-400">--help</code></td>
+                                </tr>
+                                <tr class="border-b border-[#4B5563]/15 hover:bg-[#050505] transition-none">
+                                    <td class="p-4 font-mono text-[#00FFFF]">execute(args)</td>
+                                    <td class="p-4 font-mono text-xs">-> bool</td>
+                                    <td class="p-4">Command logic execution. Returns True on success.</td>
+                                </tr>
+                                <tr class="hover:bg-[#050505] transition-none">
+                                    <td class="p-4 font-mono text-[#00FFFF]">get_menu_tree()</td>
+                                    <td class="p-4 font-mono text-xs">-> MenuNode</td>
+                                    <td class="p-4">REQUIRED: Defines the interactive menu structure.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- MenuNode API -->
+            <section id="menu-node" class="mb-16">
+                <h2 class="text-sm text-[#00FFFF] uppercase tracking-widest mb-6">02 // MenuNode API</h2>
+                <div class="bg-[#0A0A0A] border border-[#4B5563]/15">
+                    <div class="p-6 border-b border-[#4B5563]/15">
+                        <h3 class="text-xl font-bold text-white">dataclass MenuNode</h3>
+                        <p class="text-sm text-gray-400 mt-2">Defines a node in the interactive fzf menu tree.</p>
+                    </div>
+                    <div class="p-0">
+                        <table class="w-full text-left text-sm">
+                            <thead>
+                                <tr class="bg-[#050505] text-gray-500 uppercase tracking-wider text-xs">
+                                    <th class="p-4 font-normal border-b border-[#4B5563]/15">Attribute</th>
+                                    <th class="p-4 font-normal border-b border-[#4B5563]/15">Type</th>
+                                    <th class="p-4 font-normal border-b border-[#4B5563]/15">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-gray-300">
+                                <tr class="border-b border-[#4B5563]/15 hover:bg-[#050505] transition-none">
+                                    <td class="p-4 font-mono text-[#00FFFF]">label</td>
+                                    <td class="p-4 font-mono text-xs">str</td>
+                                    <td class="p-4">Display text in the menu</td>
+                                </tr>
+                                <tr class="border-b border-[#4B5563]/15 hover:bg-[#050505] transition-none">
+                                    <td class="p-4 font-mono text-[#00FFFF]">emoji</td>
+                                    <td class="p-4 font-mono text-xs">str</td>
+                                    <td class="p-4">Optional icon prefix (e.g., "⚙️")</td>
+                                </tr>
+                                <tr class="border-b border-[#4B5563]/15 hover:bg-[#050505] transition-none">
+                                    <td class="p-4 font-mono text-[#00FFFF]">children</td>
+                                    <td class="p-4 font-mono text-xs">List[MenuNode]</td>
+                                    <td class="p-4">Submenu items (makes this a navigation node)</td>
+                                </tr>
+                                <tr class="hover:bg-[#050505] transition-none">
+                                    <td class="p-4 font-mono text-[#00FFFF]">action</td>
+                                    <td class="p-4 font-mono text-xs">Callable</td>
+                                    <td class="p-4">Function to execute (makes this a leaf node)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Logger Utilities -->
+            <section id="logger" class="mb-16">
+                <h2 class="text-sm text-[#00FFFF] uppercase tracking-widest mb-6">03 // Logger Utilities</h2>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-[#0A0A0A] p-6 border border-[#4B5563]/15">
+                        <h3 class="text-white font-bold mb-2 font-mono text-sm">log_success(msg)</h3>
+                        <p class="text-sm text-gray-400">Prints a green success message with a checkmark.</p>
+                    </div>
+                    <div class="bg-[#0A0A0A] p-6 border border-[#4B5563]/15">
+                        <h3 class="text-white font-bold mb-2 font-mono text-sm">log_error(msg)</h3>
+                        <p class="text-sm text-gray-400">Prints a red error message with an X.</p>
+                    </div>
+                    <div class="bg-[#0A0A0A] p-6 border border-[#4B5563]/15">
+                        <h3 class="text-white font-bold mb-2 font-mono text-sm">log_warning(msg)</h3>
+                        <p class="text-sm text-gray-400">Prints a yellow warning message.</p>
+                    </div>
+                    <div class="bg-[#0A0A0A] p-6 border border-[#4B5563]/15">
+                        <h3 class="text-white font-bold mb-2 font-mono text-sm">log_info(msg)</h3>
+                        <p class="text-sm text-gray-400">Prints a cyan informational message.</p>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-[#4B5563]/15 bg-[#0A0A0A] py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-8 flex justify-between items-center text-xs text-gray-500 uppercase tracking-wider">
+            <div>Clingy Framework v1.0</div>
+            <div><a href="../index.html" class="hover:text-[#00FFFF] transition-none">Return to Entry Point</a></div>
+        </div>
+    </footer>
+</body>
+</html>

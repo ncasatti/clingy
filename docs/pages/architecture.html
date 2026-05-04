@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-[#050505] text-gray-300">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Architecture | Clingy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Space Grotesk', sans-serif; }
+        .cyan-period::after { content: '.'; color: #00FFFF; }
+        /* CRT Overlay */
+        .crt-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 4px, 3px 100%; pointer-events: none; z-index: 50;
+        }
+        /* Vignette */
+        .vignette {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle, rgba(0,0,0,0) 60%, rgba(0,0,0,0.8) 100%);
+            pointer-events: none; z-index: 49;
+        }
+    </style>
+</head>
+<body class="relative min-h-screen flex flex-col">
+    <div class="crt-overlay"></div>
+    <div class="vignette"></div>
+
+    <!-- Top Navigation -->
+    <nav class="border-b border-[#4B5563]/15 p-6 flex justify-between items-center sticky top-0 bg-[#050505]/90 backdrop-blur z-40">
+        <div class="text-xl font-bold text-white tracking-widest"><a href="../index.html" class="hover:text-[#00FFFF] transition-none">CLINGY<span class="text-[#00FFFF]">.</span></a></div>
+        <div class="space-x-6 text-sm uppercase tracking-wider">
+            <a href="reference.html" class="hover:text-[#00FFFF] transition-none">Reference</a>
+            <a href="architecture.html" class="text-[#00FFFF] transition-none">Architecture</a>
+        </div>
+    </nav>
+
+    <div class="flex flex-1 max-w-7xl mx-auto w-full relative z-30">
+        <!-- Side Navigation -->
+        <aside class="hidden md:block w-64 border-r border-[#4B5563]/15 p-8 h-[calc(100vh-81px)] sticky top-[81px] overflow-y-auto">
+            <div class="text-xs text-gray-500 uppercase tracking-wider mb-4">System Specs</div>
+            <ul class="space-y-3 text-sm">
+                <li><a href="#overview" class="text-gray-400 hover:text-[#00FFFF] transition-none">Overview</a></li>
+                <li><a href="#directory-map" class="text-gray-400 hover:text-[#00FFFF] transition-none">Directory Map</a></li>
+                <li><a href="#data-flow" class="text-gray-400 hover:text-[#00FFFF] transition-none">Execution Flow</a></li>
+            </ul>
+        </aside>
+
+        <main class="flex-1 p-8 md:p-12">
+            <!-- Hero Section (Cyan-period) -->
+            <header class="mb-16">
+                <div class="text-xs text-[#00FFFF] uppercase tracking-widest mb-2">Internal Design</div>
+                <h1 class="text-4xl md:text-5xl font-bold text-white mb-4 uppercase tracking-tight cyan-period">System Architecture</h1>
+                <p class="text-xl text-gray-400 max-w-2xl leading-relaxed">
+                    How Clingy orchestrates CLI tools, auto-discovers commands, and renders interactive menus.
+                </p>
+            </header>
+
+            <!-- Overview -->
+            <section id="overview" class="mb-16">
+                <h2 class="text-sm text-[#00FFFF] uppercase tracking-widest mb-6">01 // Overview</h2>
+                <div class="bg-[#0A0A0A] p-8 border border-[#4B5563]/15">
+                    <p class="text-gray-400 leading-relaxed mb-4">
+                        Clingy is designed around a modular, auto-discovering architecture. Instead of manually registering commands in a central router, the framework dynamically loads any valid command class found in the <code class="text-[#00FFFF]">commands/</code> directory.
+                    </p>
+                    <p class="text-gray-400 leading-relaxed">
+                        The core innovation is the dual-mode execution: commands can be invoked directly via traditional CLI arguments, or navigated interactively via a generated <code class="text-[#00FFFF]">fzf</code> menu tree.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Directory Map -->
+            <section id="directory-map" class="mb-16">
+                <h2 class="text-sm text-[#00FFFF] uppercase tracking-widest mb-6">02 // Directory Map</h2>
+                <div class="bg-[#0A0A0A] p-8 border border-[#4B5563]/15 font-mono text-sm text-gray-400 overflow-x-auto">
+<pre><code>clingy/
+├── commands/          <span class="text-gray-600"># Framework commands</span>
+│   ├── base.py        <span class="text-[#00FFFF]"># Abstract base class</span>
+│   ├── init.py        <span class="text-gray-600"># Project initialization</span>
+│   └── __init__.py    <span class="text-gray-600"># Command discovery</span>
+│
+├── core/              <span class="text-gray-600"># Core utilities</span>
+│   ├── discovery.py   <span class="text-[#00FFFF]"># Context detection</span>
+│   ├── logger.py      <span class="text-gray-600"># Logging functions</span>
+│   ├── menu.py        <span class="text-[#00FFFF]"># Interactive menu system (fzf)</span>
+│   └── stats.py       <span class="text-gray-600"># Statistics tracking</span>
+│
+├── cli.py             <span class="text-[#00FFFF]"># CLI entry point (orchestrator)</span>
+└── config.py          <span class="text-gray-600"># Framework configuration</span></code></pre>
+                </div>
+            </section>
+
+            <!-- Execution Flow -->
+            <section id="data-flow" class="mb-16">
+                <h2 class="text-sm text-[#00FFFF] uppercase tracking-widest mb-6">03 // Execution Flow</h2>
+                <div class="space-y-4">
+                    <div class="bg-[#0A0A0A] p-6 border border-[#4B5563]/15 flex items-start">
+                        <div class="text-[#00FFFF] font-bold font-mono mr-6 mt-1">01</div>
+                        <div>
+                            <h3 class="text-white font-bold mb-1 uppercase tracking-wide">Entry Point</h3>
+                            <p class="text-sm text-gray-400">User invokes <code class="text-white">clingy</code>. <code class="text-[#00FFFF]">cli.py</code> initializes the orchestrator.</p>
+                        </div>
+                    </div>
+                    <div class="bg-[#0A0A0A] p-6 border border-[#4B5563]/15 flex items-start">
+                        <div class="text-[#00FFFF] font-bold font-mono mr-6 mt-1">02</div>
+                        <div>
+                            <h3 class="text-white font-bold mb-1 uppercase tracking-wide">Context Detection</h3>
+                            <p class="text-sm text-gray-400"><code class="text-[#00FFFF]">discovery.py</code> searches upwards to find the project root and loads <code class="text-white">config.py</code>.</p>
+                        </div>
+                    </div>
+                    <div class="bg-[#0A0A0A] p-6 border border-[#4B5563]/15 flex items-start">
+                        <div class="text-[#00FFFF] font-bold font-mono mr-6 mt-1">03</div>
+                        <div>
+                            <h3 class="text-white font-bold mb-1 uppercase tracking-wide">Command Auto-Discovery</h3>
+                            <p class="text-sm text-gray-400">Framework scans <code class="text-white">commands/</code> and instantiates all classes inheriting from <code class="text-[#00FFFF]">BaseCommand</code>.</p>
+                        </div>
+                    </div>
+                    <div class="bg-[#0A0A0A] p-6 border border-[#4B5563]/15 flex items-start">
+                        <div class="text-[#00FFFF] font-bold font-mono mr-6 mt-1">04</div>
+                        <div>
+                            <h3 class="text-white font-bold mb-1 uppercase tracking-wide">Menu Tree Construction</h3>
+                            <p class="text-sm text-gray-400">Calls <code class="text-[#00FFFF]">get_menu_tree()</code> on all commands to build the hierarchical navigation structure.</p>
+                        </div>
+                    </div>
+                    <div class="bg-[#0A0A0A] p-6 border border-[#4B5563]/15 flex items-start">
+                        <div class="text-[#00FFFF] font-bold font-mono mr-6 mt-1">05</div>
+                        <div>
+                            <h3 class="text-white font-bold mb-1 uppercase tracking-wide">Interactive Loop</h3>
+                            <p class="text-sm text-gray-400">Passes the tree to <code class="text-[#00FFFF]">MenuRenderer</code> which manages the <code class="text-white">fzf</code> subprocess until a leaf node action is executed.</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="border-t border-[#4B5563]/15 bg-[#0A0A0A] py-8 mt-auto relative z-30">
+        <div class="max-w-7xl mx-auto px-8 flex justify-between items-center text-xs text-gray-500 uppercase tracking-wider">
+            <div>Clingy Framework v1.0</div>
+            <div><a href="../index.html" class="hover:text-[#00FFFF] transition-none">Return to Entry Point</a></div>
+        </div>
+    </footer>
+</body>
+</html>

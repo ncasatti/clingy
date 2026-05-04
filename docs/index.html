@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en" class="bg-[#050505] text-gray-300">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clingy | Context-Aware CLI Framework</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Space Grotesk', sans-serif; }
+        .cyan-period::after { content: '.'; color: #00FFFF; }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation -->
+    <nav class="border-b border-[#4B5563]/15 p-6 flex justify-between items-center sticky top-0 bg-[#050505]/90 backdrop-blur z-50">
+        <div class="text-xl font-bold text-white tracking-widest">CLINGY<span class="text-[#00FFFF]">.</span></div>
+        <div class="space-x-6 text-sm uppercase tracking-wider">
+            <a href="pages/reference.html" class="hover:text-[#00FFFF] transition-none">Reference</a>
+            <a href="pages/architecture.html" class="hover:text-[#00FFFF] transition-none">Architecture</a>
+        </div>
+    </nav>
+
+    <main class="max-w-6xl mx-auto p-12">
+        <!-- Hero Section -->
+        <header class="mb-24">
+            <h1 class="text-5xl md:text-6xl font-bold text-white mb-6 uppercase tracking-tight">Context-Aware<br>CLI Framework<span class="text-[#00FFFF]">.</span></h1>
+            <p class="text-xl text-gray-400 max-w-3xl leading-relaxed">
+                Building interactive command-line tools with fuzzy search menus and modular command architecture. Works like Git, Poetry, or Terraform—install once, use everywhere.
+            </p>
+        </header>
+
+        <!-- The Problem & Solution -->
+        <section class="mb-24">
+            <h2 class="text-sm text-[#00FFFF] uppercase tracking-widest mb-6">01 // The Philosophy</h2>
+            <div class="bg-[#0A0A0A] p-8 md:p-12 border border-[#4B5563]/15">
+                <h3 class="text-2xl font-bold text-white mb-4">Automation meets interaction.</h3>
+                <p class="text-gray-400 leading-relaxed max-w-4xl">
+                    Building CLI tools often feels like choosing between two extremes: a rigid, complex framework that takes days to learn, or a messy collection of scripts that are impossible to maintain. Clingy solves "CLI fatigue" by providing a framework where you build the logic once, and the framework provides the interface.
+                </p>
+            </div>
+        </section>
+
+        <!-- Core Features Grid -->
+        <section class="mb-24">
+            <h2 class="text-sm text-[#00FFFF] uppercase tracking-widest mb-6">02 // Core Architecture</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-[#0A0A0A] p-8 border border-[#4B5563]/15 hover:border-[#00FFFF]/50 transition-none">
+                    <h3 class="text-white font-bold mb-3 uppercase tracking-wide">Zero-Boilerplate</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Just drop a file in your <code class="text-[#00FFFF]">commands/</code> folder, and it's instantly available in your CLI. No manual registration, no complex routing.</p>
+                </div>
+                <div class="bg-[#0A0A0A] p-8 border border-[#4B5563]/15 hover:border-[#00FFFF]/50 transition-none">
+                    <h3 class="text-white font-bold mb-3 uppercase tracking-wide">Interactive by Default</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Every command you write automatically gains a fuzzy-searchable menu powered by <code class="text-[#00FFFF]">fzf</code>.</p>
+                </div>
+                <div class="bg-[#0A0A0A] p-8 border border-[#4B5563]/15 hover:border-[#00FFFF]/50 transition-none">
+                    <h3 class="text-white font-bold mb-3 uppercase tracking-wide">Submenu Architecture</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Use our intuitive node-based system to build complex, nested menus that feel like professional-grade software.</p>
+                </div>
+                <div class="bg-[#0A0A0A] p-8 border border-[#4B5563]/15 hover:border-[#00FFFF]/50 transition-none">
+                    <h3 class="text-white font-bold mb-3 uppercase tracking-wide">Context-Aware</h3>
+                    <p class="text-gray-400 text-sm leading-relaxed">Like Git, Clingy automatically detects your project root. Run it from any subdirectory, and it knows exactly where it is.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Installation & Quick Start -->
+        <section class="mb-24 grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Installation -->
+            <div>
+                <h2 class="text-sm text-[#00FFFF] uppercase tracking-widest mb-6">03 // Installation</h2>
+                <div class="bg-[#0A0A0A] p-8 border border-[#4B5563]/15 h-full">
+                    <p class="text-sm text-gray-400 mb-4">Using uv (recommended):</p>
+                    <pre class="bg-black p-4 text-[#00FFFF] text-sm mb-6 overflow-x-auto"><code>uv pip install clingy</code></pre>
+                    
+                    <p class="text-sm text-gray-400 mb-4">Using pip:</p>
+                    <pre class="bg-black p-4 text-[#00FFFF] text-sm mb-6 overflow-x-auto"><code>pip install clingy</code></pre>
+
+                    <div class="border-t border-[#4B5563]/15 pt-4 mt-4">
+                        <p class="text-xs text-gray-500 uppercase tracking-wider">Required Dependency</p>
+                        <p class="text-sm text-gray-300 mt-2"><code class="text-white">fzf</code> (fuzzy finder). Install via brew, apt, pacman, etc.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick Start -->
+            <div>
+                <h2 class="text-sm text-[#00FFFF] uppercase tracking-widest mb-6">04 // Quick Start</h2>
+                <div class="bg-[#0A0A0A] p-8 border border-[#4B5563]/15 h-full flex flex-col justify-between">
+                    <div class="space-y-6">
+                        <div>
+                            <span class="text-xs text-gray-500 uppercase tracking-wider block mb-2">Step 1: Initialize</span>
+                            <pre class="bg-black p-3 text-gray-300 text-sm"><code>mkdir my-tool && cd my-tool
+clingy init</code></pre>
+                        </div>
+                        <div>
+                            <span class="text-xs text-gray-500 uppercase tracking-wider block mb-2">Step 2: Run</span>
+                            <pre class="bg-black p-3 text-gray-300 text-sm"><code>clingy                <span class="text-gray-600"># Interactive mode</span>
+clingy greet --name User  <span class="text-gray-600"># CLI mode</span></code></pre>
+                        </div>
+                        <div>
+                            <span class="text-xs text-gray-500 uppercase tracking-wider block mb-2">Step 3: Update Framework</span>
+                            <pre class="bg-black p-3 text-gray-300 text-sm"><code>clingy --update-template</code></pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Documentation Hub -->
+        <section class="mb-24">
+            <h2 class="text-sm text-[#00FFFF] uppercase tracking-widest mb-6">05 // Documentation Hub</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-[#0A0A0A] p-8 border border-[#4B5563]/15">
+                    <h3 class="text-white font-bold mb-4 uppercase tracking-wide border-b border-[#4B5563]/15 pb-2">Framework Reference</h3>
+                    <ul class="space-y-3 text-sm">
+                        <li><a href="pages/architecture.html" class="text-gray-400 hover:text-[#00FFFF] transition-none flex items-center"><span class="text-[#00FFFF] mr-2">></span> Architecture (Internal Design)</a></li>
+                        <li><a href="pages/reference.html" class="text-gray-400 hover:text-[#00FFFF] transition-none flex items-center"><span class="text-[#00FFFF] mr-2">></span> Creating Commands Guide</a></li>
+                    </ul>
+                </div>
+                <div class="bg-[#0A0A0A] p-8 border border-[#4B5563]/15">
+                    <h3 class="text-white font-bold mb-4 uppercase tracking-wide border-b border-[#4B5563]/15 pb-2">Project Templates</h3>
+                    <ul class="space-y-3 text-sm">
+                        <li class="text-gray-400 flex items-center"><span class="text-[#00FFFF] mr-2">></span> Basic Template (Prototyping)</li>
+                        <li class="text-gray-400 flex items-center"><span class="text-[#00FFFF] mr-2">></span> Konfig Template (Dotfiles)</li>
+                        <li class="text-gray-400 flex items-center"><span class="text-[#00FFFF] mr-2">></span> Serverless Template (AWS Lambda)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Development -->
+        <section class="mb-12">
+            <h2 class="text-sm text-[#00FFFF] uppercase tracking-widest mb-6">06 // Development</h2>
+            <div class="bg-[#0A0A0A] p-8 border border-[#4B5563]/15">
+                <pre class="bg-black p-4 text-gray-300 text-sm overflow-x-auto"><code># Install in editable mode
+pip install -e .
+
+# Run tests
+pytest tests/
+
+# Format code
+black . --line-length 100
+isort . --profile black</code></pre>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-[#4B5563]/15 bg-[#0A0A0A] py-12">
+        <div class="max-w-6xl mx-auto px-12 flex flex-col md:flex-row justify-between items-center">
+            <div class="text-2xl font-bold text-white tracking-widest mb-4 md:mb-0">CLINGY<span class="text-[#00FFFF]">.</span></div>
+            <div class="text-sm text-gray-500 uppercase tracking-wider space-x-6">
+                <span>MIT License</span>
+                <span>Maintainer: <a href="https://github.com/ncasatti">ncasatti</a></span>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>
