@@ -42,17 +42,13 @@ ______________________________________________________________________
 
 ## Showcase
 
-> ![Deploy functions](docs/assets/deploy.gif)
->
-> Shows the build, zip and deploy workflow with clingy.
+Clingy basic starter template
 
-> ![Invoke function](docs/assets/invoke.gif)
->
-> Shows the invoke workflow.
+https://github.com/user-attachments/assets/61247d3c-2900-472d-a4fc-a7b3b551edf7
 
-> ![Post Orders](docs/assets/post-orders.gif)
->
-> Shows the post orders workflow.
+Clingy konfigs template
+ 
+https://github.com/user-attachments/assets/c11d5731-9a4e-4163-8b86-06463003d677
 
 ______________________________________________________________________
 
